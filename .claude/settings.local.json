@@ -18,7 +18,8 @@
       "Bash(./node_modules/.bin/electron:*)",
       "Bash(node:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

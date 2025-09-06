@@ -8,6 +8,7 @@ import { NodeVisualComponent } from '../../shared/node-visual/node-visual.compon
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
+  standalone: false,
   selector: 'app-subway-map-visual',
   templateUrl: './subway-map-visual.component.html',
   styleUrls: ['./subway-map-visual.component.scss']

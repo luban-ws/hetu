@@ -5,6 +5,7 @@ import { AppveyorCiService } from '../services/appveyor-ci.service';
 import { LayoutService } from '../services/layout.service';
 
 @Component({
+  standalone: false,
   selector: 'app-commit-detail-ci',
   templateUrl: './commit-detail-ci.component.html',
   styleUrls: ['./commit-detail-ci.component.scss']

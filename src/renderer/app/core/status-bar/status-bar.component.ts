@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { StatusBarService } from "../../infrastructure/status-bar.service";
 
 @Component({
+  standalone: false,
   selector: "app-status-bar",
   templateUrl: "./status-bar.component.html",
   styleUrls: ["./status-bar.component.scss"],

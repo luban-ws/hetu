@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ChangeDetectorRef, AfterViewInit } from '@ang
 import { D3Service } from '../d3/d3.service';
 
 @Component({
+  standalone: false,
   selector: 'app-branch-list',
   templateUrl: './branch-list.component.html',
   styleUrls: ['./branch-list.component.scss']

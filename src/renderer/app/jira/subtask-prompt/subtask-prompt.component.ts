@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter } from "@angular/core";
 import { Prompt } from "../../infrastructure/prompt";
 
 @Component({
+  standalone: false,
   selector: "app-subtask-prompt",
   templateUrl: "./subtask-prompt.component.html",
   styleUrls: ["./subtask-prompt.component.scss"],

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { LayoutService } from '../services/layout.service';
 
 @Component({
+  standalone: false,
   selector: 'app-file-counts',
   templateUrl: './file-counts.component.html',
   styleUrls: ['./file-counts.component.scss']

@@ -7,10 +7,11 @@ import { CommitSelectionService } from '../services/commit-selection.service';
 import { Subscription } from 'rxjs/Subscription';
 import { RepoService } from '../services/repo.service';
 import { CommitChangeService } from '../services/commit-change.service';
-import { ContextMenuComponent } from 'ngx-contextmenu';
-import { ContextMenuService } from 'ngx-contextmenu';
+import { ContextMenuComponent } from '@perfectmemory/ngx-contextmenu';
+import { ContextMenuService } from '@perfectmemory/ngx-contextmenu';
 
 @Component({
+  standalone: false,
   selector: 'app-subway-stations',
   templateUrl: './subway-stations.component.html',
   styleUrls: ['./subway-stations.component.scss']

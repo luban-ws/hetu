@@ -10,6 +10,7 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { JiraIntegrationService } from "../services/jira-integration.service";
 
 @Component({
+  standalone: false,
   selector: "app-jira-rich-text",
   templateUrl: "./jira-rich-text.component.html",
   styleUrls: ["./jira-rich-text.component.scss"],

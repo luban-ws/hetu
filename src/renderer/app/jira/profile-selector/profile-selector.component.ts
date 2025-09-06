@@ -12,6 +12,7 @@ import { JiraIntegrationService } from "../services/jira-integration.service";
 import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
+  standalone: false,
   selector: "app-profile-selector",
   templateUrl: "./profile-selector.component.html",
   styleUrls: ["./profile-selector.component.scss"],

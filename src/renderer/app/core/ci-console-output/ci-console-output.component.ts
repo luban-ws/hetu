@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
+  standalone: false,
   selector: 'app-ci-console-output',
   templateUrl: './ci-console-output.component.html',
   styleUrls: ['./ci-console-output.component.scss']

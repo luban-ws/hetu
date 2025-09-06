@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SettingsComponent } from '../prototypes/settings-component';
 
 @Component({
+  standalone: false,
   selector: 'app-repo-profile',
   templateUrl: './repo-profile.component.html',
   styleUrls: ['./repo-profile.component.scss']

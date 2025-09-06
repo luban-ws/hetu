@@ -1,17 +1,21 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Node } from '../d3/models/node';
-import { RepoService } from '../services/repo.service';
-import { D3Service } from '../d3/d3.service';
-import { ContextMenuComponent, ContextMenuService } from 'ngx-contextmenu';
-import { CommitSelectionService } from '../services/commit-selection.service';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { Node } from "../d3/models/node";
+import { RepoService } from "../services/repo.service";
+import { D3Service } from "../d3/d3.service";
+import {
+  ContextMenuComponent,
+  ContextMenuService,
+} from "@perfectmemory/ngx-contextmenu";
+import { CommitSelectionService } from "../services/commit-selection.service";
 
 @Component({
-  selector: 'app-subway-station-annot',
-  templateUrl: './subway-station-annot.component.html',
-  styleUrls: ['./subway-station-annot.component.scss']
+  standalone: false,
+  selector: "app-subway-station-annot",
+  templateUrl: "./subway-station-annot.component.html",
+  styleUrls: ["./subway-station-annot.component.scss"],
 })
 export class SubwayStationAnnotComponent implements OnInit {
-  @ViewChild('tagMenu') public tagMenu: ContextMenuComponent;
+  @ViewChild("tagMenu") public tagMenu: ContextMenuComponent;
   private height = Node.height;
   private commits = [];
   private refs = {};
@@ -23,14 +27,14 @@ export class SubwayStationAnnotComponent implements OnInit {
     private d3: D3Service,
     private ctxService: ContextMenuService
   ) {
-    repo.commitsChange.subscribe(cmts => {
+    repo.commitsChange.subscribe((cmts) => {
       this.commits = cmts;
     });
-    repo.refChange.subscribe(data => {
+    repo.refChange.subscribe((data) => {
       this.refs = data.refDict;
       this.updateBranchInfo();
     });
-    repo.branchChange.subscribe(bn => {
+    repo.branchChange.subscribe((bn) => {
       if (bn) {
         this.currentBranch = bn.name;
       } else {
@@ -40,9 +44,13 @@ export class SubwayStationAnnotComponent implements OnInit {
     });
     d3.mapChange.subscribe(() => {
       this.updateBranchInfo();
-      this.branchInfos.forEach(bi => {
+      this.branchInfos.forEach((bi) => {
         if (this.d3.currentMap && this.d3.currentMap.nodeDict[bi.target]) {
-          bi.color = this.d3.colors[this.d3.currentMap.nodeDict[bi.target].x_order % this.d3.colors.length];
+          bi.color =
+            this.d3.colors[
+              this.d3.currentMap.nodeDict[bi.target].x_order %
+                this.d3.colors.length
+            ];
         }
       });
     });
@@ -56,8 +64,7 @@ export class SubwayStationAnnotComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   checkout(branchInfo) {
     if (!branchInfo.isTag) {
@@ -76,35 +83,41 @@ export class SubwayStationAnnotComponent implements OnInit {
             names: [],
             target: cmt.sha,
           };
-          this.refs[cmt.sha].forEach(ref => {
+          this.refs[cmt.sha].forEach((ref) => {
             bi.names.push(ref);
           });
           this.branchInfos.push(bi);
         }
       });
     }
-    this.branchInfos.forEach(bi => {
+    this.branchInfos.forEach((bi) => {
       let consolidated = new Map<string, BranchInfo>();
-      bi.names.forEach(na => {
+      bi.names.forEach((na) => {
         if (!consolidated[na.display]) {
           consolidated[na.display] = na;
           na.current = false;
         } else {
-          consolidated[na.display].isRemote = consolidated[na.display].isRemote || na.isRemote;
-          consolidated[na.display].isBranch = consolidated[na.display].isBranch || na.isBranch;
+          consolidated[na.display].isRemote =
+            consolidated[na.display].isRemote || na.isRemote;
+          consolidated[na.display].isBranch =
+            consolidated[na.display].isBranch || na.isBranch;
           if (na.isBranch) {
             consolidated[na.display].shorthand = na.shorthand;
           }
         }
       });
-      Object.values(consolidated).forEach(con => {
+      Object.values(consolidated).forEach((con) => {
         if (con.isBranch && con.display.includes(this.currentBranch)) {
           con.current = true;
         }
       });
       bi.names = Object.values(consolidated);
       if (this.d3.currentMap && this.d3.currentMap.nodeDict[bi.target]) {
-        bi.color = this.d3.colors[this.d3.currentMap.nodeDict[bi.target].x_order % this.d3.colors.length];
+        bi.color =
+          this.d3.colors[
+            this.d3.currentMap.nodeDict[bi.target].x_order %
+              this.d3.colors.length
+          ];
       }
     });
   }
@@ -131,12 +144,14 @@ interface BranchInfo {
   top: number;
   color: string;
   target: string;
-  names: [{
-    isRemote: boolean,
-    isBranch: boolean,
-    current: boolean,
-    display: string,
-    remoteName: string,
-    localName: string,
-  }];
+  names: [
+    {
+      isRemote: boolean;
+      isBranch: boolean;
+      current: boolean;
+      display: string;
+      remoteName: string;
+      localName: string;
+    }
+  ];
 }

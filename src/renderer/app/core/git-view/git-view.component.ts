@@ -4,6 +4,7 @@ import { Commit } from '../prototypes/commit';
 import { LoadingService } from '../../infrastructure/loading-service.service';
 
 @Component({
+  standalone: false,
   selector: 'app-git-view',
   templateUrl: './git-view.component.html',
   styleUrls: ['./git-view.component.css']

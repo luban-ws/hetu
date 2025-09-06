@@ -3,6 +3,7 @@ import { Prompt } from '../../infrastructure/prompt';
 
 
 @Component({
+  standalone: false,
   selector: 'app-enter-login-prompt',
   templateUrl: './enter-login-prompt.component.html',
   styleUrls: ['./enter-login-prompt.component.scss']

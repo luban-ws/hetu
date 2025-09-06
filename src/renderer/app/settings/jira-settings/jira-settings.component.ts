@@ -4,6 +4,7 @@ import { SettingsService } from '../services/settings.service';
 import { ElectronService } from '../../infrastructure/electron.service';
 
 @Component({
+  standalone: false,
   selector: 'app-jira-settings',
   templateUrl: './jira-settings.component.html',
   styleUrls: ['./jira-settings.component.scss']

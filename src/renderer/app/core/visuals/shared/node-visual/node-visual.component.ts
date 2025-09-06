@@ -3,10 +3,11 @@ import { Node } from '../../../d3/models/node';
 import { D3Service } from '../../../d3/d3.service';
 import { CommitSelectionService } from '../../../services/commit-selection.service';
 import { Subscription } from 'rxjs/Subscription';
-import { ContextMenuComponent } from 'ngx-contextmenu';
+import { ContextMenuComponent } from '@perfectmemory/ngx-contextmenu';
 import { CommitChangeService } from '../../../services/commit-change.service';
 
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: '[nodeVisual]',
   templateUrl: './node-visual.component.html',

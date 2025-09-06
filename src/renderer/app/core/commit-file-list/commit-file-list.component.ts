@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { FileListFilterMask } from './file-list-filter';
 
 @Component({
+  standalone: false,
   selector: 'app-commit-file-list',
   templateUrl: './commit-file-list.component.html',
   styleUrls: ['./commit-file-list.component.scss']

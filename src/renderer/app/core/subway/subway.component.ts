@@ -6,6 +6,7 @@ import { Color } from '../d3/models/color';
 import { RepoService } from '../services/repo.service';
 
 @Component({
+  standalone: false,
   selector: 'app-subway',
   templateUrl: './subway.component.html',
   styleUrls: ['./subway.component.css']

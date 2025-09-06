@@ -13,6 +13,7 @@ import { KeySelectorComponent } from '../key-selector/key-selector.component';
 import { LayoutService } from '../../core/services/layout.service';
 
 @Component({
+  standalone: false,
   selector: 'app-jira-detail',
   templateUrl: './jira-detail.component.html',
   styleUrls: ['./jira-detail.component.scss']

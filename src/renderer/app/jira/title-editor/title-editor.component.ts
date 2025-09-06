@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 
 @Component({
+  standalone: false,
   selector: "app-title-editor",
   templateUrl: "./title-editor.component.html",
   styleUrls: ["./title-editor.component.scss"],

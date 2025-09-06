@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SubmodulesService } from '../services/submodules.service';
 
 @Component({
+  standalone: false,
   selector: 'app-submodule-details-panel',
   templateUrl: './submodule-details-panel.component.html',
   styleUrls: ['./submodule-details-panel.component.scss']

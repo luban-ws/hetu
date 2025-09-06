@@ -4,18 +4,14 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
+    "module": "es2020",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ES2022",
+    "target": "es2020",
     "useDefineForClassFields": false,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["ES2022", "dom"],
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

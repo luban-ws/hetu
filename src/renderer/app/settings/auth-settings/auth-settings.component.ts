@@ -3,6 +3,7 @@ import { SettingsService } from '../services/settings.service';
 import { SettingsComponent } from '../prototypes/settings-component';
 
 @Component({
+  standalone: false,
   selector: 'app-auth-settings',
   templateUrl: './auth-settings.component.html',
   styleUrls: ['./auth-settings.component.scss']

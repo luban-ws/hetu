@@ -3,6 +3,7 @@ import { Resolution } from "../models/resolution";
 import { JiraIntegrationService } from "../services/jira-integration.service";
 
 @Component({
+  standalone: false,
   selector: "app-resolution-control",
   templateUrl: "./resolution-control.component.html",
   styleUrls: ["./resolution-control.component.scss"],

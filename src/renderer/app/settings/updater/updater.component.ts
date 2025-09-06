@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UpdaterService } from '../../infrastructure/updater.service';
 
 @Component({
+  standalone: false,
   selector: 'app-updater',
   templateUrl: './updater.component.html',
   styleUrls: ['./updater.component.scss']

@@ -4,6 +4,7 @@ import { D3Service } from '../d3/d3.service';
 import * as moment from 'moment';
 
 @Component({
+  standalone: false,
   selector: 'app-committer-card',
   templateUrl: './committer-card.component.html',
   styleUrls: ['./committer-card.component.scss']

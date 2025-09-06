@@ -4,6 +4,7 @@ import { Node } from '../d3/models/node';
 import * as moment from 'moment';
 
 @Component({
+  standalone: false,
   selector: 'app-map-separator',
   templateUrl: './map-separator.component.html',
   styleUrls: ['./map-separator.component.scss']

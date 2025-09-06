@@ -3,6 +3,7 @@ import { PromptContainerDirective } from './prompt-container.directive';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
 
 @Component({
+  standalone: false,
   selector: 'app-prompt',
   templateUrl: './prompt.component.html',
   styleUrls: ['./prompt.component.scss']

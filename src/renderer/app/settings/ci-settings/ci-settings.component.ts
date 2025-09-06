@@ -4,6 +4,7 @@ import { SettingsService } from '../services/settings.service';
 import { ElectronService } from '../../infrastructure/electron.service';
 
 @Component({
+  standalone: false,
   selector: 'app-ci-settings',
   templateUrl: './ci-settings.component.html',
   styleUrls: ['./ci-settings.component.scss']

@@ -36,12 +36,12 @@ import { CiConsoleOutputComponent } from './ci-console-output/ci-console-output.
 import { ForcePushPromptComponent } from './force-push-prompt/force-push-prompt.component';
 import { CommitChangeService } from './services/commit-change.service';
 import { CreateBranchPromptComponent } from './create-branch-prompt/create-branch-prompt.component';
-import { ContextMenuModule } from 'ngx-contextmenu';
+import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { FileViewPanelComponent } from './file-view-panel/file-view-panel.component';
 import { ExternalFileViewerComponent } from './external-file-viewer/external-file-viewer.component';
 import { TagPromptComponent } from './tag-prompt/tag-prompt.component';
 import { MapSeparatorComponent } from './map-separator/map-separator.component';
-import { HotkeyModule } from 'angular2-hotkeys';
+// import { HotkeyModule } from 'angular2-hotkeys'; // TODO: Migrate to newer Angular hotkeys solution
 import { SubmodulesService } from './services/submodules.service';
 import { SubmoduleDetailsPanelComponent } from './submodule-details-panel/submodule-details-panel.component';
 import { CommitterCardComponent } from './committer-card/committer-card.component';
@@ -56,12 +56,47 @@ import { HistoryService } from './services/history.service';
         CommonModule,
         NgbModule,
         FormsModule,
-        HotkeyModule,
+        // HotkeyModule, // Commented out - needs migration to newer Angular hotkeys solution
         InfrastructureModule,
         ContextMenuModule,
-        JiraModule,
+        JiraModule
     ],
-    declarations: [BranchViewerComponent, GitViewComponent, SubwayComponent, SubwayStationsComponent, SubwayMapVisualComponent, NodeVisualComponent, LinkVisualComponent, SubwayStationAnnotComponent, ActionToolbarComponent, OpenRepoPanelComponent, StatusBarComponent, PromptComponent, EnterLoginPromptComponent, PromptContainerDirective, BranchListComponent, BranchItemComponent, SshPasswordPromptComponent, CommitDetailComponent, CommitDetailInfoComponent, CommitDetailCiComponent, CiConsoleOutputComponent, ForcePushPromptComponent, CreateBranchPromptComponent, FileViewPanelComponent, ExternalFileViewerComponent, TagPromptComponent, MapSeparatorComponent, SubmoduleDetailsPanelComponent, CommitterCardComponent, FileCountsComponent, CommitFileListComponent, FileListFilter],
+    declarations: [
+        BranchViewerComponent, 
+        GitViewComponent, 
+        ActionToolbarComponent, 
+        OpenRepoPanelComponent, 
+        StatusBarComponent, 
+        PromptComponent, 
+        CommitDetailComponent, 
+        CommitDetailInfoComponent, 
+        CommitDetailCiComponent, 
+        FileViewPanelComponent, 
+        ExternalFileViewerComponent, 
+        FileCountsComponent,
+        // Components moved from imports
+        SubwayComponent,
+        SubwayMapVisualComponent,
+        NodeVisualComponent,
+        LinkVisualComponent,
+        EnterLoginPromptComponent,
+        BranchListComponent,
+        SshPasswordPromptComponent,
+        CiConsoleOutputComponent,
+        ForcePushPromptComponent,
+        CreateBranchPromptComponent,
+        TagPromptComponent,
+        MapSeparatorComponent,
+        SubmoduleDetailsPanelComponent,
+        CommitterCardComponent,
+        CommitFileListComponent,
+        SubwayStationsComponent,
+        SubwayStationAnnotComponent,
+        BranchItemComponent,
+        // Directive and pipe
+        PromptContainerDirective,
+        FileListFilter
+    ],
     exports: [RouterModule],
     providers: [D3Service, RepoService, LayoutService, CredentialsService, CiIntegrationService, CommitSelectionService, AppveyorCiService, CommitChangeService, SubmodulesService, HistoryService]
 })

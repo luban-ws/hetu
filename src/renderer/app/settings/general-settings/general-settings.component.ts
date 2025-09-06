@@ -3,6 +3,7 @@ import { SettingsService } from '../services/settings.service';
 import { SettingsComponent } from '../prototypes/settings-component';
 
 @Component({
+  standalone: false,
   selector: 'app-general-settings',
   templateUrl: './general-settings.component.html',
   styleUrls: ['./general-settings.component.scss']

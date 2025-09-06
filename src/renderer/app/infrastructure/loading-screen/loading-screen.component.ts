@@ -5,7 +5,8 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 @Component({
   selector: 'app-loading-screen',
   templateUrl: './loading-screen.component.html',
-  styleUrls: ['./loading-screen.component.css']
+  styleUrls: ['./loading-screen.component.css'],
+  standalone: false
 })
 export class LoadingScreenComponent implements OnInit {
 

@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Prompt } from '../../infrastructure/prompt';
 
 @Component({
+  standalone: false,
   selector: 'app-tag-prompt',
   templateUrl: './tag-prompt.component.html',
   styleUrls: ['./tag-prompt.component.scss']

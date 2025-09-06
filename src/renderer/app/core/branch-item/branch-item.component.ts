@@ -1,10 +1,11 @@
 import { Component, OnInit, Input, HostBinding, ViewChild } from '@angular/core';
 import { D3Service } from '../d3/d3.service';
-import { ContextMenuService, ContextMenuComponent } from 'ngx-contextmenu';
+import { ContextMenuService, ContextMenuComponent } from '@perfectmemory/ngx-contextmenu';
 import { CommitSelectionService } from '../services/commit-selection.service';
 import { SubmodulesService } from '../services/submodules.service';
 
 @Component({
+  standalone: false,
   selector: 'app-branch-item',
   templateUrl: './branch-item.component.html',
   styleUrls: ['./branch-item.component.scss']

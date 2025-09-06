@@ -15,6 +15,7 @@ import { PromptInjectorService } from "../../infrastructure/prompt-injector.serv
 import { ResolutionSelectorComponent } from "../resolution-selector/resolution-selector.component";
 
 @Component({
+  standalone: false,
   selector: "app-transition-control",
   templateUrl: "./transition-control.component.html",
   styleUrls: ["./transition-control.component.scss"],

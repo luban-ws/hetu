@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { FileCountsComponent } from '../file-counts/file-counts.component';
 
 @Component({
+  standalone: false,
   selector: 'app-commit-detail-info',
   templateUrl: './commit-detail-info.component.html',
   styleUrls: ['./commit-detail-info.component.scss']

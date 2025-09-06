@@ -4,6 +4,7 @@ import { FileDetail } from '../prototypes/file-detail';
 import { CommitChangeService } from '../services/commit-change.service';
 
 @Component({
+  standalone: false,
   selector: 'app-file-view-panel',
   templateUrl: './file-view-panel.component.html',
   styleUrls: ['./file-view-panel.component.scss']

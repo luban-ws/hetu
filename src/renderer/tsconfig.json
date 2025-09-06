@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out/renderer",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../*"],
+      "@app/*": ["./app/*"],
+      "@core/*": ["./app/core/*"],
+      "@infrastructure/*": ["./app/infrastructure/*"],
+      "@settings/*": ["./app/settings/*"],
+      "@jira/*": ["./app/jira/*"]
+    }
+  },
+  "files": [
+    "./main.ts",
+    "./polyfills.ts"
+  ],
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}

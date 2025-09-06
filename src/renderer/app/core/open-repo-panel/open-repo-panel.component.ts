@@ -4,6 +4,7 @@ import { HistoryService } from "../services/history.service";
 import { LayoutService } from "../services/layout.service";
 
 @Component({
+  standalone: false,
   selector: "app-open-repo-panel",
   templateUrl: "./open-repo-panel.component.html",
   styleUrls: ["./open-repo-panel.component.scss"],

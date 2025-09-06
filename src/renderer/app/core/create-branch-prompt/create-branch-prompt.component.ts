@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Prompt } from '../../infrastructure/prompt';
 
 @Component({
+  standalone: false,
   selector: 'app-create-branch-prompt',
   templateUrl: './create-branch-prompt.component.html',
   styleUrls: ['./create-branch-prompt.component.scss']

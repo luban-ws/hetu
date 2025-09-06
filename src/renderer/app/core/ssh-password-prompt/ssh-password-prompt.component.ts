@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Prompt } from '../../infrastructure/prompt';
 
 @Component({
+  standalone: false,
   selector: 'app-ssh-password-prompt',
   templateUrl: './ssh-password-prompt.component.html',
   styleUrls: ['./ssh-password-prompt.component.scss']

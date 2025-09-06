@@ -8,6 +8,7 @@ import { FileDetail } from '../prototypes/file-detail';
 import { FileViewPanelComponent } from '../file-view-panel/file-view-panel.component';
 
 @Component({
+  standalone: false,
   selector: 'app-commit-detail',
   templateUrl: './commit-detail.component.html',
   styleUrls: ['./commit-detail.component.scss']

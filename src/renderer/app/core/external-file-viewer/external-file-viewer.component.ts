@@ -5,6 +5,7 @@ import { CommitSelectionService } from '../services/commit-selection.service';
 import { LoadingService } from '../../infrastructure/loading-service.service';
 
 @Component({
+  standalone: false,
   selector: 'app-external-file-viewer',
   templateUrl: './external-file-viewer.component.html',
   styleUrls: ['./external-file-viewer.component.scss']

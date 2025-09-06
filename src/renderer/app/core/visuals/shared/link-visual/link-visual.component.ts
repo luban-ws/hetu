@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit } from '@ang
 import { Link } from '../../../d3/models/link';
 
 @Component({
+  standalone: false,
   // tslint:disable-next-line:component-selector
   selector: '[linkVisual]',
   templateUrl: './link-visual.component.html',

@@ -3,7 +3,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-icheck',
   templateUrl: './icheck.component.html',
-  styleUrls: ['./icheck.component.scss']
+  styleUrls: ['./icheck.component.scss'],
+  standalone: false
 })
 export class IcheckComponent implements OnInit {
 

@@ -4,6 +4,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { Issue } from "../models/issue";
 
 @Component({
+  standalone: false,
   selector: "app-key-selector",
   templateUrl: "./key-selector.component.html",
   styleUrls: ["./key-selector.component.scss"],

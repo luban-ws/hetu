@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
+  standalone: false,
   selector: 'app-settings-nav',
   templateUrl: './settings-nav.component.html',
   styleUrls: ['./settings-nav.component.scss']

@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
     name: 'profileFilter',
-    pure: false
+    pure: false,
+    standalone: false
 })
 export class ProfileFilterPipe implements PipeTransform {
     transform(items: any[], filter: { name: string }): any {

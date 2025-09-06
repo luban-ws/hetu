@@ -9,6 +9,7 @@ import { SubmodulesService } from '../services/submodules.service';
 import { SubmoduleDetailsPanelComponent } from '../submodule-details-panel/submodule-details-panel.component';
 import { UpdaterService } from '../../infrastructure/updater.service';
 @Component({
+  standalone: false,
   selector: 'app-branch-viewer',
   templateUrl: './branch-viewer.component.html',
   styleUrls: ['./branch-viewer.component.scss']

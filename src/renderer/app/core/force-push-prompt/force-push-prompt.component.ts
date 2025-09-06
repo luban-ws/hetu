@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Prompt } from '../../infrastructure/prompt';
 
 @Component({
+  standalone: false,
   selector: 'app-force-push-prompt',
   templateUrl: './force-push-prompt.component.html',
   styleUrls: ['./force-push-prompt.component.scss']

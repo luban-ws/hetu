@@ -3,6 +3,7 @@ import { JiraIntegrationService } from "../services/jira-integration.service";
 import { Prompt } from "../../infrastructure/prompt";
 
 @Component({
+  standalone: false,
   selector: "app-add-comment-prompt",
   templateUrl: "./add-comment-prompt.component.html",
   styleUrls: ["./add-comment-prompt.component.scss"],

@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
     name: 'fileListFilter',
-    pure: false
+    pure: false,
+    standalone: false
 })
 export class FileListFilter implements PipeTransform {
     transform(items: any[], filter: FileListFilterMask): any {

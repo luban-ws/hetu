@@ -18,7 +18,7 @@ import { JiraSettingsComponent } from './settings/jira-settings/jira-settings.co
 // import { TagInputModule } from 'ngx-chips'; // Removed for compatibility
 import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { ExternalFileViewerComponent } from './core/external-file-viewer/external-file-viewer.component';
-import { HotkeyModule } from 'angular2-hotkeys';
+// import { HotkeyModule } from 'angular2-hotkeys'; // Temporarily disabled - incompatible with Angular 20
 import { ReleaseNoteComponent } from './infrastructure/release-note/release-note.component';
 import { AboutPageComponent } from './infrastructure/about-page/about-page.component';
 import { JIRAIssueGuard } from './jira/services/jira-issue-link-guard';
@@ -62,16 +62,16 @@ const appRoutes: Routes = [
     BrowserModule,
     BrowserAnimationsModule,
     NgbModule,
-    ContextMenuModule.forRoot(),
+    ContextMenuModule,
     ToastrModule.forRoot({
       positionClass: 'toast-top-right',
       timeOut: 10000,
       preventDuplicates: true,
       enableHtml: true
     }),
-    HotkeyModule.forRoot({
-      cheatSheetHotkey: '?',
-    }),
+    // HotkeyModule.forRoot({
+    //   cheatSheetHotkey: '?',
+    // }), // Temporarily disabled - incompatible with Angular 20
     InfrastructureModule,
     CoreModule,
     SettingsModule,

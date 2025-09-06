@@ -4,6 +4,7 @@ import { CommitChangeService } from '../services/commit-change.service';
 import { LayoutService } from '../services/layout.service';
 
 @Component({
+  standalone: false,
   selector: 'app-action-toolbar',
   templateUrl: './action-toolbar.component.html',
   styleUrls: ['./action-toolbar.component.scss']

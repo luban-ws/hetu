@@ -19,7 +19,12 @@
       "Bash(node:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npm run dev:*)",
+      "Bash(NODE_ENV=production npm start)",
+      "Bash(npm run:*)",
+      "WebSearch",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,16 +1,15 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { CredentialsService } from './credentials.service';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
-import { HotkeysService, Hotkey } from 'angular2-hotkeys';
-import { CommitSelectionService } from './commit-selection.service';
-import { WIPCommit } from '../prototypes/commit';
-import { LoadingService } from '../../infrastructure/loading-service.service';
+import { Injectable, EventEmitter, Output } from "@angular/core";
+import { ElectronService } from "../../infrastructure/electron.service";
+import { CredentialsService } from "./credentials.service";
+import { ToastrService } from "ngx-toastr";
+import { Router } from "@angular/router";
+import { HotkeysService } from "@ngneat/hotkeys";
+import { CommitSelectionService } from "./commit-selection.service";
+import { WIPCommit } from "../prototypes/commit";
+import { LoadingService } from "../../infrastructure/loading-service.service";
 
 @Injectable()
 export class CommitChangeService {
-
   @Output() messageChange = new EventEmitter<string>();
   @Output() detailChange = new EventEmitter<string>();
   @Output() stashed = new EventEmitter();
@@ -46,20 +45,23 @@ export class CommitChangeService {
     private toastr: ToastrService,
     private cmtSelect: CommitSelectionService,
     private hotkeys: HotkeysService,
-    private loading: LoadingService,
+    private loading: LoadingService
   ) {
-    this.electron.onCD('Repo-Committed', (event, arg) => {
+    this.electron.onCD("Repo-Committed", (event, arg) => {
       this.newCommitMessage = "";
       this.newCommitDetail = "";
       this.commiting = false;
     });
-    this.electron.onCD('Repo-CommitFail', (event, arg) => {
-      this.toastr.error("An error occured during commit, please try again", "Commit Error");
+    this.electron.onCD("Repo-CommitFail", (event, arg) => {
+      this.toastr.error(
+        "An error occured during commit, please try again",
+        "Commit Error"
+      );
       this.commiting = false;
     });
-    this.electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
-      if (arg['jira-enabled'] && arg['jira-keys']) {
-        let keys = arg['jira-keys'].split(';');
+    this.electron.onCD("Settings-EffectiveUpdated", (event, arg) => {
+      if (arg["jira-enabled"] && arg["jira-keys"]) {
+        let keys = arg["jira-keys"].split(";");
         let key = "";
         if (keys.length) {
           key = keys[0];
@@ -69,71 +71,99 @@ export class CommitChangeService {
         this.defaultKey = "";
       }
     });
-    this.electron.onCD('Repo-StashFailed', (event, arg) => {
-      this.toastr.error("There was an error during stash, please try again", "Stash Error");
+    this.electron.onCD("Repo-StashFailed", (event, arg) => {
+      this.toastr.error(
+        "There was an error during stash, please try again",
+        "Stash Error"
+      );
       this.stashed.emit();
     });
-    this.electron.onCD('Repo-PopFailed', (event, arg) => {
-      if (arg.detail === 'NO_STASH') {
+    this.electron.onCD("Repo-PopFailed", (event, arg) => {
+      if (arg.detail === "NO_STASH") {
         this.toastr.info("There's no stashed commits", "No Stash");
       } else {
-        this.toastr.error("There was an error during pop, please try again", "Pop Error");
+        this.toastr.error(
+          "There was an error during pop, please try again",
+          "Pop Error"
+        );
       }
     });
-    this.electron.onCD('Repo-Stashed', (event, arg) => {
+    this.electron.onCD("Repo-Stashed", (event, arg) => {
       this.stashed.emit();
     });
-    this.electron.onCD('Repo-Popped', (event, arg) => {
+    this.electron.onCD("Repo-Popped", (event, arg) => {
       this.popped.emit();
     });
-    cmtSelect.selectionChange.subscribe(newSelect => {
+    cmtSelect.selectionChange.subscribe((newSelect) => {
       if (<WIPCommit>newSelect) {
         this.selectedCommit = newSelect as WIPCommit;
       } else {
         this.selectedCommit = null;
       }
     });
-    this.hotkeys.add(new Hotkey('mod+s', (event: KeyboardEvent): boolean => {
-      if (!this.loading.isBusy) {
-        this.tryCommit();
-      }
-      return false;
-    }, undefined, "Commit staged changes (or all unstaged files if no files staged)"));
-    this.hotkeys.add(new Hotkey('mod+down', (event: KeyboardEvent): boolean => {
-      if (!this.loading.isBusy) {
-        this.stash();
-      }
-      return false;
-    }, undefined, "Stash"));
-    this.hotkeys.add(new Hotkey('mod+up', (event: KeyboardEvent): boolean => {
-      if (!this.loading.isBusy) {
-        this.pop();
-      }
-      return false;
-    }, undefined, "Pop latest stash"));
+    this.hotkeys.addShortcut({
+      keys: "meta.s",
+      description:
+        "Commit staged changes (or all unstaged files if no files staged)",
+      callback: (event: KeyboardEvent) => {
+        if (!this.loading.isBusy) {
+          this.tryCommit();
+        }
+        event.preventDefault();
+      },
+    });
+    this.hotkeys.addShortcut({
+      keys: "meta.arrowdown",
+      description: "Stash",
+      callback: (event: KeyboardEvent) => {
+        if (!this.loading.isBusy) {
+          this.stash();
+        }
+        event.preventDefault();
+      },
+    });
+    this.hotkeys.addShortcut({
+      keys: "meta.arrowup",
+      description: "Pop latest stash",
+      callback: (event: KeyboardEvent) => {
+        if (!this.loading.isBusy) {
+          this.pop();
+        }
+        event.preventDefault();
+      },
+    });
   }
 
-  init() {
-
-  }
+  init() {}
   stage(paths): void {
-    this.electron.ipcRenderer.send('Repo-Stage', { paths: paths });
+    this.electron.ipcRenderer.send("Repo-Stage", { paths: paths });
   }
   stageLines(path, lines) {
-    this.electron.ipcRenderer.send('Repo-StageLines', {path: path, lines: lines});
+    this.electron.ipcRenderer.send("Repo-StageLines", {
+      path: path,
+      lines: lines,
+    });
   }
   unstage(paths): void {
-    this.electron.ipcRenderer.send('Repo-Unstage', { paths: paths });
+    this.electron.ipcRenderer.send("Repo-Unstage", { paths: paths });
   }
   unstageLines(path, lines) {
-    this.electron.ipcRenderer.send('Repo-UnstageLines', {path: path, lines: lines});
+    this.electron.ipcRenderer.send("Repo-UnstageLines", {
+      path: path,
+      lines: lines,
+    });
   }
   commit(paths): void {
     if (this.checkProfileExists()) {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send('Repo-Commit', { name: name, email: email, message: message, files: paths });
+      this.electron.ipcRenderer.send("Repo-Commit", {
+        name: name,
+        email: email,
+        message: message,
+        files: paths,
+      });
     }
   }
   commitStaged(): void {
@@ -141,7 +171,11 @@ export class CommitChangeService {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send('Repo-CommitStaged', { name: name, email: email, message: message });
+      this.electron.ipcRenderer.send("Repo-CommitStaged", {
+        name: name,
+        email: email,
+        message: message,
+      });
     }
   }
   stash(): void {
@@ -149,37 +183,50 @@ export class CommitChangeService {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send('Repo-Stash', { name: name, email: email, message: message });
+      this.electron.ipcRenderer.send("Repo-Stash", {
+        name: name,
+        email: email,
+        message: message,
+      });
     }
   }
   pop(index = -1): void {
-    this.electron.ipcRenderer.send('Repo-Pop', { index: index });
+    this.electron.ipcRenderer.send("Repo-Pop", { index: index });
   }
   apply(index = -1): void {
-    this.electron.ipcRenderer.send('Repo-Apply', { index: index });
+    this.electron.ipcRenderer.send("Repo-Apply", { index: index });
   }
   deleteStash(index): void {
-    this.electron.ipcRenderer.send('Repo-DeleteStash', { index: index });
+    this.electron.ipcRenderer.send("Repo-DeleteStash", { index: index });
   }
   discardAll(): void {
-    this.electron.ipcRenderer.send('Repo-DiscardAll', {});
+    this.electron.ipcRenderer.send("Repo-DiscardAll", {});
   }
   tryCommit(): void {
-    if (this.newCommitMessage.length && this.selectedCommit && !this.commiting) {
+    if (
+      this.newCommitMessage.length &&
+      this.selectedCommit &&
+      !this.commiting
+    ) {
       this.commiting = true;
       if (this.selectedCommit.staged.length) {
         this.commitStaged();
       } else {
-        this.commit(this.selectedCommit.unstaged.map(us => us.path));
+        this.commit(this.selectedCommit.unstaged.map((us) => us.path));
       }
     }
   }
   private checkProfileExists(): boolean {
     let noProfile = !this.cred.name || !this.cred.email;
     if (noProfile) {
-      this.toastr.warning("No profile settings found, click here to setup your profile", "Profile Not Setup").onTap.subscribe(() => {
-        this.route.navigateByUrl('settings/profile');
-      });
+      this.toastr
+        .warning(
+          "No profile settings found, click here to setup your profile",
+          "Profile Not Setup"
+        )
+        .onTap.subscribe(() => {
+          this.route.navigateByUrl("settings/profile");
+        });
     }
     return !noProfile;
   }

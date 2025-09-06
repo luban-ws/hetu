@@ -10,6 +10,9 @@ export default defineConfig({
       rollupOptions: {
         external: ["electron"],
         input: "src/main/index-simple.js",
+        output: {
+          entryFileNames: "index.js"
+        }
       },
     },
   },
@@ -49,9 +52,8 @@ export default defineConfig({
         "@angular/animations",
         "rxjs",
         "rxjs/operators",
-        "zone.js",
       ],
-      exclude: ["@angular/compiler-cli"],
+      exclude: ["@angular/compiler-cli", "zone.js"],
     },
     resolve: {
       mainFields: ["module"],

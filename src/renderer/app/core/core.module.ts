@@ -49,6 +49,7 @@ import { FileCountsComponent } from './file-counts/file-counts.component';
 import { CommitFileListComponent } from './commit-file-list/commit-file-list.component';
 import { FileListFilter } from './commit-file-list/file-list-filter';
 import { HistoryService } from './services/history.service';
+import { HotkeysService } from '@ngneat/hotkeys';
 
 
 @NgModule({
@@ -98,6 +99,18 @@ import { HistoryService } from './services/history.service';
         FileListFilter
     ],
     exports: [RouterModule],
-    providers: [D3Service, RepoService, LayoutService, CredentialsService, CiIntegrationService, CommitSelectionService, AppveyorCiService, CommitChangeService, SubmodulesService, HistoryService]
+    providers: [
+        D3Service, 
+        RepoService, 
+        LayoutService, 
+        CredentialsService, 
+        CiIntegrationService, 
+        CommitSelectionService, 
+        AppveyorCiService, 
+        CommitChangeService, 
+        SubmodulesService, 
+        HistoryService,
+        HotkeysService
+    ]
 })
 export class CoreModule { }

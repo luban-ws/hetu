@@ -1,10 +1,9 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
-import { HotkeysService, Hotkey } from 'angular2-hotkeys';
-import { ElectronService } from '../../infrastructure/electron.service';
+import { Injectable, EventEmitter, Output } from "@angular/core";
+import { HotkeysService } from "@ngneat/hotkeys";
+import { ElectronService } from "../../infrastructure/electron.service";
 
 @Injectable()
 export class LayoutService {
-
   isLocalShown = true;
   isRemoteShown = true;
   isTagsShown = true;
@@ -48,19 +47,27 @@ export class LayoutService {
 
   constructor(
     private hotkeys: HotkeysService,
-    private electron: ElectronService,
+    private electron: ElectronService
   ) {
-    this.hotkeys.add(new Hotkey('shift+left', (event: KeyboardEvent): boolean => {
-      this.isNavToggled = false;
-      return false;
-    }, undefined, "Minimize left panel"));
-    this.hotkeys.add(new Hotkey('shift+right', (event: KeyboardEvent): boolean => {
-      this.isNavToggled = true;
-      return false;
-    }, undefined, "Expand left panel"));
-    this.electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
-      this.tooltipEnabled = arg['gen-tooltip'] === "" ? true : Boolean(arg['gen-tooltip']);
+    this.hotkeys.addShortcut({
+      keys: "shift.arrowleft",
+      description: "Minimize left panel",
+      callback: (event: KeyboardEvent) => {
+        this.isNavToggled = false;
+        event.preventDefault();
+      },
+    });
+    this.hotkeys.addShortcut({
+      keys: "shift.arrowright",
+      description: "Expand left panel",
+      callback: (event: KeyboardEvent) => {
+        this.isNavToggled = true;
+        event.preventDefault();
+      },
+    });
+    this.electron.onCD("Settings-EffectiveUpdated", (event, arg) => {
+      this.tooltipEnabled =
+        arg["gen-tooltip"] === "" ? true : Boolean(arg["gen-tooltip"]);
     });
   }
-
 }

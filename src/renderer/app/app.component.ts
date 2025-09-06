@@ -12,7 +12,8 @@ import { CacheService } from './infrastructure/cache.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  standalone: false
 })
 export class AppComponent implements OnInit {
   constructor(private settings: SettingsService, private repo: RepoService, private ci: CiIntegrationService, private d3: D3Service,

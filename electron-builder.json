@@ -1,6 +1,6 @@
 {
-  "appId": "com.rhodiumcode.metrogit",
-  "productName": "MetroGit",
+  "appId": "com.rhodiumcode.explorasa-git",
+  "productName": "explorasa-git",
   "directories": {
     "buildResources": "build"
   },

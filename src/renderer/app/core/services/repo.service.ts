@@ -1,20 +1,19 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { LoadingService } from '../../infrastructure/loading-service.service';
-import { ToastrService } from 'ngx-toastr';
-import { CredentialsService } from './credentials.service';
-import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
-import { StatusBarService } from '../../infrastructure/status-bar.service';
-import { Router } from '@angular/router';
-import { ForcePushPromptComponent } from '../force-push-prompt/force-push-prompt.component';
-import { CommitChangeService } from './commit-change.service';
-import { CreateBranchPromptComponent } from '../create-branch-prompt/create-branch-prompt.component';
-import { HotkeysService, Hotkey } from 'angular2-hotkeys';
-import { Branch } from '../prototypes/branch';
+import { Injectable, Output, EventEmitter } from "@angular/core";
+import { ElectronService } from "../../infrastructure/electron.service";
+import { LoadingService } from "../../infrastructure/loading-service.service";
+import { ToastrService } from "ngx-toastr";
+import { CredentialsService } from "./credentials.service";
+import { PromptInjectorService } from "../../infrastructure/prompt-injector.service";
+import { StatusBarService } from "../../infrastructure/status-bar.service";
+import { Router } from "@angular/router";
+import { ForcePushPromptComponent } from "../force-push-prompt/force-push-prompt.component";
+import { CommitChangeService } from "./commit-change.service";
+import { CreateBranchPromptComponent } from "../create-branch-prompt/create-branch-prompt.component";
+import { HotkeysService } from "@ngneat/hotkeys";
+import { Branch } from "../prototypes/branch";
 
 @Injectable()
 export class RepoService {
-
   @Output() repoChange = new EventEmitter<string>();
   @Output() wipInfoChange = new EventEmitter();
   @Output() branchChange = new EventEmitter<Branch>();
@@ -22,7 +21,7 @@ export class RepoService {
   @Output() refChange = new EventEmitter<any>();
   @Output() pulling = new EventEmitter<boolean>();
   @Output() pushing = new EventEmitter<boolean>();
-  @Output() posUpdate = new EventEmitter<{ ahead: number, behind: number }>();
+  @Output() posUpdate = new EventEmitter<{ ahead: number; behind: number }>();
 
   commits: any[] = [];
   repoName = "";
@@ -31,7 +30,7 @@ export class RepoService {
   refDict = {};
   refs = [];
   remote = "";
-  currentPos: { ahead: number, behind: number };
+  currentPos: { ahead: number; behind: number };
   pulloption = "";
 
   private _wipCommit = {
@@ -45,7 +44,7 @@ export class RepoService {
     virtual: true,
     isStash: false,
     enabled: false,
-    fileSummary: {}
+    fileSummary: {},
   };
   private _currentWorkingPath = "";
   private _pendingOperation: Function = null;
@@ -59,22 +58,21 @@ export class RepoService {
     private cred: CredentialsService,
     private route: Router,
     private commitChange: CommitChangeService,
-    private hotkeys: HotkeysService,
-  ) {
-  }
+    private hotkeys: HotkeysService
+  ) {}
 
   init(): void {
-    this.electron.onCD('Repo-OpenSuccessful', (event, arg) => {
+    this.electron.onCD("Repo-OpenSuccessful", (event, arg) => {
       this._currentWorkingPath = arg.workingDir;
       this.repoName = arg.repoName;
       this.repoChange.emit(this.repoName);
       this.hasRepository = true;
       this.loading.disableLoading();
     });
-    this.electron.onCD('Repo-CurrentRemoved', (event, arg) => {
-      this.electron.ipcRenderer.send('Repo-Close', {});
+    this.electron.onCD("Repo-CurrentRemoved", (event, arg) => {
+      this.electron.ipcRenderer.send("Repo-Close", {});
     });
-    this.electron.onCD('Repo-Closed', (event, arg) => {
+    this.electron.onCD("Repo-Closed", (event, arg) => {
       this._currentWorkingPath = "";
       this.repoName = "";
       this.repoChange.emit(this.repoName);
@@ -83,77 +81,94 @@ export class RepoService {
       this.branchChange.emit(this.currentBranch);
       this.notifyCommitDifference([]);
     });
-    this.electron.onCD('Repo-BranchPositionRetrieved', (event, arg) => {
+    this.electron.onCD("Repo-BranchPositionRetrieved", (event, arg) => {
       this.currentPos = arg;
       this.posUpdate.emit(this.currentPos);
     });
-    this.electron.onCD('Repo-Pulled', (event, arg) => {
+    this.electron.onCD("Repo-Pulled", (event, arg) => {
       this.pulling.emit(false);
-      if (arg.result === 'UP_TO_DATE') {
-        this.toastr.info("Your local branch is up-to-date with the remote", "Up to date");
+      if (arg.result === "UP_TO_DATE") {
+        this.toastr.info(
+          "Your local branch is up-to-date with the remote",
+          "Up to date"
+        );
       } else {
-        this.toastr.success("Successfully updated local branch", "Pull Successful");
+        this.toastr.success(
+          "Successfully updated local branch",
+          "Pull Successful"
+        );
       }
     });
-    this.electron.onCD('Repo-Pushed', (event, arg) => {
+    this.electron.onCD("Repo-Pushed", (event, arg) => {
       this.pushing.emit(false);
       this.toastr.success("Successfully pushed to remote", "Pushed");
     });
-    this.electron.onCD('Repo-CommitsUpdated', (event, arg) => {
+    this.electron.onCD("Repo-CommitsUpdated", (event, arg) => {
       this.notifyCommitDifference(arg.newCommits);
     });
-    this.electron.onCD('Repo-Fetched', (event, arg) => {
-    });
-    this.electron.onCD('Repo-OpenFailed', (event, arg) => {
+    this.electron.onCD("Repo-Fetched", (event, arg) => {});
+    this.electron.onCD("Repo-OpenFailed", (event, arg) => {
       this.toastr.error("Failed to open repository", "Error");
       this.loading.disableLoading();
     });
-    this.electron.onCD('Repo-BranchCreateFailed', (event, arg) => {
+    this.electron.onCD("Repo-BranchCreateFailed", (event, arg) => {
       this.toastr.error("Failed to create branch, " + arg.detail, "Error");
     });
-    this.electron.on('Repo-FolderSelected', (event, arg) => {
+    this.electron.on("Repo-FolderSelected", (event, arg) => {
       this._pendingOperation = null;
       this.openRepo(arg.path);
     });
-    this.electron.onCD('Repo-BranchChanged', (event, arg) => {
+    this.electron.onCD("Repo-BranchChanged", (event, arg) => {
       this.currentBranch = arg;
       this._wipCommit.parents = [this.currentBranch.target];
       this.branchChange.emit(arg);
       this.emitCommitWithWIP();
     });
-    this.electron.onCD('Repo-CredentialIssue', (event, arg) => {
+    this.electron.onCD("Repo-CredentialIssue", (event, arg) => {
       if (this.remote) {
-        if (this.remote.startsWith('http://') || this.remote.startsWith('https://')) {
+        if (
+          this.remote.startsWith("http://") ||
+          this.remote.startsWith("https://")
+        ) {
           this.cred.promptUserUpdateCredential();
         } else {
           this.cred.promptUserEnterSSHPassword();
         }
       }
     });
-    this.electron.onCD('Repo-FetchFailed', (event, arg) => {
-      if (arg.detail.indexOf('403') !== -1) {
-        this.toastr.error("It appears the remote is blocking this operation. You might have attempted to login too many times, please try again later", "Forbidden");
+    this.electron.onCD("Repo-FetchFailed", (event, arg) => {
+      if (arg.detail.indexOf("403") !== -1) {
+        this.toastr.error(
+          "It appears the remote is blocking this operation. You might have attempted to login too many times, please try again later",
+          "Forbidden"
+        );
       } else {
-        this.status.flash('danger', 'Fetch failed');
+        this.status.flash("danger", "Fetch failed");
         this._pendingOperation = this.fetch;
       }
     });
-    this.electron.onCD('Repo-PullFailed', (event, arg) => {
-      if (arg.detail === 'LOCAL_AHEAD') {
-        this.toastr.error("Your local branch is ahead, cannot fast forward", "Local Ahead");
-      } else if (arg.detail === 'UPSTREAM_NOT_FOUND') {
-        this.toastr.info("This branch does not have an upstream branch", "Upstream Branch Not Found");
+    this.electron.onCD("Repo-PullFailed", (event, arg) => {
+      if (arg.detail === "LOCAL_AHEAD") {
+        this.toastr.error(
+          "Your local branch is ahead, cannot fast forward",
+          "Local Ahead"
+        );
+      } else if (arg.detail === "UPSTREAM_NOT_FOUND") {
+        this.toastr.info(
+          "This branch does not have an upstream branch",
+          "Upstream Branch Not Found"
+        );
       } else {
         this.skipAuthError(arg.detail);
       }
       this.pulling.emit(false);
       this._pendingOperation = this.pull;
     });
-    this.electron.onCD('Repo-PushFailed', (event, arg) => {
-      if (arg.detail === 'FORCE_REQUIRED') {
+    this.electron.onCD("Repo-PushFailed", (event, arg) => {
+      if (arg.detail === "FORCE_REQUIRED") {
         let inst = this.promptIj.injectComponent(ForcePushPromptComponent);
         this._pendingOperation = this.push;
-        inst.onResult.subscribe(force => {
+        inst.onResult.subscribe((force) => {
           if (force) {
             this.push(true);
             this._pendingOperation = null;
@@ -161,44 +176,56 @@ export class RepoService {
             this._pendingOperation = null;
           }
         });
-      } else if (arg.detail === 'UP_TO_DATE') {
-        this.toastr.info("Your local branch is up-to-date with the remote", 'Up To Date');
-      } else if (arg.detail === 'REMOTE_UNCHANGED') {
-        this.toastr.error("Remote branch was unchanged, the branch might be protected", "Push Failed");
+      } else if (arg.detail === "UP_TO_DATE") {
+        this.toastr.info(
+          "Your local branch is up-to-date with the remote",
+          "Up To Date"
+        );
+      } else if (arg.detail === "REMOTE_UNCHANGED") {
+        this.toastr.error(
+          "Remote branch was unchanged, the branch might be protected",
+          "Push Failed"
+        );
       } else {
         this.skipAuthError(arg.detail);
       }
       this.pushing.emit(false);
     });
-    this.electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
-      this.pulloption = arg['gen-pulloption'];
-      if (arg.currentRepo && this._currentWorkingPath !== arg.currentRepo.workingDir) {
+    this.electron.onCD("Settings-EffectiveUpdated", (event, arg) => {
+      this.pulloption = arg["gen-pulloption"];
+      if (
+        arg.currentRepo &&
+        this._currentWorkingPath !== arg.currentRepo.workingDir
+      ) {
         this.openRepo(arg.currentRepo.workingDir);
       }
     });
-    this.electron.onCD('Repo-RefRetrieved', (event, arg) => {
+    this.electron.onCD("Repo-RefRetrieved", (event, arg) => {
       this.refDict = arg.refDict;
       this.refs = arg.references;
-      this.refChange.emit({ refDict: this.refDict, references: arg.references });
+      this.refChange.emit({
+        refDict: this.refDict,
+        references: arg.references,
+      });
     });
-    this.electron.onCD('Repo-RemotesChanged', (event, arg) => {
+    this.electron.onCD("Repo-RemotesChanged", (event, arg) => {
       this.remote = arg.remote;
     });
-    this.electron.onCD('AutoFetch-Timeout', (event, arg) => {
+    this.electron.onCD("AutoFetch-Timeout", (event, arg) => {
       if (!this._pendingOperation) {
         this.fetch();
       }
     });
-    this.electron.onCD('Repo-BlockingOperationBegan', (event, arg) => {
+    this.electron.onCD("Repo-BlockingOperationBegan", (event, arg) => {
       this.loading.enableLoading(arg.operation);
     });
-    this.electron.onCD('Repo-BlockingOperationEnd', (event, arg) => {
+    this.electron.onCD("Repo-BlockingOperationEnd", (event, arg) => {
       this.loading.disableLoading();
     });
-    this.electron.onCD('Repo-BlockingUpdate', (event, arg) => {
+    this.electron.onCD("Repo-BlockingUpdate", (event, arg) => {
       this.loading.updateMessage(arg.operation);
     });
-    this.electron.onCD('Repo-FileStatusRetrieved', (event, arg) => {
+    this.electron.onCD("Repo-FileStatusRetrieved", (event, arg) => {
       let oldStatus = this._wipCommit.enabled;
       this._wipCommit.fileSummary = arg.summary;
       if (arg.staged.length || arg.unstaged.length) {
@@ -211,42 +238,61 @@ export class RepoService {
       }
       this.wipInfoChange.emit();
     });
-    this.electron.onCD('Repo-TagCreated', (event, arg) => {
-      this.toastr.success(`Tag ${arg.name} created successfully. Click here to publish it to remote`, "Tag Created").onTap.subscribe(() => {
-        this.pushTag(arg.name);
-      });
+    this.electron.onCD("Repo-TagCreated", (event, arg) => {
+      this.toastr
+        .success(
+          `Tag ${arg.name} created successfully. Click here to publish it to remote`,
+          "Tag Created"
+        )
+        .onTap.subscribe(() => {
+          this.pushTag(arg.name);
+        });
     });
-    this.electron.onCD('Repo-TagDeleted', (event, arg) => {
-      this.toastr.success(`Tag ${arg.name} deleted successfully.`, "Tag Deleted");
+    this.electron.onCD("Repo-TagDeleted", (event, arg) => {
+      this.toastr.success(
+        `Tag ${arg.name} deleted successfully.`,
+        "Tag Deleted"
+      );
       this.pushTag(arg.name, true);
     });
-    this.electron.onCD('Repo-InitPathSelected', (event, arg) => {
-      this.electron.ipcRenderer.send('Repo-Init', {path: arg.path});
+    this.electron.onCD("Repo-InitPathSelected", (event, arg) => {
+      this.electron.ipcRenderer.send("Repo-Init", { path: arg.path });
     });
-    this.electron.onCD('Repo-InitSuccessful', (event, arg) => {
+    this.electron.onCD("Repo-InitSuccessful", (event, arg) => {
       this.openRepo(arg.path);
     });
-    this.electron.onCD('Repo-InitFailed', (event, arg) => {
-      this.toastr.error('Failed to initialize repository', 'Initialization Error');
+    this.electron.onCD("Repo-InitFailed", (event, arg) => {
+      this.toastr.error(
+        "Failed to initialize repository",
+        "Initialization Error"
+      );
     });
-    this.cred.credentialChange.subscribe(newCreds => {
+    this.cred.credentialChange.subscribe((newCreds) => {
       this.retry();
     });
-    this.commitChange.messageChange.subscribe(msg => {
+    this.commitChange.messageChange.subscribe((msg) => {
       this._wipCommit.message = msg;
     });
-    this.hotkeys.add(new Hotkey('mod+shift+up', (event: KeyboardEvent): boolean => {
-      if (!this.loading.isBusy) {
-        this.push();
-      }
-      return false;
-    }, undefined, "Push"));
-    this.hotkeys.add(new Hotkey('mod+shift+down', (event: KeyboardEvent): boolean => {
-      if (!this.loading.isBusy) {
-        this.pull();
-      }
-      return false;
-    }, undefined, "Pull"));
+    this.hotkeys.addShortcut({
+      keys: "meta.shift.arrowup",
+      description: "Push",
+      callback: (event: KeyboardEvent) => {
+        if (!this.loading.isBusy) {
+          this.push();
+        }
+        event.preventDefault();
+      },
+    });
+    this.hotkeys.addShortcut({
+      keys: "meta.shift.arrowdown",
+      description: "Pull",
+      callback: (event: KeyboardEvent) => {
+        if (!this.loading.isBusy) {
+          this.pull();
+        }
+        event.preventDefault();
+      },
+    });
   }
 
   getCommitsWithWIP() {
@@ -262,7 +308,7 @@ export class RepoService {
   }
 
   private skipAuthError(detail) {
-    if (detail !== 'CRED_ISSUE') {
+    if (detail !== "CRED_ISSUE") {
       this.toastr.error(detail, "Error");
     }
   }
@@ -288,40 +334,59 @@ export class RepoService {
   openRepo(workingDir): void {
     if (this.electron.available) {
       this.loading.enableLoading("Opening Repo...");
-      this.electron.ipcRenderer.send('Repo-Open', { workingDir: workingDir });
+      this.electron.ipcRenderer.send("Repo-Open", { workingDir: workingDir });
     }
   }
 
   openBrowse(): void {
-    this.electron.ipcRenderer.send('Repo-Browse', {});
+    this.electron.ipcRenderer.send("Repo-Browse", {});
   }
 
   fetch(): void {
-    this.electron.ipcRenderer.send('Repo-Fetch', { username: this.cred.username, password: this.cred.password });
+    this.electron.ipcRenderer.send("Repo-Fetch", {
+      username: this.cred.username,
+      password: this.cred.password,
+    });
   }
 
   pull(): void {
     this.pulling.emit(true);
-    this.electron.ipcRenderer.send('Repo-Pull', { username: this.cred.username, password: this.cred.password, option: this.pulloption });
+    this.electron.ipcRenderer.send("Repo-Pull", {
+      username: this.cred.username,
+      password: this.cred.password,
+      option: this.pulloption,
+    });
   }
 
   push(force = false): void {
     this.pushing.emit(true);
-    this.electron.ipcRenderer.send('Repo-Push', { username: this.cred.username, password: this.cred.password, force: force });
+    this.electron.ipcRenderer.send("Repo-Push", {
+      username: this.cred.username,
+      password: this.cred.password,
+      force: force,
+    });
   }
 
   createBranch(): void {
     let prompt = this.promptIj.injectComponent(CreateBranchPromptComponent);
-    prompt.onEnter.subscribe(name => {
-      this.electron.ipcRenderer.send('Repo-CreateBranch', { name: name, commit: this.currentBranch.target });
+    prompt.onEnter.subscribe((name) => {
+      this.electron.ipcRenderer.send("Repo-CreateBranch", {
+        name: name,
+        commit: this.currentBranch.target,
+      });
     });
   }
 
   checkout(shorthand): void {
-    this.electron.ipcRenderer.send('Repo-Checkout', { branch: shorthand });
+    this.electron.ipcRenderer.send("Repo-Checkout", { branch: shorthand });
   }
   pushTag(name, toDelete = false): void {
-    this.electron.ipcRenderer.send('Repo-PushTag', { username: this.cred.username, password: this.cred.password, name: name, delete: toDelete });
+    this.electron.ipcRenderer.send("Repo-PushTag", {
+      username: this.cred.username,
+      password: this.cred.password,
+      name: name,
+      delete: toDelete,
+    });
   }
   retry(): void {
     if (this._pendingOperation) {
@@ -330,10 +395,12 @@ export class RepoService {
     }
   }
   removeRepoSetting(workingDir) {
-    this.electron.ipcRenderer.send('Repo-RemoveHistory', {workingDir: workingDir});
+    this.electron.ipcRenderer.send("Repo-RemoveHistory", {
+      workingDir: workingDir,
+    });
   }
 
   browseInitFolder() {
-    this.electron.ipcRenderer.send('Repo-InitBrowse', {});
+    this.electron.ipcRenderer.send("Repo-InitBrowse", {});
   }
 }

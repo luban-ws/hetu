@@ -22,6 +22,7 @@ import { ExternalFileViewerComponent } from './core/external-file-viewer/externa
 import { ReleaseNoteComponent } from './infrastructure/release-note/release-note.component';
 import { AboutPageComponent } from './infrastructure/about-page/about-page.component';
 import { JIRAIssueGuard } from './jira/services/jira-issue-link-guard';
+import { HotkeysHelpComponent } from '@ngneat/hotkeys';
 
 const appRoutes: Routes = [
   {
@@ -63,6 +64,7 @@ const appRoutes: Routes = [
     BrowserAnimationsModule,
     NgbModule,
     ContextMenuModule,
+    HotkeysHelpComponent,
     ToastrModule.forRoot({
       positionClass: 'toast-top-right',
       timeOut: 10000,

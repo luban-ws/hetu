@@ -53,24 +53,17 @@ import { HistoryService } from './services/history.service';
 
 
 @NgModule({
-  imports: [
-    CommonModule,
-    NgbModule,
-    FormsModule,
-    HotkeyModule,
-    InfrastructureModule,
-    ContextMenuModule,
-    JiraModule,
-  ],
-  declarations: [BranchViewerComponent, GitViewComponent, SubwayComponent, SubwayStationsComponent, SubwayMapVisualComponent, NodeVisualComponent, LinkVisualComponent, SubwayStationAnnotComponent, ActionToolbarComponent, OpenRepoPanelComponent, StatusBarComponent, PromptComponent, EnterLoginPromptComponent, PromptContainerDirective, BranchListComponent, BranchItemComponent, SshPasswordPromptComponent, CommitDetailComponent, CommitDetailInfoComponent, CommitDetailCiComponent, CiConsoleOutputComponent, ForcePushPromptComponent, CreateBranchPromptComponent, FileViewPanelComponent, ExternalFileViewerComponent, TagPromptComponent, MapSeparatorComponent, SubmoduleDetailsPanelComponent, CommitterCardComponent, FileCountsComponent, CommitFileListComponent, FileListFilter],
-  entryComponents: [
-    EnterLoginPromptComponent,
-    SshPasswordPromptComponent,
-    ForcePushPromptComponent,
-    CreateBranchPromptComponent,
-    TagPromptComponent,
-  ],
-  exports: [RouterModule],
-  providers: [D3Service, RepoService, LayoutService, CredentialsService, CiIntegrationService, CommitSelectionService, AppveyorCiService, CommitChangeService, SubmodulesService, HistoryService],
+    imports: [
+        CommonModule,
+        NgbModule,
+        FormsModule,
+        HotkeyModule,
+        InfrastructureModule,
+        ContextMenuModule,
+        JiraModule,
+    ],
+    declarations: [BranchViewerComponent, GitViewComponent, SubwayComponent, SubwayStationsComponent, SubwayMapVisualComponent, NodeVisualComponent, LinkVisualComponent, SubwayStationAnnotComponent, ActionToolbarComponent, OpenRepoPanelComponent, StatusBarComponent, PromptComponent, EnterLoginPromptComponent, PromptContainerDirective, BranchListComponent, BranchItemComponent, SshPasswordPromptComponent, CommitDetailComponent, CommitDetailInfoComponent, CommitDetailCiComponent, CiConsoleOutputComponent, ForcePushPromptComponent, CreateBranchPromptComponent, FileViewPanelComponent, ExternalFileViewerComponent, TagPromptComponent, MapSeparatorComponent, SubmoduleDetailsPanelComponent, CommitterCardComponent, FileCountsComponent, CommitFileListComponent, FileListFilter],
+    exports: [RouterModule],
+    providers: [D3Service, RepoService, LayoutService, CredentialsService, CiIntegrationService, CommitSelectionService, AppveyorCiService, CommitChangeService, SubmodulesService, HistoryService]
 })
 export class CoreModule { }

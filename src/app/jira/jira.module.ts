@@ -20,23 +20,18 @@ import { ResolutionControlComponent } from './resolution-control/resolution-cont
 
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule,
-    NgbModule,
-    FormsModule,
-    InfrastructureModule
-  ],
-  providers: [
-    JiraIntegrationService,
-    JIRAIssueGuard
-  ],
-  entryComponents: [
-    AddCommentPromptComponent,
-    SubtaskPromptComponent,
-    ResolutionSelectorComponent
-  ],
-  exports: [ JiraDetailComponent ],
-  declarations: [JiraDetailComponent, JiraRichTextComponent, TransitionControlComponent, AddCommentPromptComponent, ProfileSelectorComponent, ProfileFilterPipe, KeySelectorComponent, SubtaskPromptComponent, TitleEditorComponent, ResolutionSelectorComponent, ResolutionControlComponent]
+    imports: [
+        CommonModule,
+        RouterModule,
+        NgbModule,
+        FormsModule,
+        InfrastructureModule
+    ],
+    providers: [
+        JiraIntegrationService,
+        JIRAIssueGuard
+    ],
+    exports: [JiraDetailComponent],
+    declarations: [JiraDetailComponent, JiraRichTextComponent, TransitionControlComponent, AddCommentPromptComponent, ProfileSelectorComponent, ProfileFilterPipe, KeySelectorComponent, SubtaskPromptComponent, TitleEditorComponent, ResolutionSelectorComponent, ResolutionControlComponent]
 })
 export class JiraModule { }

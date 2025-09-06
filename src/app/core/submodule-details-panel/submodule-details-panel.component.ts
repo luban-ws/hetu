@@ -13,7 +13,7 @@ export class SubmoduleDetailsPanelComponent implements OnInit {
     this._name = n;
     this.submodules.getSubmoduleDetails(n);
   }
-  private details;
+  public details;
   private _name = "";
   constructor(
     private submodules: SubmodulesService

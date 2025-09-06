@@ -1,5 +1,6 @@
-import { Output, EventEmitter } from "@angular/core";
+import { Output, EventEmitter, Injectable } from "@angular/core";
 
+@Injectable()
 export class MockSubmodule {
     @Output() submoduleChanged = new EventEmitter<any[]>();
     @Output() submoduleSelected = new EventEmitter<string>();

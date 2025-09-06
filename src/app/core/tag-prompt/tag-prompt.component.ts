@@ -11,7 +11,7 @@ export class TagPromptComponent implements OnInit, Prompt {
   toClose = new EventEmitter();
   toCreate = new EventEmitter<{sha: string, name: string}>();
   sha = "";
-  private tagName = "";
+  public tagName = "";
   constructor() { }
 
   ngOnInit() {

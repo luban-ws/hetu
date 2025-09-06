@@ -15,7 +15,7 @@ export class SubwayStationAnnotComponent implements OnInit {
   private height = Node.height;
   private commits = [];
   private refs = {};
-  private branchInfos = [];
+  public branchInfos = [];
   private currentBranch = "";
   constructor(
     private repo: RepoService,

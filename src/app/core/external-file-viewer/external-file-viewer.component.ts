@@ -11,10 +11,10 @@ import { LoadingService } from '../../infrastructure/loading-service.service';
 })
 export class ExternalFileViewerComponent implements OnInit {
 
-  private path: string;
+  public path: string;
   private oldPath: string;
   private sha: string;
-  private fileDetail: FileDetail;
+  public fileDetail: FileDetail;
   private mode = 'hunk';
   constructor(
     private route: ActivatedRoute,

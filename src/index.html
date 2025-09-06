@@ -7,7 +7,9 @@
   <script>
     if(document.location.protocol.indexOf('file') !== -1){
       document.write(`<base href="${document.location}" />`)
-      var electron = require('electron');
+      if(typeof require !== 'undefined'){
+        var electron = require('electron');
+      }
     } else {
       document.write('<base href="/" />');
     }

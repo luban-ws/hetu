@@ -1,36 +1,33 @@
-import { Component, OnInit, Input, HostBinding } from '@angular/core';
-import { RepoService } from '../services/repo.service';
-import { HistoryService } from '../services/history.service';
-import { LayoutService } from '../services/layout.service';
+import { Component, OnInit, Input, HostBinding } from "@angular/core";
+import { RepoService } from "../services/repo.service";
+import { HistoryService } from "../services/history.service";
+import { LayoutService } from "../services/layout.service";
 
 @Component({
-  selector: 'app-open-repo-panel',
-  templateUrl: './open-repo-panel.component.html',
-  styleUrls: ['./open-repo-panel.component.scss']
+  selector: "app-open-repo-panel",
+  templateUrl: "./open-repo-panel.component.html",
+  styleUrls: ["./open-repo-panel.component.scss"],
 })
 export class OpenRepoPanelComponent implements OnInit {
-
   @Input() toggled = false;
-  private history = [];
-  private tooltip = true;
+  public history = [];
+  public tooltip = true;
   constructor(
     private repoService: RepoService,
     private repoHistory: HistoryService,
     private layout: LayoutService
   ) {
-    this.repoHistory.historyChange.subscribe(repos => {
+    this.repoHistory.historyChange.subscribe((repos) => {
       this.history = repos;
     });
-    this.layout.tooltipChanged.subscribe(tp => {
+    this.layout.tooltipChanged.subscribe((tp) => {
       this.tooltip = tp;
     });
     this.history = this.repoHistory.repos;
     this.tooltip = this.layout.tooltipEnabled;
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   openBrowseDialog() {
     this.repoService.openBrowse();

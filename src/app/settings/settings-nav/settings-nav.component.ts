@@ -9,9 +9,9 @@ import { SettingsService } from '../services/settings.service';
 })
 export class SettingsNavComponent implements OnInit {
 
-  private repoName: string = null;
+  public repoName: string = null;
   constructor(
-    private route: Router,
+    public route: Router,
     private settings: SettingsService
   ) {
     settings.settingsUpdated.subscribe(val => {

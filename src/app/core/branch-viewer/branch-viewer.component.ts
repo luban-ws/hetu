@@ -31,7 +31,7 @@ export class BranchViewerComponent implements OnInit {
   updateAvailable = false;
   private collapseRemote = false;
   private collapseLocal = false;
-  private tooltip = true;
+  public tooltip = true;
   @ViewChild('openRepoPanel') openRepoPanel: OpenRepoPanelComponent;
   @ViewChild('submodulePanel') submodulePanel: SubmoduleDetailsPanelComponent;
   constructor(

@@ -1,7 +1,8 @@
-import { Output, EventEmitter } from "@angular/core";
+import { Output, EventEmitter, Injectable } from "@angular/core";
 import { CommitDetail, WIPCommit } from "../prototypes/commit";
 import { FileDetail } from "../prototypes/file-detail";
 
+@Injectable()
 export class MockCommitSelection {
     @Output() selectionChange = new EventEmitter<CommitDetail | WIPCommit>();
     @Output() selectingChange = new EventEmitter<boolean>();

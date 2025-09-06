@@ -29,8 +29,8 @@ export class FileViewPanelComponent implements OnInit {
   get mode() {
     return this._mode;
   }
-  private _fileDetail: FileDetail;
-  private loading = true;
+  public _fileDetail: FileDetail;
+  public loading = true;
   private _mode = 'hunk';
   constructor(
     private ch: CommitSelectionService,

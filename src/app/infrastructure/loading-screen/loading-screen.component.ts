@@ -27,7 +27,7 @@ export class LoadingScreenComponent implements OnInit {
     private loadingService: LoadingService
   ) {
     loadingService.change.subscribe(isBusy => {
-      this.enabled = isBusy;
+      this.enabled = isBusy as boolean;
     });
     loadingService.messageChange.subscribe(message => {
       this.message = message;

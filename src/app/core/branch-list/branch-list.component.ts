@@ -29,7 +29,7 @@ export class BranchListComponent implements OnInit, AfterViewInit {
     return this._itemIcon;
   }
   private _branches = [];
-  private items = [];
+  public items = [];
   private basePad = 25;
   private baseCls = "mr-2";
   private _itemIcon = 'git-branch';

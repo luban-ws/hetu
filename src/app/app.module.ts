@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, COMPILER_OPTIONS, CompilerFactory, Compiler } from '@angular/core';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { SimpleNotificationsModule } from 'angular2-notifications';
@@ -14,7 +15,7 @@ import { CiSettingsComponent } from './settings/ci-settings/ci-settings.componen
 import { AuthSettingsComponent } from './settings/auth-settings/auth-settings.component';
 import { GeneralSettingsComponent } from './settings/general-settings/general-settings.component';
 import { JiraSettingsComponent } from './settings/jira-settings/jira-settings.component';
-import { TagInputModule } from 'ngx-chips';
+// import { TagInputModule } from 'ngx-chips'; // Removed for compatibility
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { ExternalFileViewerComponent } from './core/external-file-viewer/external-file-viewer.component';
 import { HotkeyModule } from 'angular2-hotkeys';
@@ -57,10 +58,10 @@ const appRoutes: Routes = [
     AppComponent,
   ],
   imports: [
-    TagInputModule,
+    // TagInputModule, // Removed for compatibility
     BrowserModule,
     BrowserAnimationsModule,
-    NgbModule.forRoot(),
+    NgbModule,
     ContextMenuModule.forRoot(),
     SimpleNotificationsModule.forRoot({
       position: [
@@ -89,6 +90,15 @@ const appRoutes: Routes = [
       { enableTracing: true, useHash: true } // <-- debugging purposes only
     ),
   ],
+  providers: [
+    { provide: COMPILER_OPTIONS, useValue: {}, multi: true },
+    { provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS] },
+    { provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory] }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function createCompiler(compilerFactory: CompilerFactory) {
+  return compilerFactory.createCompiler();
+}

@@ -16,26 +16,26 @@ export class CommitDetailComponent implements OnInit {
 
   toggled = false;
   fileToggled = false;
-  private loading = false;
-  private selectedCommit: CommitDetail = null;
-  private selectedTab = "";
-  private selectedFile = "";
-  private fileDetail: FileDetail;
-  private set fileViewMode(m: string) {
+  public loading = false;
+  public selectedCommit: CommitDetail = null;
+  public selectedTab = "";
+  public selectedFile = "";
+  public fileDetail: FileDetail;
+  public set fileViewMode(m: string) {
     this._mode = m;
   }
-  private get fileViewMode() {
+  public get fileViewMode() {
     return this._mode;
   }
   private _mode = 'hunk';
   constructor(
     private selection: CommitSelectionService,
-    private ci: CiIntegrationService,
-    private jira: JiraIntegrationService,
+    public ci: CiIntegrationService,
+    public jira: JiraIntegrationService,
     private layout: LayoutService,
   ) {
     selection.selectionChange.subscribe(newSelect => {
-      this.selectedCommit = newSelect;
+      this.selectedCommit = newSelect as CommitDetail;
       if (this.selectedCommit) {
         this.toggled = true;
         if (!this.selectedTab) {

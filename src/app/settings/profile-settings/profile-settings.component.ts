@@ -1,22 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { SettingsComponent } from '../prototypes/settings-component';
-import { SettingsService } from '../services/settings.service';
+import { Component, OnInit } from "@angular/core";
+import { SettingsComponent } from "../prototypes/settings-component";
+import { SettingsService } from "../services/settings.service";
 
 @Component({
-  selector: 'app-profile-settings',
-  templateUrl: './profile-settings.component.html',
-  styleUrls: ['./profile-settings.component.scss']
+  selector: "app-profile-settings",
+  templateUrl: "./profile-settings.component.html",
+  styleUrls: ["./profile-settings.component.scss"],
 })
 export class ProfileSettingsComponent extends SettingsComponent {
+  public email = "";
+  public name = "";
 
-  private email = "";
-  private name = "";
+  constructor(settings: SettingsService) {
+    super(settings);
+  }
   getSettings() {
-    this.email = this.settings.getAppSetting('profile-email');
-    this.name = this.settings.getAppSetting('profile-name');
+    this.email = this.settings.getAppSetting("profile-email");
+    this.name = this.settings.getAppSetting("profile-name");
   }
   updateSettings() {
-    this.settings.setSetting('profile-email', this.email);
-    this.settings.setSetting('profile-name', this.name);
+    this.settings.setSetting("profile-email", this.email);
+    this.settings.setSetting("profile-name", this.name);
   }
 }

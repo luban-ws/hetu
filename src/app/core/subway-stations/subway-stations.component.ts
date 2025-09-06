@@ -26,7 +26,7 @@ export class SubwayStationsComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('stashMenu') public stashMenu: ContextMenuComponent;
 
 
-  private _commits: Commit[];
+  public _commits: Commit[];
   private selected: string;
   private height = Node.height - 8;
   private subs: Subscription[] = [];

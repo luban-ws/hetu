@@ -73,18 +73,7 @@ body {
     background: #ffc107;
 }
 
-tag-input {
-    width: 100%;
-}
-
-.ng2-tag-input__text-input {
-    background: transparent !important;
-    color: #FFF !important;
-}
-
-tag-input tag:hover {
-    box-shadow: none !important;
-}
+/* tag-input styles removed - ngx-chips no longer used */
 
 context-menu-content {
     ul {

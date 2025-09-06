@@ -9,11 +9,11 @@ import { SettingsComponent } from '../prototypes/settings-component';
 })
 export class GeneralSettingsComponent extends SettingsComponent {
 
-  private _autoFetchInterval = 1;
-  private _pullOption = 'ffonly';
-  private _cacheCleanupOption = '0';
-  private _tooltip = true;
-  private pullOptions = [
+  public _autoFetchInterval = 1;
+  public _pullOption = 'ffonly';
+  public _cacheCleanupOption = '0';
+  public _tooltip = true;
+  public pullOptions = [
     {
       id: 'ffonly',
       name: "Fast-Forward Only (Only pull when your local branch is not ahead)"
@@ -27,7 +27,7 @@ export class GeneralSettingsComponent extends SettingsComponent {
       name: "Merge (Ceate merge commit if remote is ahead)"
     }
   ];
-  private cacheCleanupOptions = [
+  public cacheCleanupOptions = [
     {
       id: '0',
       name: "Do not auto delete cached files"

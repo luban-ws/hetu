@@ -1,6 +1,7 @@
-import { Output, EventEmitter } from "@angular/core";
+import { Output, EventEmitter, Injectable } from "@angular/core";
 import { Branch } from "../prototypes/branch";
 
+@Injectable()
 export class MockRepo {
     @Output() repoChange = new EventEmitter<string>();
     @Output() wipInfoChange = new EventEmitter();

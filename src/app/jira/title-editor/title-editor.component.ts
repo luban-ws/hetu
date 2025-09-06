@@ -1,12 +1,11 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-title-editor',
-  templateUrl: './title-editor.component.html',
-  styleUrls: ['./title-editor.component.scss']
+  selector: "app-title-editor",
+  templateUrl: "./title-editor.component.html",
+  styleUrls: ["./title-editor.component.scss"],
 })
 export class TitleEditorComponent implements OnInit {
-
   @Input()
   set text(txt: string) {
     this._text = txt;
@@ -18,12 +17,11 @@ export class TitleEditorComponent implements OnInit {
   @Output() textChange = new EventEmitter<string>();
   @Output() toConfirm = new EventEmitter();
   private _text = "";
-  private editText = "";
-  private editing = false;
-  constructor() { }
+  public editText = "";
+  public editing = false;
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   toggleEdit() {
     this.editText = this._text;

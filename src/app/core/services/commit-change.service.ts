@@ -88,7 +88,7 @@ export class CommitChangeService {
     });
     cmtSelect.selectionChange.subscribe(newSelect => {
       if (<WIPCommit>newSelect) {
-        this.selectedCommit = newSelect;
+        this.selectedCommit = newSelect as WIPCommit;
       } else {
         this.selectedCommit = null;
       }

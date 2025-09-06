@@ -16,7 +16,7 @@ export class PromptInjectorService {
 
   injectComponent<T extends Prompt>(component: Type<T>): T {
     this.vcf.clear();
-    let cf = this.cfr.resolveComponentFactory(component);
+    let cf = this.cfr.resolveComponentFactory<T>(component);
     let componentRef = this.vcf.createComponent(cf);
     this.componentChange.emit(<Prompt>componentRef.instance);
     return componentRef.instance;

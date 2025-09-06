@@ -12,7 +12,7 @@ import { LayoutService } from '../services/layout.service';
 export class CommitDetailCiComponent implements OnInit {
 
 
-  private commit: CommitDetail;
+  public commit: CommitDetail;
   private showAppveyor = false;
   private appveyorOutput = "";
   private loadingAppveyor = false;

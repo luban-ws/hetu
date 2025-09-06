@@ -16,7 +16,7 @@ export class MapSeparatorComponent implements OnInit {
     this.processSeparators();
   }
   private _commits: Commit[];
-  private separators = [
+  public separators = [
     new Sep(moment().subtract(1, 'hour')),
     new Sep(moment().subtract(6, 'hour')),
     new Sep(moment().subtract(12, 'hour')),

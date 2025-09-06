@@ -11,7 +11,7 @@ export class CommitFileListComponent implements OnInit {
   @Input() files: any[];
   @Output() fileSelected: EventEmitter<string> = new EventEmitter<string>();
   private defaultFilterMask: FileListFilterMask = new FileListFilterMask(true, true, true, true);
-  private currentFilter: FileListFilterMask;
+  public currentFilter: FileListFilterMask;
   constructor() {
     this.clearFilter();
   }

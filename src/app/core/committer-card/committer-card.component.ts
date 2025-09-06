@@ -21,11 +21,11 @@ export class CommitterCardComponent implements OnInit {
   @Input() set time(t) {
     this.getDateTime(t);
   }
-  private authorIcn = "";
-  private badgeColor: SafeStyle;
-  private timeStr = "";
-  private _email = "";
-  private _author = "";
+  public authorIcn = "";
+  public badgeColor: SafeStyle;
+  public timeStr = "";
+  public _email = "";
+  public _author = "";
   constructor(
     private sanitize: DomSanitizer,
     private d3: D3Service,

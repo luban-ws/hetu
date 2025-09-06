@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
 import { SettingsNavComponent } from './settings-nav/settings-nav.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -11,7 +11,7 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 import { GeneralSettingsComponent } from './general-settings/general-settings.component';
 import { FormsModule } from '@angular/forms';
 import { JiraSettingsComponent } from './jira-settings/jira-settings.component';
-import { TagInputModule } from 'ngx-chips';
+// import { TagInputModule } from 'ngx-chips'; // Removed for compatibility
 import { ProfileSettingsComponent } from './profile-settings/profile-settings.component';
 import { RepoProfileComponent } from './repo-profile/repo-profile.component';
 import { UpdaterComponent } from './updater/updater.component';
@@ -47,9 +47,9 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports: [
-    TagInputModule,
+    // TagInputModule, // Removed for compatibility
     CommonModule,
-    NgbModule,
+    NgbNavModule,
     RouterModule.forChild(appRoutes),
     FormsModule,
     InfrastructureModule,

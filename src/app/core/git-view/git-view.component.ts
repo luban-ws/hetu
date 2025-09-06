@@ -10,8 +10,8 @@ import { LoadingService } from '../../infrastructure/loading-service.service';
 })
 export class GitViewComponent implements OnInit {
 
-  private repoName: string = null;
-  private commits: Commit[] = [];
+  public repoName: string = null;
+  public commits: Commit[] = [];
   constructor(
     private repoService: RepoService,
     private loading: LoadingService

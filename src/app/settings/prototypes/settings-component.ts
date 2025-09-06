@@ -1,7 +1,7 @@
 import { SettingsService } from "../services/settings.service";
-import { OnInit, Component } from "@angular/core";
+import { OnInit, Directive } from "@angular/core";
 
-@Component({})
+@Directive()
 export abstract class SettingsComponent implements OnInit {
 
     constructor(

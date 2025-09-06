@@ -14,7 +14,7 @@ export class CiConsoleOutputComponent implements OnInit {
     temp = temp.replace(/\n/g, '<br/>');
     this.display = this.sanitizer.bypassSecurityTrustHtml(temp);
   }
-  private display: SafeHtml;
+  public display: SafeHtml;
   constructor(
     private sanitizer: DomSanitizer
   ) { }

@@ -1,41 +1,49 @@
-import { Component, OnInit, Input, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
-import { Profile } from '../models/profile';
-import { JiraIntegrationService } from '../services/jira-integration.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import {
+  Component,
+  OnInit,
+  Input,
+  HostListener,
+  ElementRef,
+  Output,
+  EventEmitter,
+} from "@angular/core";
+import { Profile } from "../models/profile";
+import { JiraIntegrationService } from "../services/jira-integration.service";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
-  selector: 'app-profile-selector',
-  templateUrl: './profile-selector.component.html',
-  styleUrls: ['./profile-selector.component.scss']
+  selector: "app-profile-selector",
+  templateUrl: "./profile-selector.component.html",
+  styleUrls: ["./profile-selector.component.scss"],
 })
 export class ProfileSelectorComponent implements OnInit {
-
   @Input() profile: Profile;
   @Input() key: string;
-  @HostListener('document:click') click = this.onClick;
+  @HostListener("document:click") click = this.onClick;
   @Output() profileSelected = new EventEmitter();
-  private toggled = false;
-  private loading = false;
-  private users: Profile[] = [];
-  private searchName = "";
+  public toggled = false;
+  public loading = false;
+  public users: Profile[] = [];
+  public searchName = "";
   constructor(
     private jira: JiraIntegrationService,
     private eref: ElementRef,
-    private sanitizer: DomSanitizer,
+    private sanitizer: DomSanitizer
   ) {
-    jira.assignableRetrieved.subscribe(data => {
+    jira.assignableRetrieved.subscribe((data) => {
       if (data.key === this.key) {
         this.users = data.result;
-        this.users.forEach(user => {
-          user.safeAvatarUrl = this.sanitizer.bypassSecurityTrustUrl(user.avatarUrls['32x32']);
+        this.users.forEach((user) => {
+          user.safeAvatarUrl = this.sanitizer.bypassSecurityTrustUrl(
+            user.avatarUrls["32x32"]
+          );
         });
         this.loading = false;
       }
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick($event) {
     if (!this.eref.nativeElement.contains(event.target)) {

@@ -40,8 +40,8 @@
   <div class="form-group" *ngIf="jira">
     <label for="exampleInputPassword1">Keys Associated To This Repo</label>
     <div class="input-group mb-2">
-      <tag-input [(ngModel)]='jiraKeys' [inputText]="jiraKeyInput" (onAdd)="updateJiraKeys()" (onRemove)="updateJiraKeys()" (onTextChange)="upperCase($event)"
-        separatorKeys="[';']" placeholder="Add more keys" secondaryPlaceholder="Enter a JIRA key" theme='bootstrap' name="jiraKeys"></tag-input>
+      <input type="text" class="form-control" [(ngModel)]="jiraKeyInput" (input)="upperCase($event)" 
+        placeholder="Add more keys" name="jiraKeys" />
     </div>
     <small class="form-text text-muted">MetroGit uses these keys to look up related issues in JIRA
     </small>

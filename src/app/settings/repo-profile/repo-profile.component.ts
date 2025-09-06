@@ -8,7 +8,7 @@ import { SettingsComponent } from '../prototypes/settings-component';
 })
 export class RepoProfileComponent extends SettingsComponent {
 
-  private repoProfile = false;
+  public repoProfile = false;
   private name = "";
   private email = "";
   getSettings() {

@@ -38,14 +38,14 @@ export class JiraDetailComponent implements OnInit, OnDestroy {
   }
   canPrevious = false;
   canNext = false;
-  private currentIssueKey = "";
-  private issue: Issue;
-  private issueIconUrl: SafeResourceUrl;
-  private priorityIconUrl: SafeResourceUrl;
-  private reporterIconUrl: SafeUrl;
-  private assigneeIconUrl: SafeUrl;
-  private loading = false;
-  private tooltip = true;
+  public currentIssueKey = "";
+  public issue: Issue;
+  public issueIconUrl: SafeResourceUrl;
+  public priorityIconUrl: SafeResourceUrl;
+  public reporterIconUrl: SafeUrl;
+  public assigneeIconUrl: SafeUrl;
+  public loading = false;
+  public tooltip = true;
   private subs: Subscription[] = [];
   constructor(
     private electron: ElectronService,

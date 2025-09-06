@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(rm:*)",
+      "Bash(npx ngcc:*)",
+      "Bash(npm run build:*)",
+      "Bash(export NODE_OPTIONS=--openssl-legacy-provider)",
+      "Bash(npx ng build:*)",
+      "Bash(electron:*)",
+      "Bash(npx:*)",
+      "Bash(sed:*)",
+      "Bash(osascript:*)",
+      "Bash(export NODE_OPTIONS=\"--openssl-legacy-provider\")",
+      "WebFetch(domain:ng-bootstrap.github.io)",
+      "Bash(npm start)",
+      "Bash(./node_modules/.bin/electron:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

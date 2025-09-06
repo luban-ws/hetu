@@ -1,4 +1,4 @@
-import { aM as __extends, aN as AsyncAction, aO as AsyncScheduler, aP as isArray$1, aQ as isObject$1, o as map$1, aq as Observable, q as from$1, aR as isFunction$1, aS as noop$1 } from "./vendor-BzKSgkTr.js";
+import { aU as __extends, aV as AsyncAction, aW as AsyncScheduler, O as Observable, aX as isArray$1, aY as isObject$1, o as map$1, q as from$1, aZ as isFunction$1, a_ as noop$1 } from "./vendor-DVK44qPQ.js";
 var AnimationFrameAction = /* @__PURE__ */ (function(_super) {
   __extends(AnimationFrameAction2, _super);
   function AnimationFrameAction2(scheduler, work) {
@@ -63,6 +63,9 @@ var AnimationFrameScheduler = /* @__PURE__ */ (function(_super) {
   return AnimationFrameScheduler2;
 })(AsyncScheduler);
 var animationFrameScheduler = /* @__PURE__ */ new AnimationFrameScheduler(AnimationFrameAction);
+function isObservable(obj) {
+  return !!obj && (obj instanceof Observable || typeof obj.lift === "function" && typeof obj.subscribe === "function");
+}
 function forkJoin() {
   var sources = [];
   for (var _i = 0; _i < arguments.length; _i++) {
@@ -6241,6 +6244,7 @@ export {
   selectAll as c,
   forkJoin as f,
   getDefaultExportFromCjs as g,
+  isObservable as i,
   moment as m,
   select as s
 };

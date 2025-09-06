@@ -54,7 +54,7 @@ function createWindow() {
   const mainMenu = electron.Menu.buildFromTemplate(menuTemplate);
   electron.Menu.setApplicationMenu(mainMenu);
   if (process.env.NODE_ENV === "development") {
-    win.loadURL("http://localhost:5174");
+    win.loadURL("http://localhost:5173");
   } else {
     win.loadFile(path.join(__dirname$1, "../renderer/index.html"));
   }

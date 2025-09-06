@@ -23,6 +23,22 @@ export default defineConfig({
     // 渲染进程配置 (Angular应用)
     root: "src/renderer",
     plugins: [],
+    esbuild: {
+      target: "ES2022",
+    },
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development"),
+    },
+    optimizeDeps: {
+      include: [
+        "@angular/core",
+        "@angular/common",
+        "@angular/platform-browser",
+        "@angular/platform-browser-dynamic",
+        "@angular/compiler",
+        "ngx-contextmenu"
+      ],
+    },
     resolve: {
       alias: {
         "@": resolve(__dirname, "src"),

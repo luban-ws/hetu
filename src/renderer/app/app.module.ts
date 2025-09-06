@@ -16,7 +16,7 @@ import { AuthSettingsComponent } from './settings/auth-settings/auth-settings.co
 import { GeneralSettingsComponent } from './settings/general-settings/general-settings.component';
 import { JiraSettingsComponent } from './settings/jira-settings/jira-settings.component';
 // import { TagInputModule } from 'ngx-chips'; // Removed for compatibility
-import { ContextMenuModule } from 'ngx-contextmenu';
+import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { ExternalFileViewerComponent } from './core/external-file-viewer/external-file-viewer.component';
 import { HotkeyModule } from 'angular2-hotkeys';
 import { ReleaseNoteComponent } from './infrastructure/release-note/release-note.component';

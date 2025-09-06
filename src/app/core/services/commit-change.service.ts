@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
 import { CredentialsService } from './credentials.service';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { HotkeysService, Hotkey } from 'angular2-hotkeys';
 import { CommitSelectionService } from './commit-selection.service';
@@ -43,7 +43,7 @@ export class CommitChangeService {
     private electron: ElectronService,
     private cred: CredentialsService,
     private route: Router,
-    private noti: NotificationsService,
+    private toastr: ToastrService,
     private cmtSelect: CommitSelectionService,
     private hotkeys: HotkeysService,
     private loading: LoadingService,
@@ -54,7 +54,7 @@ export class CommitChangeService {
       this.commiting = false;
     });
     this.electron.onCD('Repo-CommitFail', (event, arg) => {
-      this.noti.error("Commit Error", "An error occured during commit, please try again");
+      this.toastr.error("An error occured during commit, please try again", "Commit Error");
       this.commiting = false;
     });
     this.electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
@@ -70,14 +70,14 @@ export class CommitChangeService {
       }
     });
     this.electron.onCD('Repo-StashFailed', (event, arg) => {
-      this.noti.error("Stash Error", "There was an error during stash, please try again");
+      this.toastr.error("There was an error during stash, please try again", "Stash Error");
       this.stashed.emit();
     });
     this.electron.onCD('Repo-PopFailed', (event, arg) => {
       if (arg.detail === 'NO_STASH') {
-        this.noti.info("No Stash", "There's no stashed commits");
+        this.toastr.info("There's no stashed commits", "No Stash");
       } else {
-        this.noti.error("Pop Error", "There was an error during pop, please try again");
+        this.toastr.error("There was an error during pop, please try again", "Pop Error");
       }
     });
     this.electron.onCD('Repo-Stashed', (event, arg) => {
@@ -177,8 +177,7 @@ export class CommitChangeService {
   private checkProfileExists(): boolean {
     let noProfile = !this.cred.name || !this.cred.email;
     if (noProfile) {
-      let notification = this.noti.warn("Profile Not Setup", "No profile settings found, click here to setup your profile");
-      notification.click.subscribe(() => {
+      this.toastr.warning("No profile settings found, click here to setup your profile", "Profile Not Setup").onTap.subscribe(() => {
         this.route.navigateByUrl('settings/profile');
       });
     }

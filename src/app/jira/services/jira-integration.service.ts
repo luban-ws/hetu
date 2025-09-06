@@ -1,7 +1,7 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
 import { Issue } from '../models/issue';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { StatusBarService } from '../../infrastructure/status-bar.service';
 import { Profile } from '../models/profile';
 import { IssueType } from '../models/issue-type';
@@ -29,7 +29,7 @@ export class JiraIntegrationService {
   private subtaskType: IssueType;
   constructor(
     private electron: ElectronService,
-    private noti: NotificationsService,
+    private toastr: ToastrService,
     private statusBarSvc: StatusBarService,
   ) {
     electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
@@ -57,21 +57,21 @@ export class JiraIntegrationService {
       this.subtaskType = arg.subtaskType;
     });
     electron.onCD('JIRA-Error', (event, arg) => {
-      noti.error("Error", "Your JIRA setup doesn't seemed to be correct, please enter the correct settings");
+      this.toastr.error("Your JIRA setup doesn't seemed to be correct, please enter the correct settings", "Error");
     });
     electron.onCD('JIRA-Timeout', (event, arg) => {
       statusBarSvc.flash('warning', "JIRA connection timeout, your network connection might be unstable");
     });
     electron.onCD('JIRA-OperationFailed', (event, arg) => {
-      noti.error("Failed", "Operation failed, please reload this issue and try again");
+      this.toastr.error("Operation failed, please reload this issue and try again", "Failed");
       this.issueRetrieved.emit(null);
     });
     electron.onCD('JIRA-NotFound', (event, arg) => {
-      noti.warn("Not Found", "JIRA issue not found, server returned 404");
+      this.toastr.warning("JIRA issue not found, server returned 404", "Not Found");
       this.issueRetrieved.emit(null);
     });
     electron.onCD('JIRA-CAPTCHARequired', (event, arg) => {
-      noti.warn("JIRA Limiting", "You have triggered JIRA's CAPTCHA detection, please login using your browser and solve the challenge before attempting more requests");
+      this.toastr.warning("You have triggered JIRA's CAPTCHA detection, please login using your browser and solve the challenge before attempting more requests", "JIRA Limiting");
     });
     electron.onCD('JIRA-AssignableUsersRetrieved', (event, arg) => {
       this.assignableRetrieved.emit(arg.result);

@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
 import { EnterLoginPromptComponent } from '../enter-login-prompt/enter-login-prompt.component';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { SshPasswordPromptComponent } from '../ssh-password-prompt/ssh-password-prompt.component';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
@@ -17,7 +17,7 @@ export class CredentialsService {
   constructor(
     private electron: ElectronService,
     private promptIj: PromptInjectorService,
-    private noti: NotificationsService,
+    private toastr: ToastrService,
     private route: Router
   ) {
     this.electron.onCD('Repo-OpenSuccessful', (event, arg) => {
@@ -39,8 +39,7 @@ export class CredentialsService {
       this.notifyCredentialChange();
     });
     this.electron.onCD('Repo-SSHKeyRequired', (event, arg) => {
-      let notification = this.noti.warn("SSH Key Required", "This repo uses SSH authentication, click here to set up your SSH keys", { clickToClose: true });
-      notification.click.subscribe(() => {
+      this.toastr.warning("This repo uses SSH authentication, click here to set up your SSH keys", "SSH Key Required").onTap.subscribe(() => {
         this.route.navigateByUrl('settings/auth');
       });
     });

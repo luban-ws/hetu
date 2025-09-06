@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { ElectronService } from './electron.service';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { StatusBarService } from './status-bar.service';
 
 @Injectable()
@@ -12,13 +12,12 @@ export class UpdaterService {
   updateAvailableChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   constructor(
     private electron: ElectronService,
-    private noti: NotificationsService,
+    private toastr: ToastrService,
     private status: StatusBarService,
   ) {
     electron.onCD('Updater', (event, arg) => {
       if (arg.msg === 'update-available') {
-        let notification = this.noti.info("Update Available", "Click here to install update, the app will restart automatically to update");
-        notification.click.subscribe(() => {
+        this.toastr.info("Click here to install update, the app will restart automatically to update", "Update Available").onTap.subscribe(() => {
           this.electron.ipcRenderer.send('Updater', 'commence-download');
         });
         this.isUpdateAvailable = true;
@@ -45,7 +44,7 @@ export class UpdaterService {
     this.electron.ipcRenderer.send('Updater-Check');
   }
   installUpdate() {
-    this.noti.info("Installing Update", "Downloading update...");
+    this.toastr.info("Downloading update...", "Installing Update");
     this.electron.ipcRenderer.send('Updater', 'commence-download');
   }
   init() {

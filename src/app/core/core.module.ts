@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { SimpleNotificationsModule } from 'angular2-notifications';
 import { BranchViewerComponent } from './branch-viewer/branch-viewer.component';
 import { GitViewComponent } from './git-view/git-view.component';
 import { SubwayComponent } from './subway/subway.component';

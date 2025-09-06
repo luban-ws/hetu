@@ -1,7 +1,7 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
 import { LoadingService } from '../../infrastructure/loading-service.service';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { CredentialsService } from './credentials.service';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
 import { StatusBarService } from '../../infrastructure/status-bar.service';
@@ -53,7 +53,7 @@ export class RepoService {
   constructor(
     private electron: ElectronService,
     private loading: LoadingService,
-    private noti: NotificationsService,
+    private toastr: ToastrService,
     private status: StatusBarService,
     private promptIj: PromptInjectorService,
     private cred: CredentialsService,
@@ -90,14 +90,14 @@ export class RepoService {
     this.electron.onCD('Repo-Pulled', (event, arg) => {
       this.pulling.emit(false);
       if (arg.result === 'UP_TO_DATE') {
-        this.noti.info("Up to date", "Your local branch is up-to-date with the remote");
+        this.toastr.info("Your local branch is up-to-date with the remote", "Up to date");
       } else {
-        this.noti.success("Pull Successful", "Successfully updated local branch");
+        this.toastr.success("Successfully updated local branch", "Pull Successful");
       }
     });
     this.electron.onCD('Repo-Pushed', (event, arg) => {
       this.pushing.emit(false);
-      this.noti.success("Pushed", "Successfully pushed to remote");
+      this.toastr.success("Successfully pushed to remote", "Pushed");
     });
     this.electron.onCD('Repo-CommitsUpdated', (event, arg) => {
       this.notifyCommitDifference(arg.newCommits);
@@ -105,11 +105,11 @@ export class RepoService {
     this.electron.onCD('Repo-Fetched', (event, arg) => {
     });
     this.electron.onCD('Repo-OpenFailed', (event, arg) => {
-      this.noti.error("Error", "Failed to open repository");
+      this.toastr.error("Failed to open repository", "Error");
       this.loading.disableLoading();
     });
     this.electron.onCD('Repo-BranchCreateFailed', (event, arg) => {
-      this.noti.error("Error", "Failed to create branch, " + arg.detail);
+      this.toastr.error("Failed to create branch, " + arg.detail, "Error");
     });
     this.electron.on('Repo-FolderSelected', (event, arg) => {
       this._pendingOperation = null;
@@ -132,7 +132,7 @@ export class RepoService {
     });
     this.electron.onCD('Repo-FetchFailed', (event, arg) => {
       if (arg.detail.indexOf('403') !== -1) {
-        this.noti.error("Forbidden", "It appears the remote is blocking this operation. You might have attempted to login too many times, please try again later");
+        this.toastr.error("It appears the remote is blocking this operation. You might have attempted to login too many times, please try again later", "Forbidden");
       } else {
         this.status.flash('danger', 'Fetch failed');
         this._pendingOperation = this.fetch;
@@ -140,9 +140,9 @@ export class RepoService {
     });
     this.electron.onCD('Repo-PullFailed', (event, arg) => {
       if (arg.detail === 'LOCAL_AHEAD') {
-        this.noti.error("Local Ahead", "Your local branch is ahead, cannot fast forward");
+        this.toastr.error("Your local branch is ahead, cannot fast forward", "Local Ahead");
       } else if (arg.detail === 'UPSTREAM_NOT_FOUND') {
-        this.noti.info("Upstream Branch Not Found", "This branch does not have an upstream branch");
+        this.toastr.info("This branch does not have an upstream branch", "Upstream Branch Not Found");
       } else {
         this.skipAuthError(arg.detail);
       }
@@ -162,9 +162,9 @@ export class RepoService {
           }
         });
       } else if (arg.detail === 'UP_TO_DATE') {
-        this.noti.info('Up To Date', "Your local branch is up-to-date with the remote");
+        this.toastr.info("Your local branch is up-to-date with the remote", 'Up To Date');
       } else if (arg.detail === 'REMOTE_UNCHANGED') {
-        this.noti.error("Push Failed", "Remote branch was unchanged, the branch might be protected");
+        this.toastr.error("Remote branch was unchanged, the branch might be protected", "Push Failed");
       } else {
         this.skipAuthError(arg.detail);
       }
@@ -212,13 +212,12 @@ export class RepoService {
       this.wipInfoChange.emit();
     });
     this.electron.onCD('Repo-TagCreated', (event, arg) => {
-      let n = this.noti.success("Tag Created", `Tag ${arg.name} created successfully. Click here to publish it to remote`);
-      n.click.subscribe(() => {
+      this.toastr.success(`Tag ${arg.name} created successfully. Click here to publish it to remote`, "Tag Created").onTap.subscribe(() => {
         this.pushTag(arg.name);
       });
     });
     this.electron.onCD('Repo-TagDeleted', (event, arg) => {
-      let n = this.noti.success("Tag Deleted", `Tag ${arg.name} deleted successfully.`);
+      this.toastr.success(`Tag ${arg.name} deleted successfully.`, "Tag Deleted");
       this.pushTag(arg.name, true);
     });
     this.electron.onCD('Repo-InitPathSelected', (event, arg) => {
@@ -228,7 +227,7 @@ export class RepoService {
       this.openRepo(arg.path);
     });
     this.electron.onCD('Repo-InitFailed', (event, arg) => {
-      this.noti.error('Initialization Error', 'Failed to initialize repository');
+      this.toastr.error('Failed to initialize repository', 'Initialization Error');
     });
     this.cred.credentialChange.subscribe(newCreds => {
       this.retry();
@@ -264,7 +263,7 @@ export class RepoService {
 
   private skipAuthError(detail) {
     if (detail !== 'CRED_ISSUE') {
-      this.noti.error("Error", detail);
+      this.toastr.error(detail, "Error");
     }
   }
 

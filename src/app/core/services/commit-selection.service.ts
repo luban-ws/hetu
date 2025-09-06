@@ -5,7 +5,7 @@ import { CiIntegrationService } from './ci-integration.service';
 import { FileDetail } from '../prototypes/file-detail';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
 import { TagPromptComponent } from '../tag-prompt/tag-prompt.component';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { CredentialsService } from './credentials.service';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class CommitSelectionService {
   constructor(
     private electron: ElectronService,
     private promptInj: PromptInjectorService,
-    private noti: NotificationsService,
+    private toastr: ToastrService,
     private cred: CredentialsService
   ) {
     this.electron.onCD('Repo-CommitDetailRetrieved', (event, arg) => {
@@ -77,15 +77,14 @@ export class CommitSelectionService {
     });
     this.electron.onCD('Repo-BranchDeleted', (event, arg) => {
       if (arg.upstream) {
-        let notification = this.noti.info("Upstream Branch Found", "Local branch deleted. Click here to delete the upstream branch");
-        notification.click.subscribe(() => {
+        this.toastr.info("Local branch deleted. Click here to delete the upstream branch", "Upstream Branch Found").onTap.subscribe(() => {
           this.deleteRemoteBranch(arg.upstream);
         });
       }
     });
     this.electron.onCD('Repo-BranchDeleteFailed', (event, arg) => {
       if (arg.detail === 'IS_CURRENT_BRANCH') {
-        this.noti.error("Current Branch", "You are trying to delete the current branch, please checkout another branch before deleting");
+        this.toastr.error("You are trying to delete the current branch, please checkout another branch before deleting", "Current Branch");
       }
     });
     this.electron.onCD('Repo-LiveUpdateFileNotFound', (event, arg) => {

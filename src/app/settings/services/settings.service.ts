@@ -1,6 +1,6 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class SettingsService {
@@ -9,17 +9,17 @@ export class SettingsService {
   settingsData = new Settings;
   constructor(
     private electron: ElectronService,
-    private noti: NotificationsService
+    private toastr: ToastrService
   ) {
     this.electron.onCD('Settings-Updated', (event, arg) => {
       this.settingsData = arg.currentSettings;
       this.settingsUpdated.emit(this.settingsData);
     });
     this.electron.onCD('Secure-CacheCleared', (event, arg) => {
-      this.noti.success("Credentials Cleared", "All credentials cleared! You will be prompted to enter your credentials the next time you start the app.");
+      this.toastr.success("All credentials cleared! You will be prompted to enter your credentials the next time you start the app.", "Credentials Cleared");
     });
     this.electron.onCD('Secure-ClearCacheFailed', (event, arg) => {
-      this.noti.error("Clear Credentials Failed", "Uh oh, something went wrong. Please close this app and manually clear the credentials.");
+      this.toastr.error("Uh oh, something went wrong. Please close this app and manually clear the credentials.", "Clear Credentials Failed");
     });
   }
 

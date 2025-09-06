@@ -1,5 +1,5 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class LoadingService {
@@ -15,7 +15,7 @@ export class LoadingService {
   change: EventEmitter<Boolean> = new EventEmitter();
 
   constructor(
-    private noti: NotificationsService
+    private toastr: ToastrService
   ) { }
   updateMessage(message) {
     if (message) {
@@ -50,10 +50,9 @@ export class LoadingService {
     }
     this._busyTimeout = setTimeout(() => {
       this.disableLoading();
-      this.noti.error('Timeout', "Sorry~ This operation has timed out, please reload the app and try again",
-        {
-          timeOut: 0
-        });
+      this.toastr.error("Sorry~ This operation has timed out, please reload the app and try again", 'Timeout', {
+        timeOut: 0
+      });
     }, 60 * 1000);
   }
 

@@ -1,6 +1,6 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
-import { NotificationsService } from 'angular2-notifications';
+import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../infrastructure/loading-service.service';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AppveyorCiService {
   private project = "";
   constructor(
     private electron: ElectronService,
-    private notification: NotificationsService,
+    private toastr: ToastrService,
     private loading: LoadingService
   ) {
     electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
@@ -57,11 +57,11 @@ export class AppveyorCiService {
       this.logRetrieved.emit({build: arg.version, output: arg.result});
     });
     electron.onCD('CI-AppVeyorRebuilded', (event, arg) => {
-      this.notification.success(`Rebuild Scheduled ...`);
+      this.toastr.success('Rebuild Scheduled ...');
       this.loading.disableLoading();
     });
     electron.onCD('CI-AppVeyorRebuildFailed', (event, arg) => {
-      this.notification.error(`Rebuild Failed. Please try again later`);
+      this.toastr.error('Rebuild Failed. Please try again later');
       this.loading.disableLoading();
     });
   }

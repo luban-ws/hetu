@@ -201,14 +201,22 @@ app.on("ready", () => {
   initRepoHistory(settingsInstance, win); // repo-history 需要 settings 和 window
   initRepo(win, settingsInstance, null, null); // repo 需要 window, settings, history, file-watcher
 
-  // 创建 repo 对象实例
+  // 创建 repo 对象实例 - 桥接新旧系统API差异
   const repoInstance = {
     fetchRepo: wrappedFetchRepo,
     getCurrentRemotes: wrappedGetCurrentRemotes,
     getCurrentFirstRemote: wrappedGetCurrentFirstRemote,
     pullWrapper: wrappedPullWrapper,
     closeRepo: wrappedCloseRepo,
-    openRepo: wrappedOpenRepo,
+    // 桥接 openRepo - 旧系统期望Promise，新系统直接发送IPC事件
+    openRepo: async (workingDir) => {
+      try {
+        await wrappedOpenRepo(workingDir);
+        return Promise.resolve(); // 旧系统需要resolved promise
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
     // 添加其他需要的函数
   };
 

@@ -4,6 +4,7 @@
  */
 
 import path from "path";
+import fs from "fs";
 import wasmGitModule from "wasm-git/lg2_async.js";
 import { BaseGitAdapter } from "./base-git-adapter.js";
 
@@ -61,6 +62,28 @@ export class WasmGitAdapter extends BaseGitAdapter {
     return wasmPath;
   }
 
+  // Validate if directory exists and is a git repository
+  _validateGitRepository(targetDir) {
+    // Check if directory exists
+    if (!fs.existsSync(targetDir)) {
+      throw new Error(`Directory does not exist: ${targetDir}`);
+    }
+
+    // Check if it's a directory
+    const stats = fs.statSync(targetDir);
+    if (!stats.isDirectory()) {
+      throw new Error(`Path is not a directory: ${targetDir}`);
+    }
+
+    // Check if .git directory exists
+    const gitDir = path.join(targetDir, '.git');
+    if (!fs.existsSync(gitDir)) {
+      throw new Error(`Not a git repository: ${targetDir}`);
+    }
+
+    return true;
+  }
+
   async _executeGitCommand(command, args = [], targetDir = null) {
     try {
       await this._mountRepository(targetDir);
@@ -82,11 +105,16 @@ export class WasmGitAdapter extends BaseGitAdapter {
   // Repository operations
   async open(dir = null) {
     const targetDir = dir || this.workingDir;
+    
+    // Pre-validate the repository before attempting Git operations
+    this._validateGitRepository(targetDir);
+    
     try {
       await this._executeGitCommand("status", [], targetDir);
       return { workingDir: targetDir };
     } catch (error) {
-      throw new Error(`Not a git repository: ${targetDir}`);
+      // If validation passed but Git command failed, provide more specific error
+      throw new Error(`Failed to open git repository: ${error.message}`);
     }
   }
 

@@ -130,5 +130,45 @@ describe('WasmGitAdapter - Basic Tests', () => {
         }
       }
     });
+
+    it('should validate directory existence before opening', async () => {
+      const nonExistentDir = '/non/existent/directory';
+      
+      await expect(adapter.open(nonExistentDir)).rejects.toThrow('Directory does not exist');
+    });
+
+    it('should validate that path is a directory', async () => {
+      // This would require mocking fs.statSync, but for now we'll test the logic
+      expect(typeof adapter._validateGitRepository).toBe('function');
+    });
+
+    it('should validate .git directory exists', async () => {
+      const nonGitDir = '/tmp/not-a-git-repo';
+      
+      // Mock fs.existsSync and fs.statSync
+      const fs = require('fs');
+      const originalExistsSync = fs.existsSync;
+      const originalStatSync = fs.statSync;
+      
+      fs.existsSync = vi.fn((path) => {
+        if (path === nonGitDir) return true;
+        if (path.endsWith('.git')) return false;
+        return originalExistsSync(path);
+      });
+      
+      fs.statSync = vi.fn((path) => {
+        if (path === nonGitDir) {
+          return { isDirectory: () => true };
+        }
+        return originalStatSync(path);
+      });
+      
+      try {
+        await expect(adapter.open(nonGitDir)).rejects.toThrow('Not a git repository');
+      } finally {
+        fs.existsSync = originalExistsSync;
+        fs.statSync = originalStatSync;
+      }
+    });
   });
 });

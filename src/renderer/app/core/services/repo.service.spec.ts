@@ -17,6 +17,7 @@ import { SimpleNotificationsComponent, SimpleNotificationsModule, NotificationsS
 import { RouterTestingModule } from '../../../../node_modules/@angular/router/testing';
 import { MockCredential } from '../mocks/mock-credential-service';
 import { CredentialsService } from './credentials.service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 describe('RepoService', () => {
   beforeEach(() => {
@@ -47,24 +48,24 @@ describe('RepoService', () => {
 
     service.browseInitFolder();
 
-    expect(electronSvc.messageWasSent('Repo-InitBrowse')).toBeTruthy();
+    expect(electronSvc.messageWasSent(IPC_EVENTS.REPO.INIT_BROWSE)).toBeTruthy();
   }));
 
   it('should send Repo-Init on Repo-InitPathSelected', inject([RepoService], (service: RepoService) => {
     let electronSvc = TestBed.get(ElectronService) as MockElectron;
     service.init();
 
-    electronSvc.receiveEvent('Repo-InitPathSelected', {path: 'TestPath'});
+    electronSvc.receiveEvent(IPC_EVENTS.REPO.INIT_PATH_SELECTED, {path: 'TestPath'});
 
-    expect(electronSvc.messageWasSent('Repo-Init')).toBeTruthy();
+    expect(electronSvc.messageWasSent(IPC_EVENTS.REPO.INIT)).toBeTruthy();
   }));
   it('should openRepo on Repo-InitSuccessful', inject([RepoService], (service: RepoService) => {
     let electronSvc = TestBed.get(ElectronService) as MockElectron;
     service.init();
 
-    electronSvc.receiveEvent('Repo-InitSuccessful', {path: 'TestPath'});
+    electronSvc.receiveEvent(IPC_EVENTS.REPO.INIT_SUCCESSFUL, {path: 'TestPath'});
 
-    expect(electronSvc.messageWasSent('Repo-Open')).toBeTruthy();
+    expect(electronSvc.messageWasSent(IPC_EVENTS.REPO.OPEN)).toBeTruthy();
   }));
   it('should show error notification on Repo-InitFailed', inject([RepoService], (service: RepoService) => {
     let noti = TestBed.get(NotificationsService) as NotificationsService;
@@ -72,7 +73,7 @@ describe('RepoService', () => {
     let notiSpy = spyOn(noti, 'error').and.callThrough();
     service.init();
 
-    electronSvc.receiveEvent('Repo-InitFailed', {});
+    electronSvc.receiveEvent(IPC_EVENTS.REPO.INIT_FAILED, {});
 
     expect(notiSpy).toHaveBeenCalled();
   }));

@@ -13,6 +13,7 @@ import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
 import { MockCredential } from '../mocks/mock-credential-service';
 import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
 import { RouterTestingModule } from '../../../../node_modules/@angular/router/testing';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 describe('CommitChangeService', () => {
   beforeEach(() => {
@@ -43,7 +44,7 @@ describe('CommitChangeService', () => {
       emit = true;
     });
 
-    electron.receiveEvent('Repo-Popped', {});
+    electron.receiveEvent(IPC_EVENTS.REPO.POPPED, {});
 
     expect(emit).toBeTruthy();
   }));

@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class HistoryService {
@@ -9,7 +10,7 @@ export class HistoryService {
   constructor(
     private electron: ElectronService
   ) {
-    electron.onCD('Repo-HistoryChanged', (event, arg) => {
+    electron.onCD(IPC_EVENTS.REPO.HISTORY_CHANGED, (event, arg) => {
       this.repos = arg.history;
       this.historyChange.emit(this.repos);
     });

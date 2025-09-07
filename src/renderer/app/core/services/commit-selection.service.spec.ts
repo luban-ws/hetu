@@ -8,6 +8,7 @@ import { SimpleNotificationsModule } from '../../../../node_modules/angular2-not
 import { ElectronService } from '../../infrastructure/electron.service';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
 import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 describe('CommitSelectionService', () => {
   beforeEach(() => {
@@ -34,7 +35,7 @@ describe('CommitSelectionService', () => {
     service.selectionChange.subscribe(s => {
       emit = true;
     });
-    electron.receiveEvent('Repo-Closed', {});
+    electron.receiveEvent(IPC_EVENTS.REPO.CLOSED, {});
 
     expect(service.selectedCommit).toBeNull();
     expect(emit).toBeTruthy();
@@ -45,7 +46,7 @@ describe('CommitSelectionService', () => {
     service.selectionChange.subscribe(s => {
       emit = true;
     });
-    electron.receiveEvent('Repo-OpenSuccessful', {});
+    electron.receiveEvent(IPC_EVENTS.REPO.OPEN_SUCCESSFUL, {});
 
     expect(service.selectedCommit).toBeNull();
     expect(emit).toBeTruthy();

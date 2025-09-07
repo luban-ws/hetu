@@ -7,6 +7,7 @@ import { HotkeysService } from "@ngneat/hotkeys";
 import { CommitSelectionService } from "./commit-selection.service";
 import { WIPCommit } from "../prototypes/commit";
 import { LoadingService } from "../../infrastructure/loading-service.service";
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class CommitChangeService {
@@ -37,7 +38,7 @@ export class CommitChangeService {
   private _message = "";
   private _detail = "";
   private _commiting = false;
-  private selectedCommit: WIPCommit;
+  private selectedCommit: WIPCommit | null = null;
   constructor(
     private electron: ElectronService,
     private cred: CredentialsService,
@@ -47,20 +48,20 @@ export class CommitChangeService {
     private hotkeys: HotkeysService,
     private loading: LoadingService
   ) {
-    this.electron.onCD("Repo-Committed", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.COMMITTED, (event: any, arg: any) => {
       this.newCommitMessage = "";
       this.newCommitDetail = "";
       this.commiting = false;
     });
-    this.electron.onCD("Repo-CommitFail", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.COMMIT_FAIL, (event: any, arg: any) => {
       this.toastr.error(
         "An error occured during commit, please try again",
         "Commit Error"
       );
       this.commiting = false;
     });
-    this.electron.onCD("Settings-EffectiveUpdated", (event, arg) => {
-      if (arg["jira-enabled"] && arg["jira-keys"]) {
+    this.electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
+      if (arg && arg["jira-enabled"] && arg["jira-keys"]) {
         let keys = arg["jira-keys"].split(";");
         let key = "";
         if (keys.length) {
@@ -71,14 +72,14 @@ export class CommitChangeService {
         this.defaultKey = "";
       }
     });
-    this.electron.onCD("Repo-StashFailed", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.STASH_FAILED, (event: any, arg: any) => {
       this.toastr.error(
         "There was an error during stash, please try again",
         "Stash Error"
       );
       this.stashed.emit();
     });
-    this.electron.onCD("Repo-PopFailed", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.POP_FAILED, (event: any, arg: any) => {
       if (arg.detail === "NO_STASH") {
         this.toastr.info("There's no stashed commits", "No Stash");
       } else {
@@ -88,10 +89,10 @@ export class CommitChangeService {
         );
       }
     });
-    this.electron.onCD("Repo-Stashed", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.STASHED, (event: any, arg: any) => {
       this.stashed.emit();
     });
-    this.electron.onCD("Repo-Popped", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.POPPED, (event: any, arg: any) => {
       this.popped.emit();
     });
     cmtSelect.selectionChange.subscribe((newSelect) => {
@@ -135,30 +136,30 @@ export class CommitChangeService {
   }
 
   init() {}
-  stage(paths): void {
-    this.electron.ipcRenderer.send("Repo-Stage", { paths: paths });
+  stage(paths: any): void {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.STAGE, { paths: paths });
   }
-  stageLines(path, lines) {
-    this.electron.ipcRenderer.send("Repo-StageLines", {
+  stageLines(path: any, lines: any) {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.STAGE_LINES, {
       path: path,
       lines: lines,
     });
   }
-  unstage(paths): void {
-    this.electron.ipcRenderer.send("Repo-Unstage", { paths: paths });
+  unstage(paths: any): void {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.UNSTAGE, { paths: paths });
   }
-  unstageLines(path, lines) {
-    this.electron.ipcRenderer.send("Repo-UnstageLines", {
+  unstageLines(path: any, lines: any) {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.UNSTAGE_LINES, {
       path: path,
       lines: lines,
     });
   }
-  commit(paths): void {
+  commit(paths: any): void {
     if (this.checkProfileExists()) {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send("Repo-Commit", {
+      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.COMMIT, {
         name: name,
         email: email,
         message: message,
@@ -171,7 +172,7 @@ export class CommitChangeService {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send("Repo-CommitStaged", {
+      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.COMMIT_STAGED, {
         name: name,
         email: email,
         message: message,
@@ -183,24 +184,24 @@ export class CommitChangeService {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send("Repo-Stash", {
+      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.STASH, {
         name: name,
         email: email,
         message: message,
       });
     }
   }
-  pop(index = -1): void {
-    this.electron.ipcRenderer.send("Repo-Pop", { index: index });
+  pop(index: any = -1): void {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.POP, { index: index });
   }
-  apply(index = -1): void {
-    this.electron.ipcRenderer.send("Repo-Apply", { index: index });
+  apply(index: any = -1): void {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.APPLY, { index: index });
   }
-  deleteStash(index): void {
-    this.electron.ipcRenderer.send("Repo-DeleteStash", { index: index });
+  deleteStash(index: any): void {
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DELETE_STASH, { index: index });
   }
   discardAll(): void {
-    this.electron.ipcRenderer.send("Repo-DiscardAll", {});
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DISCARD_ALL, {});
   }
   tryCommit(): void {
     if (

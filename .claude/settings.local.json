@@ -24,7 +24,8 @@
       "Bash(NODE_ENV=production npm start)",
       "Bash(npm run:*)",
       "WebSearch",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": []

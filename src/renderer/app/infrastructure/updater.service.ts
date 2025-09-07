@@ -2,6 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { ElectronService } from './electron.service';
 import { ToastrService } from 'ngx-toastr';
 import { StatusBarService } from './status-bar.service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class UpdaterService {
@@ -36,12 +37,12 @@ export class UpdaterService {
         }, 10 * 1000);
       }
     });
-    electron.onCD('Updater-Checking', (event, arg) => {
+    electron.onCD(IPC_EVENTS.UPDATER.CHECKING, (event, arg) => {
       this.updateChecking.emit(arg.inProgress);
     });
   }
   checkUpdate() {
-    this.electron.ipcRenderer.send('Updater-Check');
+    this.electron.ipcRenderer.send(IPC_EVENTS.UPDATER.CHECK);
   }
   installUpdate() {
     this.toastr.info("Downloading update...", "Installing Update");

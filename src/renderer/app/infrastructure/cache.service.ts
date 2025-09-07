@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ElectronService } from './electron.service';
 import { StatusBarService } from './status-bar.service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class CacheService {
@@ -9,10 +10,10 @@ export class CacheService {
     private electron: ElectronService,
     private statusBar: StatusBarService
   ) {
-    this.electron.onCD('Cache-AutoCleanBegin', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.CACHE.AUTO_CLEAN_BEGIN, (event, arg) => {
       this.statusBar.enableLoading('Starting auto cache cleanup');
     });
-    this.electron.onCD('Cache-AutoCleanSuccess', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.CACHE.AUTO_CLEAN_SUCCESS, (event, arg) => {
       this.statusBar.flash('success', "Auto cache cleanup successful");
     });
   }

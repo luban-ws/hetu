@@ -7,6 +7,7 @@ import { PromptInjectorService } from '../../infrastructure/prompt-injector.serv
 import { TagPromptComponent } from '../tag-prompt/tag-prompt.component';
 import { ToastrService } from 'ngx-toastr';
 import { CredentialsService } from './credentials.service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class CommitSelectionService {
@@ -55,13 +56,13 @@ export class CommitSelectionService {
     private toastr: ToastrService,
     private cred: CredentialsService
   ) {
-    this.electron.onCD('Repo-CommitDetailRetrieved', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.COMMIT_DETAIL_RETRIEVED, (event, arg) => {
       this.selectedCommit = arg.commit;
 
       this.selectingChange.emit(false);
       this.selectionChange.emit(this.selectedCommit);
     });
-    this.electron.onCD('Repo-FileStatusRetrieved', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.FILE_STATUS_RETRIEVED, (event, arg) => {
       this._wipDetail.stagedSummary = arg.stagedSummary;
       this._wipDetail.unstagedSummary = arg.unstagedSummary;
       this._wipDetail.staged = arg.staged;
@@ -71,32 +72,32 @@ export class CommitSelectionService {
         this.selectionChange.emit(this.selectedCommit);
       }
     });
-    this.electron.onCD('Repo-FileDetailRetrieved', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.FILE_DETAIL_RETRIEVED, (event, arg) => {
       this._fileDetail = arg;
       this.fileDetailChanged.emit(this._fileDetail);
     });
-    this.electron.onCD('Repo-BranchDeleted', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.BRANCH_DELETED, (event, arg) => {
       if (arg.upstream) {
         this.toastr.info("Local branch deleted. Click here to delete the upstream branch", "Upstream Branch Found").onTap.subscribe(() => {
           this.deleteRemoteBranch(arg.upstream);
         });
       }
     });
-    this.electron.onCD('Repo-BranchDeleteFailed', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.BRANCH_DELETE_FAILED, (event, arg) => {
       if (arg.detail === 'IS_CURRENT_BRANCH') {
         this.toastr.error("You are trying to delete the current branch, please checkout another branch before deleting", "Current Branch");
       }
     });
-    this.electron.onCD('Repo-LiveUpdateFileNotFound', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.LIVE_UPDATE_FILE_NOT_FOUND, (event, arg) => {
       this._selectedFile = "";
       this.selectedFileChange.emit(this._selectedFile);
     });
-    this.electron.onCD('Repo-Closed', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.CLOSED, (event, arg) => {
       this.selectedCommit = null;
       this.selectionChange.emit(this.selectedCommit);
     });
 
-    this.electron.onCD('Repo-OpenSuccessful', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.OPEN_SUCCESSFUL, (event, arg) => {
       this.selectedCommit = null;
       this.selectionChange.emit(this.selectedCommit);
     });
@@ -109,12 +110,12 @@ export class CommitSelectionService {
     this._selectedFile = file;
     this.selectedFileChange.emit(file);
     this.gettingFileDetail.emit();
-    this.electron.ipcRenderer.send('Repo-GetFileDetail', { file: file, commit: sha, fullFile: fullFile });
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.GET_FILE_DETAIL, { file: file, commit: sha, fullFile: fullFile });
     this.subscribeLiveFileUpdate(file, sha, fullFile);
   }
   subscribeLiveFileUpdate(file, commit, fullFile) {
     this.unsubscribeFileUpdate();
-    this._currentUpdateSubscription = this.electron.ipcRenderer.sendSync('Repo-SubscribeFileUpdate', {file: file, commit: commit, fullFile: fullFile});
+    this._currentUpdateSubscription = this.electron.ipcRenderer.sendSync(IPC_EVENTS.REPO.SUBSCRIBE_FILE_UPDATE, {file: file, commit: commit, fullFile: fullFile});
   }
   select(commit) {
     if (commit && (!this.selectedCommit || commit !== this.selectedCommit.sha)) {
@@ -123,7 +124,7 @@ export class CommitSelectionService {
         this.selectionChange.emit(this.selectedCommit);
       } else {
         this.selectingChange.emit(true);
-        this.electron.ipcRenderer.send('Repo-GetCommit', { commit: commit });
+        this.electron.ipcRenderer.send(IPC_EVENTS.REPO.GET_COMMIT, { commit: commit });
       }
     } else if (!commit || (this.selectedCommit && commit === this.selectedCommit.sha)) {
       this.selectedCommit = null;
@@ -134,34 +135,34 @@ export class CommitSelectionService {
     if (!sha) {
       sha = this.selectedCommit.sha;
     }
-    this.electron.ipcRenderer.send('Repo-OpenExternalFile', { file: file, commit: sha });
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.OPEN_EXTERNAL_FILE, { file: file, commit: sha });
   }
   reset(commit, mode): void {
     if (mode === 'hard') {
-      this.electron.ipcRenderer.send('Repo-ResetHard', { commit: commit });
+      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.RESET_HARD, { commit: commit });
     } else if (mode === 'soft') {
-      this.electron.ipcRenderer.send('Repo-ResetSoft', { commit: commit });
+      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.RESET_SOFT, { commit: commit });
     }
   }
   createTag(commit): void {
     let compt = this.promptInj.injectComponent(TagPromptComponent);
     compt.sha = commit;
     compt.toCreate.subscribe(info => {
-      this.electron.ipcRenderer.send('Repo-CreateTag', { targetCommit: info.sha, name: info.name });
+      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.CREATE_TAG, { targetCommit: info.sha, name: info.name });
     });
   }
   deleteTag(name): void {
-    this.electron.ipcRenderer.send('Repo-DeleteTag', { name: name });
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DELETE_TAG, { name: name });
   }
   deleteBranch(name): void {
-    this.electron.ipcRenderer.send('Repo-DeleteBranch', {name: name});
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DELETE_BRANCH, {name: name});
   }
   deleteRemoteBranch(name): void {
     let username = this.cred.username;
     let password = this.cred.password;
-    this.electron.ipcRenderer.send('Repo-DeleteBranch', {name: name, username: username, password: password});
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DELETE_BRANCH, {name: name, username: username, password: password});
   }
   unsubscribeFileUpdate(): void {
-    this.electron.ipcRenderer.send('Repo-UnsubscribeFileUpdate', {id: this._currentUpdateSubscription});
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.UNSUBSCRIBE_FILE_UPDATE, {id: this._currentUpdateSubscription});
   }
 }

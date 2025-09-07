@@ -1,14 +1,17 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { ToastrService } from 'ngx-toastr';
-import { LoadingService } from '../../infrastructure/loading-service.service';
+import { Injectable, Output, EventEmitter } from "@angular/core";
+import { ElectronService } from "../../infrastructure/electron.service";
+import { ToastrService } from "ngx-toastr";
+import { LoadingService } from "../../infrastructure/loading-service.service";
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class AppveyorCiService {
-
   @Output() buildsUpdated = new EventEmitter<any>();
   @Output() enabledChanged = new EventEmitter<boolean>();
-  @Output() logRetrieved = new EventEmitter<{build: string, output: string}>();
+  @Output() logRetrieved = new EventEmitter<{
+    build: string;
+    output: string;
+  }>();
 
   buildResults;
   enabled;
@@ -20,29 +23,37 @@ export class AppveyorCiService {
     private toastr: ToastrService,
     private loading: LoadingService
   ) {
-    electron.onCD('Settings-EffectiveUpdated', (event, arg) => {
+    electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event, arg) => {
       this.buildResults = null;
-      if (!arg['ci-appveyor']) {
+      if (!arg || !arg["ci-appveyor"]) {
         this.enabled = false;
         this.account = "";
         this.project = "";
       } else {
         this.buildResults = {};
-        this.project = arg['ci-appveyor-project'];
-        this.account = arg['ci-appveyor-account'];
+        this.project = arg["ci-appveyor-project"] || "";
+        this.account = arg["ci-appveyor-account"] || "";
         this.enabled = true;
       }
       this.enabledChanged.emit(this.enabled);
-      this.repoID = arg.currentRepo.id;
+      if (arg && arg.currentRepo && arg.currentRepo.id) {
+        this.repoID = arg.currentRepo.id;
+      }
     });
-    electron.onCD('CI-BuildsRetrieved', (event, arg) => {
+    electron.onCD(IPC_EVENTS.CI.BUILDS_RETRIEVED, (event, arg) => {
       if (this.enabled) {
         let updated = {};
-        arg.data.forEach(b => {
-          if (this.buildResults[b.commit] && this.buildResults[b.commit].status !== b.status) {
+        arg.data.forEach((b) => {
+          if (
+            this.buildResults[b.commit] &&
+            this.buildResults[b.commit].status !== b.status
+          ) {
             this.buildResults[b.commit] = b;
             updated[b.commit] = this.buildResults[b.commit];
-          } else if (!this.buildResults[b.commit] && arg.service === 'AppVeyor') {
+          } else if (
+            !this.buildResults[b.commit] &&
+            arg.service === "AppVeyor"
+          ) {
             this.buildResults[b.commit] = b;
             updated[b.commit] = this.buildResults[b.commit];
           }
@@ -50,42 +61,54 @@ export class AppveyorCiService {
         this.buildsUpdated.emit(updated);
       }
     });
-    electron.onCD('CI-AppVeyorLogNotFound', (event, arg) => {
-      this.logRetrieved.emit({build: arg.version, output: "No output"});
+    electron.onCD(IPC_EVENTS.CI.APPVEYOR.LOG_NOT_FOUND, (event, arg) => {
+      this.logRetrieved.emit({ build: arg.version, output: "No output" });
     });
-    electron.onCD('CI-AppVeyorLogRetrieved', (event, arg) => {
-      this.logRetrieved.emit({build: arg.version, output: arg.result});
+    electron.onCD(IPC_EVENTS.CI.APPVEYOR.LOG_RETRIEVED, (event, arg) => {
+      this.logRetrieved.emit({ build: arg.version, output: arg.result });
     });
-    electron.onCD('CI-AppVeyorRebuilded', (event, arg) => {
-      this.toastr.success('Rebuild Scheduled ...');
+    electron.onCD(IPC_EVENTS.CI.APPVEYOR.REBUILDED, (event, arg) => {
+      this.toastr.success("Rebuild Scheduled ...");
       this.loading.disableLoading();
     });
-    electron.onCD('CI-AppVeyorRebuildFailed', (event, arg) => {
-      this.toastr.error('Rebuild Failed. Please try again later');
+    electron.onCD(IPC_EVENTS.CI.APPVEYOR.REBUILD_FAILED, (event, arg) => {
+      this.toastr.error("Rebuild Failed. Please try again later");
       this.loading.disableLoading();
     });
   }
 
-  init() {
-
-  }
+  init() {}
 
   openAppveyor(commit) {
-    if (this.buildResults && this.buildResults[commit] && this.account && this.project) {
+    if (
+      this.buildResults &&
+      this.buildResults[commit] &&
+      this.account &&
+      this.project
+    ) {
       let url = `https://ci.appveyor.com/project/${this.account}/${this.project}/build/${this.buildResults[commit].version}`;
-      this.electron.ipcRenderer.send('Shell-Open', {url: url});
+      this.electron.ipcRenderer.send(IPC_EVENTS.SHELL.OPEN, { url: url });
     }
   }
 
   getBuildLog(commit) {
-    if (this.buildResults && this.buildResults[commit] && this.account && this.project) {
-      this.electron.ipcRenderer.send('CI-AppVeyorGetLog', {version: this.buildResults[commit].version});
+    if (
+      this.buildResults &&
+      this.buildResults[commit] &&
+      this.account &&
+      this.project
+    ) {
+      this.electron.ipcRenderer.send(IPC_EVENTS.CI.APPVEYOR.GET_LOG, {
+        version: this.buildResults[commit].version,
+      });
     }
   }
 
   rebuildAppveyor(commit) {
-    this.loading.enableLoading('Rebuilding ...');
-    this.electron.ipcRenderer.send('CI-AppVeyorRebuild', {branch: this.buildResults[commit].branch, commit: commit});
+    this.loading.enableLoading("Rebuilding ...");
+    this.electron.ipcRenderer.send(IPC_EVENTS.CI.APPVEYOR.REBUILD, {
+      branch: this.buildResults[commit].branch,
+      commit: commit,
+    });
   }
-
 }

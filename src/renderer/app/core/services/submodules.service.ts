@@ -1,5 +1,6 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { ElectronService } from '../../infrastructure/electron.service';
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class SubmodulesService {
@@ -13,11 +14,11 @@ export class SubmodulesService {
   constructor(
     private electron: ElectronService
   ) {
-    this.electron.onCD('Repo-SubmoduleNamesRetrieved', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.SUBMODULE_NAMES_RETRIEVED, (event, arg) => {
       this.submodules = arg.submodules;
       this.submoduleChanged.emit(this.submodules);
     });
-    this.electron.onCD('Repo-SubmoduleDetailsRetrieved', (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.REPO.SUBMODULE_DETAILS_RETRIEVED, (event, arg) => {
       this.submoduleDetails = arg.result;
       this.submoduleDetailChanged.emit(this.submoduleDetails);
     });
@@ -29,6 +30,6 @@ export class SubmodulesService {
   }
 
   getSubmoduleDetails(name) {
-    this.electron.ipcRenderer.send('Repo-GetSubmoduleDetails', {name: name});
+    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.GET_SUBMODULE_DETAILS, {name: name});
   }
 }

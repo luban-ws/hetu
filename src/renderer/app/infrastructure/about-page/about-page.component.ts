@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ElectronService } from "../electron.service";
+import { IPC_EVENTS } from "@common/ipc-events";
 
 @Component({
   selector: "app-about-page",
@@ -13,12 +14,12 @@ export class AboutPageComponent implements OnInit {
   ngOnInit() {}
 
   goToRepo() {
-    this.electron.ipcRenderer.send("Shell-Open", {
-      url: "https://github.com/Yamazaki93/explorasa-git",
+    this.electron.ipcRenderer.send(IPC_EVENTS.SHELL.OPEN, {
+      url: "https://github.com/systembugtj/explorasa-git",
     });
   }
   goToBMC() {
-    this.electron.ipcRenderer.send("Shell-Open", {
+    this.electron.ipcRenderer.send(IPC_EVENTS.SHELL.OPEN, {
       url: "https://www.buymeacoffee.com/mjCsGWDTS",
     });
   }

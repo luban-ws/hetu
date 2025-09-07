@@ -1,6 +1,7 @@
 import { Injectable, EventEmitter, Output } from "@angular/core";
 import { HotkeysService } from "@ngneat/hotkeys";
 import { ElectronService } from "../../infrastructure/electron.service";
+import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
 export class LayoutService {
@@ -65,9 +66,11 @@ export class LayoutService {
         event.preventDefault();
       },
     });
-    this.electron.onCD("Settings-EffectiveUpdated", (event, arg) => {
+    this.electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
       this.tooltipEnabled =
-        arg["gen-tooltip"] === "" ? true : Boolean(arg["gen-tooltip"]);
+        arg && arg["gen-tooltip"] === ""
+          ? true
+          : Boolean(arg && arg["gen-tooltip"]);
     });
   }
 }

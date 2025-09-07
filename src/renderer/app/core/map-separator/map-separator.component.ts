@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Commit } from '../prototypes/commit';
 import { Node } from '../d3/models/node';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
   standalone: false,

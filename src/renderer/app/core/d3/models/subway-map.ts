@@ -30,6 +30,9 @@ export class SubwayMap {
     }
 
     scrollTo(commit: string) {
+        if (!commit) {
+            return;
+        }
         let node = document.getElementById(`commit-info-${commit}`);
         if (node) {
             node.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});

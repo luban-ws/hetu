@@ -2,6 +2,10 @@ import { ipcMain, dialog } from "electron";
 import helper from "./repo-helpers.js";
 import { requireArgParams } from "../infrastructure/handler-helper.js";
 import { IPC_EVENTS  } from '@common/ipc-events';
+import { getLogger } from "@common/logger";
+import { safeEventSend } from "../infrastructure/ipc-wrapper.js";
+
+const logger = getLogger("repo-command-handler");
 let repoService = null;
 let settings = null;
 let secure = null;
@@ -106,7 +110,34 @@ function getCommit(event, arg) {
   repoService
     .getCommitDetails(arg.commit)
     .then((result) => {
-      event.sender.send(IPC_EVENTS.REPO.COMMIT_DETAIL_RETRIEVED, { commit: result });
+      // Ensure commit details are serializable
+      const serializableCommit = {
+        sha: result.sha || '',
+        author: result.author || '',
+        email: result.email || '',
+        parents: Array.isArray(result.parents) ? result.parents : [],
+        message: result.message || '',
+        date: result.date ? new Date(result.date) : new Date(),
+        ci: result.ci || '',
+        virtual: Boolean(result.virtual),
+        isStash: Boolean(result.isStash),
+        stashIndex: typeof result.stashIndex === 'number' ? result.stashIndex : -1,
+        // Add any additional commit detail fields if they exist
+        files: Array.isArray(result.files) ? result.files.map(file => ({
+          path: file.path || '',
+          isModified: Boolean(file.isModified),
+          isDeleted: Boolean(file.isDeleted),
+          isAdded: Boolean(file.isAdded),
+          isRenamed: Boolean(file.isRenamed),
+        })) : [],
+        fileSummary: result.fileSummary ? {
+          added: Number(result.fileSummary.added) || 0,
+          deleted: Number(result.fileSummary.deleted) || 0,
+          modified: Number(result.fileSummary.modified) || 0,
+          renamed: Number(result.fileSummary.renamed) || 0,
+        } : { added: 0, deleted: 0, modified: 0, renamed: 0 }
+      };
+      safeEventSend(event, IPC_EVENTS.REPO.COMMIT_DETAIL_RETRIEVED, { commit: serializableCommit });
     })
     .catch((res) => {
       operationFailed(IPC_EVENTS.REPO.FAILED_GET_COMMIT_DETAIL, event, res);
@@ -120,10 +151,23 @@ function openRepo(event, arg) {
       getStoredCredentials(event);
     })
     .catch(function (err) {
-      event.sender.send(IPC_EVENTS.REPO.OPEN_FAILED, {
-        error: "OPEN_ERROR",
-        detail_message: err,
-      });
+      // Check if error is "Not a git repository"
+      const errorMessage = err.message || err.toString();
+      if (errorMessage.includes('Not a git repository')) {
+        // Ask user if they want to initialize the directory as a git repository
+        event.sender.send(IPC_EVENTS.REPO.OPEN_FAILED, {
+          error: "NOT_GIT_REPOSITORY",
+          detail_message: `"${arg.workingDir}" is not a git repository. Would you like to initialize it as a git repository?`,
+          workingDir: arg.workingDir,
+          canInitialize: true
+        });
+      } else {
+        // Regular error handling
+        event.sender.send(IPC_EVENTS.REPO.OPEN_FAILED, {
+          error: "OPEN_ERROR",
+          detail_message: err,
+        });
+      }
     });
 }
 
@@ -190,7 +234,7 @@ async function openBrowseFolderDialog(event, arg) {
       event.sender.send(IPC_EVENTS.REPO.FOLDER_SELECTED, { path: result.filePaths[0] });
     }
   } catch (error) {
-    console.error('Error opening browse dialog:', error);
+    logger.error('Error opening browse dialog:', error);
   }
 }
 
@@ -205,7 +249,7 @@ async function openInitBrowseDialog(event, arg) {
       event.sender.send(IPC_EVENTS.REPO.INIT_PATH_SELECTED, { path: result.filePaths[0] });
     }
   } catch (error) {
-    console.error('Error opening init browse dialog:', error);
+    logger.error('Error opening init browse dialog:', error);
   }
 }
 

@@ -1,9 +1,8 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit, AfterViewChecked, OnChanges, HostBinding, ChangeDetectorRef, QueryList, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewInit, HostBinding, ChangeDetectorRef, QueryList, OnDestroy, ElementRef } from '@angular/core';
 import { SubwayMap } from '../../../d3/models/subway-map';
 import { D3Service } from '../../../d3/d3.service';
 import { Node } from '../../../d3/models/node';
 import { Commit } from '../../../prototypes/commit';
-import { CiIntegrationService } from '../../../services/ci-integration.service';
 import { NodeVisualComponent } from '../../shared/node-visual/node-visual.component';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -16,14 +15,17 @@ import { Subscription } from 'rxjs/Subscription';
 export class SubwayMapVisualComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
-  @Input('commits') set commits(cmts) {
+  @Input('commits') set commits(cmts: Commit[]) {
     let that = this;
     if (!that._commits) {
       that._commits = cmts;
       that.graph = that.d3Service.getSubwayMap(that._commits);
-      this.graph.initGraph(this.svg);
       that.d3Service.getCIStatus();
       that._updateWidth();
+      // Only init graph if svg is available
+      if (this.svg) {
+        this.graph.initGraph(this.svg);
+      }
       that.cdr.detectChanges();
     } else {
       setTimeout(() => {
@@ -31,22 +33,24 @@ export class SubwayMapVisualComponent implements OnInit, AfterViewInit, OnDestro
         that._commits = cmts;
         that._updateHeight();
         that._updateWidth();
-        that.graph.initGraph(that.svg);
+        // Only init graph if svg is available
+        if (that.svg) {
+          that.graph.initGraph(that.svg);
+        }
         that.cdr.detectChanges();
       });
     }
   }
-  @ViewChild('svg') svg;
-  @ViewChild('nodeVisual') nodeVisuals: QueryList<NodeVisualComponent>;
-  @HostBinding('style.height.px') height;
+  @ViewChild('svg') svg!: ElementRef;
+  @ViewChild('nodeVisual') nodeVisuals!: QueryList<NodeVisualComponent>;
+  @HostBinding('style.height.px') height!: number;
   @HostBinding('style.width.px') width = 500;
-  private _commits: Commit[];
+  private _commits!: Commit[];
   private subs: Subscription;
-  graph: SubwayMap;
+  graph!: SubwayMap;
 
   constructor(
     private d3Service: D3Service,
-    private ciService: CiIntegrationService,
     private cdr: ChangeDetectorRef,
   ) {
     this.subs = this.d3Service.mapChange.subscribe(() => {
@@ -60,6 +64,10 @@ export class SubwayMapVisualComponent implements OnInit, AfterViewInit, OnDestro
     // this._updateHeight();
   }
   ngAfterViewInit(): void {
+    // Initialize graph if it exists and hasn't been initialized yet
+    if (this.graph && this.svg && !this.graph.initialized) {
+      this.graph.initGraph(this.svg);
+    }
     this.cdr.detach();
   }
   ngOnDestroy() {
@@ -67,9 +75,13 @@ export class SubwayMapVisualComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   private _updateHeight() {
-    this.height = Math.max(this._commits.length * Node.height + 10, 55);
+    if (this._commits) {
+      this.height = Math.max(this._commits.length * Node.height + 10, 55);
+    }
   }
   private _updateWidth() {
-    this.width = Math.min(Math.max(this.graph.width * 50 + 20 + 3, 55), 600);
+    if (this.graph) {
+      this.width = Math.min(Math.max(this.graph.width * 50 + 20 + 3, 55), 600);
+    }
   }
 }

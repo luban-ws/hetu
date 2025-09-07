@@ -1,38 +1,37 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Link } from './models/link';
-import { Node } from './models/node';
-import { SubwayMap } from './models/subway-map';
-import { Commit } from '../prototypes/commit';
+import { Injectable, EventEmitter, Output } from "@angular/core";
+import { Link } from "./models/link";
+import { Node } from "./models/node";
+import { SubwayMap } from "./models/subway-map";
+import { Commit } from "../prototypes/commit";
 
-import * as d3 from 'd3';
-import { Color } from './models/color';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { CiIntegrationService } from '../services/ci-integration.service';
+import * as d3 from "d3";
+import { Color } from "./models/color";
+import { ElectronService } from "../../infrastructure/electron.service";
+import { CiIntegrationService } from "../services/ci-integration.service";
 
 @Injectable()
 export class D3Service {
-
   colors = [
-    '#058ED9',
-    '#880044',
-    '#875053',
-    '#129490',
-    '#E5A823',
-    '#0055A2',
-    '#96C5F7'];
+    "#058ED9",
+    "#880044",
+    "#875053",
+    "#129490",
+    "#E5A823",
+    "#0055A2",
+    "#96C5F7",
+  ];
   currentMap: SubwayMap = null;
   @Output() mapChange = new EventEmitter();
+  private pendingScrollTarget: string | null = null;
   private ciEnabled = false;
-  constructor(
-    private ci: CiIntegrationService,
-  ) {
-    ci.enabledChanged.subscribe(en => {
+  constructor(private ci: CiIntegrationService) {
+    ci.enabledChanged.subscribe((en) => {
       this.ciEnabled = en;
       this.getCIStatus();
     });
-    ci.buildsUpdated.subscribe(newBuilds => {
+    ci.buildsUpdated.subscribe((newBuilds) => {
       if (this.ciEnabled) {
-        Object.keys(newBuilds).map(key => {
+        Object.keys(newBuilds).map((key) => {
           let b = newBuilds[key];
           this.updateCommitStatus(b.commit, b.overall);
         });
@@ -41,13 +40,11 @@ export class D3Service {
     });
   }
 
-  init() {
-
-  }
+  init() {}
 
   getCIStatus() {
     if (this.ciEnabled) {
-      Object.keys(this.ci.buildResults).map(key => {
+      Object.keys(this.ci.buildResults).map((key) => {
         let b = this.ci.buildResults[key];
         this.updateCommitStatus(b.commit, b.overall);
       });
@@ -80,18 +77,19 @@ export class D3Service {
     }, this);
     // edge creation
     commits.forEach((c) => {
-      if (c.parents.length === 0) {
-        let infinityNode = new Node('infty-' + c.sha);
+      const parents = c.parents || [];
+      if (parents.length === 0) {
+        let infinityNode = new Node("infty-" + c.sha);
         infinityNode.x = nodeDict[c.sha].x;
         infinityNode.y = _infinityY;
         let newLink = new Link(nodeDict[c.sha], infinityNode);
         newLink.color = nodeDict[c.sha].color;
         links.push(newLink);
       } else {
-        c.parents.forEach((p) => {
+        parents.forEach((p) => {
           if (nodeDict[p]) {
             let newLink = new Link(nodeDict[c.sha], nodeDict[p]);
-            if (c.parents.length > 1) {
+            if (parents.length > 1) {
               newLink.color = nodeDict[p].color;
               nodeDict[c.sha].secondColor = nodeDict[p].color;
               newLink.merge = true;
@@ -106,6 +104,13 @@ export class D3Service {
     });
     this.currentMap = new SubwayMap(nodes, links, nodeDict);
     this.updateMapLayout(this.currentMap);
+
+    // Execute any pending scroll now that map is ready
+    if (this.pendingScrollTarget) {
+      this.currentMap.scrollTo(this.pendingScrollTarget);
+      this.pendingScrollTarget = null;
+    }
+
     this.mapChange.emit();
     return this.currentMap;
   }
@@ -119,15 +124,18 @@ export class D3Service {
     if (this.currentMap) {
       // remove not exist commits
       let removed = [];
-      let newKeys = newCommits.map(c => c.sha);
+      let newKeys = newCommits.map((c) => c.sha);
       let oldKeys = Object.keys(nodeDict);
-      oldKeys.forEach(k => {
+      oldKeys.forEach((k) => {
         if (newKeys.indexOf(k) === -1) {
           removed.push(k);
         }
       });
-      removed.forEach(k => {
-        this.currentMap.nodes.splice(this.currentMap.nodes.indexOf(nodeDict[k]), 1);
+      removed.forEach((k) => {
+        this.currentMap.nodes.splice(
+          this.currentMap.nodes.indexOf(nodeDict[k]),
+          1
+        );
         delete nodeDict[k];
       });
       // add in new commits in correct place
@@ -156,7 +164,7 @@ export class D3Service {
         j += 1;
         i += 1;
       }
-      this.currentMap.nodes.map(n => {
+      this.currentMap.nodes.map((n) => {
         n.processed = false;
       });
       this.currentMap.links = [];
@@ -164,18 +172,19 @@ export class D3Service {
       let _infinityY = Node.height * (nodes.length + 1);
       nodes.forEach((n) => {
         let c = n.commit;
-        if (c.parents.length === 0) {
-          let infinityNode = new Node('infty-' + c.sha);
+        const parents = c.parents || [];
+        if (parents.length === 0) {
+          let infinityNode = new Node("infty-" + c.sha);
           infinityNode.x = nodeDict[c.sha].x;
           infinityNode.y = _infinityY;
           let newLink = new Link(nodeDict[c.sha], infinityNode);
           newLink.color = nodeDict[c.sha].color;
           this.currentMap.links.push(newLink);
         } else {
-          c.parents.forEach((p) => {
+          parents.forEach((p) => {
             if (nodeDict[p]) {
               let newLink = new Link(nodeDict[c.sha], nodeDict[p]);
-              if (c.parents.length > 1) {
+              if (parents.length > 1) {
                 newLink.color = nodeDict[p].color;
                 nodeDict[c.sha].secondColor = nodeDict[p].color;
                 newLink.merge = true;
@@ -189,6 +198,13 @@ export class D3Service {
         }
       });
       this.updateMapLayout(this.currentMap);
+
+      // Execute any pending scroll now that map is ready
+      if (this.pendingScrollTarget) {
+        this.currentMap.scrollTo(this.pendingScrollTarget);
+        this.pendingScrollTarget = null;
+      }
+
       this.getCIStatus();
       this.mapChange.emit();
       return this.currentMap;
@@ -209,7 +225,7 @@ export class D3Service {
     let branchLines: BranchLine[] = [];
     function placeNodeInNewOrClosed(node: Node): BranchLine {
       let addedToBl = null;
-      branchLines.forEach(bl => {
+      branchLines.forEach((bl) => {
         if (!node.processed) {
           // now a bl can be closed if all the commits in there is after this node
           // let allAfter = bl.nodes.every(bln => nodes.indexOf(bln) > nodes.indexOf(node));
@@ -222,9 +238,12 @@ export class D3Service {
           //     return (!bln.commit.parents.every(parent => nodes.indexOf(nodeDict[parent]) > nodes.indexOf(node)) && nodes.indexOf(bln) > nodes.indexOf(node));
           //   }
           // });
-          let lastCross = !bl.nodes[bl.nodes.length - 1].commit.parents.every(parent => {
-            return nodes.indexOf(nodeDict[parent]) > nodes.indexOf(node);
-          });
+          const lastNodeParentsForCross = bl.nodes.length > 0 ? (bl.nodes[bl.nodes.length - 1].commit.parents || []) : [];
+          let lastCross = !lastNodeParentsForCross.every(
+            (parent) => {
+              return nodes.indexOf(nodeDict[parent]) > nodes.indexOf(node);
+            }
+          );
           if (lastCross) {
             // bl.open = false;
           }
@@ -247,9 +266,12 @@ export class D3Service {
     }
     function placeNodeInExisting(node: Node): BranchLine {
       let addedToBl = null;
-      branchLines.forEach(bl => {
-        if (!node.processed) {
-          if (bl.nodes[bl.nodes.length - 1].commit.parents[0] === node.commit.sha) {
+      branchLines.forEach((bl) => {
+        if (!node.processed && bl.nodes.length > 0) {
+          const lastNodeParents = bl.nodes[bl.nodes.length - 1].commit.parents || [];
+          if (
+            lastNodeParents.length > 0 && lastNodeParents[0] === node.commit.sha
+          ) {
             // else if a bl's last node is it's parent
             // it's impossible for anything other than the last one to be the parent
             // because that whould have been a merge which is processed in special case
@@ -262,32 +284,37 @@ export class D3Service {
       return addedToBl;
     }
     function processParents(n: Node, bl: BranchLine) {
-      // pecial case for it's parents, always put the first with itself
-      let parent0 = nodeDict[n.commit.parents[0]];
+      const parents = n.commit.parents || [];
+      if (parents.length === 0) return;
+      
+      // Special case for its first parent, always put it with itself
+      let parent0 = nodeDict[parents[0]];
       let processGrandparent0 = false;
       if (parent0 && !parent0.processed) {
         bl.nodes.push(parent0);
-        if (nodeDict[n.commit.parents[0]].commit.parents.length > 1) {
+        const grandParents = parent0.commit.parents || [];
+        if (grandParents.length > 1) {
           processGrandparent0 = true;
         }
-        nodeDict[n.commit.parents[0]].processed = true;
+        parent0.processed = true;
       }
       // if there's a second parent, try to place that too
-      let parent1 = nodeDict[n.commit.parents[1]];
+      let parent1 = parents.length > 1 ? nodeDict[parents[1]] : null;
       let newbl;
       let processGrandparent = false;
       if (parent1 && !parent1.processed) {
         if (!placeNodeInExisting(parent1)) {
-          if (parent1.commit.parents.length > 1) {
+          const grandParents1 = parent1.commit.parents || [];
+          if (grandParents1.length > 1) {
             processGrandparent = true;
           }
           newbl = placeNodeInNewOrClosed(parent1);
         }
       }
-      if (processGrandparent0) {
-        processParents(nodeDict[n.commit.parents[0]], bl);
+      if (processGrandparent0 && parents.length > 0 && nodeDict[parents[0]]) {
+        processParents(nodeDict[parents[0]], bl);
       }
-      if (processGrandparent) {
+      if (processGrandparent && parent1) {
         processParents(parent1, newbl);
       }
     }
@@ -300,21 +327,26 @@ export class D3Service {
         // see if I can add to an existing branch
         addedToBl = placeNodeInExisting(n);
         if (!addedToBl) {
-          addedToBl = placeNodeInNewOrClosed(n);   // this method must return a bl
+          addedToBl = placeNodeInNewOrClosed(n); // this method must return a bl
         }
         processParents(n, addedToBl);
       }
       // check for closed branch line, make it available for adding
-      branchLines.forEach(bl => {
-        if (bl.nodes[bl.nodes.length - 1].commit.parents.indexOf(currentSha) !== -1) {
-          bl.open = false;
+      branchLines.forEach((bl) => {
+        if (bl.nodes.length > 0) {
+          const lastNodeParentsForClosing = bl.nodes[bl.nodes.length - 1].commit.parents || [];
+          if (
+            lastNodeParentsForClosing.indexOf(currentSha) !== -1
+          ) {
+            bl.open = false;
+          }
         }
       });
     });
     // process all branch lines
     let that = this;
     branchLines.forEach((bl, i) => {
-      bl.nodes.forEach(n => {
+      bl.nodes.forEach((n) => {
         n.x = _start + i * _offset;
         n.color.setHex(that.colors[i % that.colors.length]);
         n.x_order = i;
@@ -324,7 +356,12 @@ export class D3Service {
   }
 
   scrollTo(commit: string) {
-    this.currentMap.scrollTo(commit);
+    if (this.currentMap) {
+      this.currentMap.scrollTo(commit);
+    } else {
+      // Queue the scroll until map is ready
+      this.pendingScrollTarget = commit;
+    }
   }
 
   updateCommitStatus(commit: string, status: string) {
@@ -334,24 +371,29 @@ export class D3Service {
   }
   clearCommitsCIStatus() {
     if (this.currentMap) {
-      this.currentMap.nodes.map(n => {
-        n.commit.ci = '';
+      this.currentMap.nodes.map((n) => {
+        n.commit.ci = "";
       });
     }
   }
 
-  getAuthor(author) {
-    let firstChars = author.split(' ').map(n => n.length > 0 ? n[0].toUpperCase() : "");
+  getAuthor(author: string) {
+    if (!author) return "";
+    let firstChars = author
+      .split(" ")
+      .map((n) => (n.length > 0 ? n[0].toUpperCase() : ""));
     let name = "";
-    firstChars.forEach(f => {
-      if (f > 'A' && f < 'Z' && name.length < 2) {
+    firstChars.forEach((f) => {
+      if (f > "A" && f < "Z" && name.length < 2) {
         name += f;
       }
     });
     return name;
   }
 
-  private hashCode(str) { // java String#hashCode
+  private hashCode(str: string) {
+    // java String#hashCode
+    if (!str) return 0;
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       // tslint:disable-next-line:no-bitwise
@@ -359,17 +401,15 @@ export class D3Service {
     }
     return hash;
   }
-  private intToRGB(i) {
+  private intToRGB(i: number) {
     // tslint:disable-next-line:no-bitwise
-    let c = (i & 0x00FFFFFF)
-      .toString(16)
-      .toUpperCase();
+    let c = (i & 0x00ffffff).toString(16).toUpperCase();
 
     return "00000".substring(0, 6 - c.length) + c;
   }
 
   getColorByAuthor(email: string) {
-    return `#${this.intToRGB(this.hashCode(email))}`;
+    return `#${this.intToRGB(this.hashCode(email || ''))}`;
   }
 }
 

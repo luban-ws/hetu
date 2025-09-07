@@ -24,7 +24,21 @@ function open(event, arg) {
   });
   win.webContents.once("did-finish-load", () => {
     fileWatch.getFileDetail(arg.file, arg.commit).then((result) => {
-      win.webContents.send(IPC_EVENTS.REPO.FILE_DETAIL_RETRIEVED, result);
+      // Ensure file detail result is serializable
+      const serializableResult = {
+        file: result.file || '',
+        commit: result.commit || '',
+        content: result.content || '',
+        encoding: result.encoding || 'utf8',
+        binary: Boolean(result.binary),
+        size: Number(result.size) || 0,
+        // Add any other properties that might exist
+        ...(result.diff && { diff: String(result.diff) }),
+        ...(result.patch && { patch: String(result.patch) }),
+        ...(result.additions && { additions: Number(result.additions) }),
+        ...(result.deletions && { deletions: Number(result.deletions) }),
+      };
+      win.webContents.send(IPC_EVENTS.REPO.FILE_DETAIL_RETRIEVED, serializableResult);
     });
   });
   win.loadURL(address);

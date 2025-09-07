@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { requireArgParams } from "../infrastructure/handler-helper.js";
 import { IPC_EVENTS  } from '@common/ipc-events';
+import { safeSend } from '../infrastructure/ipc-wrapper.js';
 
 let settings;
 let window;
@@ -13,7 +14,7 @@ function updateRepos(event, arg) {
       path: r.workingDir,
     };
   });
-  window.webContents.send(IPC_EVENTS.REPO.HISTORY_CHANGED, { history: repoHistory });
+  safeSend(window.webContents, IPC_EVENTS.REPO.HISTORY_CHANGED, { history: repoHistory });
 }
 
 function removeHistory(event, arg) {

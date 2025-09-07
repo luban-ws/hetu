@@ -1,0 +1,23 @@
+<div class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Initialize Git Repository</h3>
+    </div>
+    
+    <div class="modal-body">
+      <p>{{ message }}</p>
+      <div class="directory-path">
+        <strong>Directory:</strong> {{ workingDir }}
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onInitialize()">
+        Initialize Repository
+      </button>
+    </div>
+  </div>
+</div>

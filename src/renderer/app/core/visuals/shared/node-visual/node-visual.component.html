@@ -29,7 +29,7 @@
     r="7"
     class="dot"
     [style.fill]="node.secondColor.stringValue"
-    *ngIf="node.commit.parents.length > 1 && !node.commit.isStash"
+    *ngIf="node.commit.parents && node.commit.parents.length > 1 && !node.commit.isStash"
   ></svg:circle>
   <svg:rect
     *ngIf="node.commit.isStash"

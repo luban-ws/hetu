@@ -1,6 +1,5 @@
 import { defineConfig } from "electron-vite";
 import { resolve } from "path";
-import { readFileSync, existsSync } from "fs";
 import angular from "@analogjs/vite-plugin-angular";
 
 export default defineConfig({
@@ -21,36 +20,8 @@ export default defineConfig({
           entryFileNames: "index.js",
         },
       },
-      // 复制 WASM 文件到构建输出目录
       copyPublicDir: false,
-      assetsInclude: ["**/*.wasm"],
     },
-    // 添加插件来处理 WASM 文件
-    plugins: [
-      {
-        name: "copy-wasm-files",
-        generateBundle(options, bundle) {
-          // 复制 wasm-git 的 WASM 文件
-          const wasmFiles = [
-            "node_modules/wasm-git/lg2_async.wasm",
-            "node_modules/wasm-git/lg2.wasm",
-          ];
-
-          wasmFiles.forEach((wasmFile) => {
-            const wasmPath = resolve(__dirname, wasmFile);
-            if (existsSync(wasmPath)) {
-              const wasmContent = readFileSync(wasmPath);
-              const fileName = wasmFile.split("/").pop();
-              this.emitFile({
-                type: "asset",
-                fileName: `chunks/${fileName}`,
-                source: wasmContent,
-              });
-            }
-          });
-        },
-      },
-    ],
   },
   preload: {
     // 预加载脚本配置

@@ -4,7 +4,7 @@
  */
 
 import { repoState } from "./state/repo-state.js";
-import { repoOperations } from "./operations/repo-operations.js";
+import { repoOperations } from "./operations/repo-operations.ts";
 import {
   createIpcHandlers,
   registerIpcHandlers,
@@ -24,8 +24,9 @@ function init(win, settingsInstance, historyInstance, fileWatcherInstance) {
   repoState.setRepoHistory(historyInstance);
 
   // Create and register IPC handlers
-  const handlers = createIpcHandlers(repoOperations);
-  registerIpcHandlers(handlers);
+  // Temporarily disabled to avoid conflicts with legacy system
+  // const handlers = createIpcHandlers(repoOperations);
+  // registerIpcHandlers(handlers);
 }
 
 // Export main functions

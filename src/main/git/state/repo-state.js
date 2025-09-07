@@ -3,6 +3,10 @@
  * Manages repository state and lifecycle
  */
 
+import { getLogger } from "@common/logger";
+
+const logger = getLogger("repo-state");
+
 // Global state
 let Repo = null;
 let window = null;
@@ -73,7 +77,7 @@ export const repoUtils = {
       try {
         return await fn(...args);
       } catch (error) {
-        console.error(`Error in ${fn.name}:`, error);
+        logger.error(`Error in ${fn.name}:`, error);
         throw error;
       }
     },

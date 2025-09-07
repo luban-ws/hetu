@@ -21,21 +21,20 @@ import {
   cleanupGitAdapter
 } from '../git-adapter-factory.js';
 
-// Mock WasmGitAdapter
-const mockWasmGitAdapter = {
+// Mock IsomorphicGitAdapter
+const mockIsomorphicGitAdapter = {
   workingDir: '/test/repo',
-  validateRepository: vi.fn().mockResolvedValue(true),
   close: vi.fn().mockResolvedValue(undefined)
 };
 
-vi.mock('../adapters/wasm-git-adapter.js', () => ({
+vi.mock('../adapters/isomorphic-git-adapter.js', () => ({
   default: vi.fn().mockImplementation((workingDir) => ({
-    ...mockWasmGitAdapter,
+    ...mockIsomorphicGitAdapter,
     workingDir
   }))
 }));
 
-import WasmGitAdapter from '../adapters/wasm-git-adapter.js';
+import IsomorphicGitAdapter from '../adapters/isomorphic-git-adapter.js';
 
 describe('Git Adapter Factory', () => {
   beforeEach(() => {
@@ -49,7 +48,7 @@ describe('Git Adapter Factory', () => {
   describe('constants and configuration', () => {
     it('should export correct adapter types', () => {
       expect(GIT_ADAPTER_TYPES).toEqual({
-        WASM: 'wasm'
+        ISOMORPHIC: 'isomorphic'
       });
     });
 
@@ -57,34 +56,34 @@ describe('Git Adapter Factory', () => {
       configureGitAdapter({
         preferred: 'invalid',
         fallback: 'invalid',
-        wasmEnabled: false
+        isomorphicEnabled: false
       });
 
-      // Should ignore invalid config and always use WASM
-      expect(getAdapterCapabilities(GIT_ADAPTER_TYPES.WASM)).toBeDefined();
+      // Should ignore invalid config and always use Isomorphic Git
+      expect(getAdapterCapabilities(GIT_ADAPTER_TYPES.ISOMORPHIC)).toBeDefined();
     });
   });
 
   describe('createGitAdapter', () => {
-    it('should create WASM adapter by default', async () => {
+    it('should create Isomorphic Git adapter by default', async () => {
       const workingDir = '/test/repo';
       const adapter = await createGitAdapter(workingDir);
 
-      expect(WasmGitAdapter).toHaveBeenCalledWith(workingDir);
+      expect(IsomorphicGitAdapter).toHaveBeenCalledWith(workingDir);
       expect(adapter.workingDir).toBe(workingDir);
     });
 
-    it('should create WASM adapter regardless of requested type', async () => {
+    it('should create Isomorphic Git adapter regardless of requested type', async () => {
       const workingDir = '/test/repo';
       const adapter = await createGitAdapter(workingDir, 'invalid-type');
 
-      expect(WasmGitAdapter).toHaveBeenCalledWith(workingDir);
+      expect(IsomorphicGitAdapter).toHaveBeenCalledWith(workingDir);
       expect(adapter.workingDir).toBe(workingDir);
     });
 
     it('should handle adapter creation errors', async () => {
-      const error = new Error('WASM initialization failed');
-      WasmGitAdapter.mockImplementationOnce(() => {
+      const error = new Error('Isomorphic Git initialization failed');
+      IsomorphicGitAdapter.mockImplementationOnce(() => {
         throw error;
       });
 
@@ -93,36 +92,38 @@ describe('Git Adapter Factory', () => {
   });
 
   describe('testAdapterAvailability', () => {
-    it('should return true for WASM adapter when available', async () => {
-      const available = await testAdapterAvailability(GIT_ADAPTER_TYPES.WASM);
+    it('should return true for Isomorphic Git adapter when available', async () => {
+      const available = await testAdapterAvailability(GIT_ADAPTER_TYPES.ISOMORPHIC);
       expect(available).toBe(true);
     });
 
     it('should return false when adapter creation fails', async () => {
-      WasmGitAdapter.mockImplementationOnce(() => {
+      IsomorphicGitAdapter.mockImplementationOnce(() => {
         throw new Error('Not available');
       });
 
-      const available = await testAdapterAvailability(GIT_ADAPTER_TYPES.WASM);
+      const available = await testAdapterAvailability(GIT_ADAPTER_TYPES.ISOMORPHIC);
       expect(available).toBe(false);
     });
 
     it('should test with safe directory path', async () => {
-      await testAdapterAvailability(GIT_ADAPTER_TYPES.WASM);
-      expect(WasmGitAdapter).toHaveBeenCalledWith('/tmp');
+      await testAdapterAvailability(GIT_ADAPTER_TYPES.ISOMORPHIC);
+      expect(IsomorphicGitAdapter).toHaveBeenCalledWith('/tmp');
     });
   });
 
   describe('getAdapterCapabilities', () => {
-    it('should return WASM adapter capabilities', () => {
-      const capabilities = getAdapterCapabilities(GIT_ADAPTER_TYPES.WASM);
+    it('should return Isomorphic Git adapter capabilities', () => {
+      const capabilities = getAdapterCapabilities(GIT_ADAPTER_TYPES.ISOMORPHIC);
       
       expect(capabilities).toEqual({
         stash: true,
-        performance: 'high',
+        performance: 'good',
         nativeFallback: false,
         crossPlatform: true,
-        bundleSize: 'large'
+        bundleSize: 'medium',
+        pureJavaScript: true,
+        noSystemDependencies: true
       });
     });
 
@@ -139,7 +140,7 @@ describe('Git Adapter Factory', () => {
       it('should create and cache adapter for working directory', async () => {
         const adapter = await gitAdapterSingleton.initialize(workingDir);
 
-        expect(WasmGitAdapter).toHaveBeenCalledWith(workingDir);
+        expect(IsomorphicGitAdapter).toHaveBeenCalledWith(workingDir);
         expect(adapter.workingDir).toBe(workingDir);
         expect(gitAdapterSingleton.workingDir).toBe(workingDir);
       });
@@ -149,15 +150,15 @@ describe('Git Adapter Factory', () => {
         const adapter2 = await gitAdapterSingleton.initialize(workingDir);
 
         expect(adapter1).toBe(adapter2);
-        expect(WasmGitAdapter).toHaveBeenCalledOnce();
+        expect(IsomorphicGitAdapter).toHaveBeenCalledOnce();
       });
 
       it('should cleanup previous adapter when changing directory', async () => {
         await gitAdapterSingleton.initialize(workingDir);
         await gitAdapterSingleton.initialize('/different/repo');
 
-        expect(mockWasmGitAdapter.close).toHaveBeenCalledOnce();
-        expect(WasmGitAdapter).toHaveBeenCalledTimes(2);
+        expect(mockIsomorphicGitAdapter.close).toHaveBeenCalledOnce();
+        expect(IsomorphicGitAdapter).toHaveBeenCalledTimes(2);
       });
 
       it('should ignore adapter type parameter', async () => {
@@ -186,7 +187,7 @@ describe('Git Adapter Factory', () => {
         await gitAdapterSingleton.initialize(workingDir);
         await gitAdapterSingleton.cleanup();
 
-        expect(mockWasmGitAdapter.close).toHaveBeenCalledOnce();
+        expect(mockIsomorphicGitAdapter.close).toHaveBeenCalledOnce();
         expect(gitAdapterSingleton.adapter).toBe(null);
         expect(gitAdapterSingleton.workingDir).toBe(null);
       });
@@ -197,7 +198,7 @@ describe('Git Adapter Factory', () => {
 
       it('should handle adapter without close method', async () => {
         const adapterWithoutClose = { workingDir };
-        WasmGitAdapter.mockReturnValueOnce(adapterWithoutClose);
+        IsomorphicGitAdapter.mockReturnValueOnce(adapterWithoutClose);
         
         await gitAdapterSingleton.initialize(workingDir);
         await expect(gitAdapterSingleton.cleanup()).resolves.not.toThrow();
@@ -231,8 +232,8 @@ describe('Git Adapter Factory', () => {
 
   describe('error handling', () => {
     it('should handle adapter initialization errors gracefully', async () => {
-      const error = new Error('WASM failed to load');
-      WasmGitAdapter.mockImplementationOnce(() => {
+      const error = new Error('Isomorphic Git failed to load');
+      IsomorphicGitAdapter.mockImplementationOnce(() => {
         throw error;
       });
 
@@ -244,7 +245,7 @@ describe('Git Adapter Factory', () => {
         workingDir: '/test/repo',
         close: vi.fn().mockRejectedValue(new Error('Close failed'))
       };
-      WasmGitAdapter.mockReturnValueOnce(adapterWithFailingClose);
+      IsomorphicGitAdapter.mockReturnValueOnce(adapterWithFailingClose);
 
       await gitAdapterSingleton.initialize('/test/repo');
       
@@ -270,7 +271,7 @@ describe('Git Adapter Factory', () => {
 
       expect(adapter1.workingDir).toBe(repo1);
       expect(adapter2.workingDir).toBe(repo2);
-      expect(WasmGitAdapter).toHaveBeenCalledTimes(2);
+      expect(IsomorphicGitAdapter).toHaveBeenCalledTimes(2);
     });
 
     it('should handle singleton across different repositories', async () => {
@@ -280,7 +281,7 @@ describe('Git Adapter Factory', () => {
       await initializeGitAdapter('/repo2');
       expect(getGitAdapter().workingDir).toBe('/repo2');
 
-      expect(mockWasmGitAdapter.close).toHaveBeenCalledOnce();
+      expect(mockIsomorphicGitAdapter.close).toHaveBeenCalledOnce();
     });
   });
 });

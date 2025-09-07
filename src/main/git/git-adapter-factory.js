@@ -3,61 +3,63 @@
  * Provides centralized creation and management of Git adapters with fallback strategy
  */
 
-import WasmGitAdapter from './adapters/wasm-git-adapter.js';
+import IsomorphicGitAdapter from './adapters/isomorphic-git-adapter.ts';
+import { getLogger } from "@common/logger";
 
-// Adapter types - Only WASM supported
+const logger = getLogger("git-adapter-factory");
+
+// Adapter types - Only Isomorphic Git supported
 export const GIT_ADAPTER_TYPES = {
-  WASM: 'wasm'
+  ISOMORPHIC: 'isomorphic'
 };
 
-// Global adapter configuration - Always use WASM
+// Global adapter configuration - Always use Isomorphic Git
 let adapterConfig = {
-  preferred: GIT_ADAPTER_TYPES.WASM,
-  fallback: GIT_ADAPTER_TYPES.WASM,
-  wasmEnabled: true
+  preferred: GIT_ADAPTER_TYPES.ISOMORPHIC,
+  fallback: GIT_ADAPTER_TYPES.ISOMORPHIC,
+  isomorphicEnabled: true
 };
 
 /**
  * Configure the Git adapter factory
  * @param {Object} config - Configuration object
- * @param {string} config.preferred - Preferred adapter type (always WASM)
- * @param {string} config.fallback - Fallback adapter type (always WASM)
- * @param {boolean} config.wasmEnabled - Whether WASM adapter is enabled (always true)
+ * @param {string} config.preferred - Preferred adapter type (always Isomorphic)
+ * @param {string} config.fallback - Fallback adapter type (always Isomorphic)
+ * @param {boolean} config.isomorphicEnabled - Whether Isomorphic adapter is enabled (always true)
  */
 export function configureGitAdapter(config) {
-  // Always use WASM adapter - ignore configuration
+  // Always use Isomorphic Git adapter - ignore configuration
   adapterConfig = { 
-    preferred: GIT_ADAPTER_TYPES.WASM,
-    fallback: GIT_ADAPTER_TYPES.WASM,
-    wasmEnabled: true 
+    preferred: GIT_ADAPTER_TYPES.ISOMORPHIC,
+    fallback: GIT_ADAPTER_TYPES.ISOMORPHIC,
+    isomorphicEnabled: true 
   };
 }
 
 /**
- * Create a Git adapter instance - Always returns WASM adapter
+ * Create a Git adapter instance - Always returns Isomorphic Git adapter
  * @param {string} workingDir - Repository working directory
- * @param {string} adapterType - Ignored - always uses WASM
- * @returns {Promise<WasmGitAdapter>} WASM Git adapter instance
+ * @param {string} adapterType - Ignored - always uses Isomorphic Git
+ * @returns {Promise<IsomorphicGitAdapter>} Isomorphic Git adapter instance
  */
 export async function createGitAdapter(workingDir, adapterType = null) {
-  // Always create WASM adapter
+  // Always create Isomorphic Git adapter
   try {
-    return new WasmGitAdapter(workingDir);
+    return new IsomorphicGitAdapter(workingDir);
   } catch (error) {
-    console.error(`Failed to create WASM adapter:`, error.message);
+    logger.error(`Failed to create Isomorphic Git adapter:`, error.message);
     throw error;
   }
 }
 
 /**
- * Create adapter with automatic selection - Always WASM
+ * Create adapter with automatic selection - Always Isomorphic Git
  * @param {string} workingDir - Repository working directory
- * @returns {Promise<WasmGitAdapter>} WASM Git adapter instance
+ * @returns {Promise<IsomorphicGitAdapter>} Isomorphic Git adapter instance
  */
 async function createAutoAdapter(workingDir) {
-  // Always create WASM adapter
-  const adapter = new WasmGitAdapter(workingDir);
-  await adapter.validateRepository();
+  // Always create Isomorphic Git adapter
+  const adapter = new IsomorphicGitAdapter(workingDir);
   return adapter;
 }
 
@@ -83,12 +85,14 @@ export async function testAdapterAvailability(adapterType) {
  */
 export function getAdapterCapabilities(adapterType) {
   const capabilities = {
-    [GIT_ADAPTER_TYPES.WASM]: {
+    [GIT_ADAPTER_TYPES.ISOMORPHIC]: {
       stash: true,
-      performance: 'high',
+      performance: 'good',
       nativeFallback: false,
       crossPlatform: true,
-      bundleSize: 'large'
+      bundleSize: 'medium',
+      pureJavaScript: true,
+      noSystemDependencies: true
     }
   };
   
@@ -133,7 +137,7 @@ class GitAdapterSingleton {
         await this.adapter.close();
       } catch (error) {
         // Log error but don't throw - cleanup should always succeed
-        console.warn('Error during adapter cleanup:', error.message);
+        logger.warn('Error during adapter cleanup:', error.message);
       }
     }
     this.adapter = null;

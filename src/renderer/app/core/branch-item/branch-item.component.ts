@@ -3,6 +3,7 @@ import { D3Service } from '../d3/d3.service';
 import { ContextMenuService, ContextMenuComponent } from '@perfectmemory/ngx-contextmenu';
 import { CommitSelectionService } from '../services/commit-selection.service';
 import { SubmodulesService } from '../services/submodules.service';
+import { RepoService } from '../services/repo.service';
 
 @Component({
   standalone: false,
@@ -26,7 +27,8 @@ export class BranchItemComponent implements OnInit {
     private d3: D3Service,
     private ctxService: ContextMenuService,
     private commitSelection: CommitSelectionService,
-    private submodules: SubmodulesService
+    private submodules: SubmodulesService,
+    private repoService: RepoService
   ) { }
 
   ngOnInit() {
@@ -37,8 +39,12 @@ export class BranchItemComponent implements OnInit {
       this.toggled = !this.toggled;
     } else if (this.item.submodule) {
       this.submodules.selectSubmodule(this.item.shorthand);
-    } else {
+    } else if (this.item.isTag) {
+      // For tags, just scroll to the commit
       this.d3.scrollTo(this.item.target);
+    } else {
+      // For branches, checkout the branch to load its commits
+      this.repoService.checkout(this.item.shorthand);
     }
     $event.stopPropagation();
   }

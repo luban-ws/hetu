@@ -7,7 +7,11 @@ import { ipcMain } from "electron";
 import { requireArgParams } from "../infrastructure/handler-helper.js";
 import { createGitAdapter } from "./git-adapter-factory.js";
 import { v4 as uuid } from "uuid";
-import { IPC_EVENTS } from "@common/ipc-events.js";
+import { IPC_EVENTS } from "@common/ipc-events";
+import { getLogger } from "@common/logger";
+import { safeSend, safeEventSend } from "../infrastructure/ipc-wrapper.js";
+
+const logger = getLogger("file-watcher");
 
 // Global state
 let Repo = null;
@@ -22,7 +26,7 @@ const withErrorHandling =
     try {
       return await fn(...args);
     } catch (error) {
-      console.error(`Error in ${fn.name}:`, error);
+      logger.error(`Error in ${fn.name}:`, error);
       throw error;
     }
   };
@@ -85,10 +89,21 @@ const refreshFiles = async () => {
     for (const [id, subscription] of Object.entries(fileRefreshSubscriptions)) {
       const fileStatus = status.files?.[subscription.file];
       if (fileStatus) {
-        window?.webContents.send(IPC_EVENTS.REPO.FILE_UPDATED, {
+        // Convert file status to serializable object
+        const serializableStatus = {
+          path: fileStatus.path || subscription.file,
+          isNew: fileStatus.isNew && typeof fileStatus.isNew === 'function' ? fileStatus.isNew() : false,
+          isModified: fileStatus.isModified && typeof fileStatus.isModified === 'function' ? fileStatus.isModified() : false,
+          isDeleted: fileStatus.isDeleted && typeof fileStatus.isDeleted === 'function' ? fileStatus.isDeleted() : false,
+          isRenamed: fileStatus.isRenamed && typeof fileStatus.isRenamed === 'function' ? fileStatus.isRenamed() : false,
+          isIgnored: false,
+          inIndex: fileStatus.inIndex && typeof fileStatus.inIndex === 'function' ? fileStatus.inIndex() : false,
+          inWorkingTree: fileStatus.inWorkingTree && typeof fileStatus.inWorkingTree === 'function' ? fileStatus.inWorkingTree() : false,
+        };
+        safeSend(window?.webContents, IPC_EVENTS.REPO.FILE_UPDATED, {
           id,
           file: subscription.file,
-          status: fileStatus,
+          status: serializableStatus,
         });
       }
     }
@@ -123,19 +138,32 @@ const closeRepo = withErrorHandling(async (event, arg) => {
 
 const getFileDetailWrapper = async (event, arg) => {
   const result = await wrappedGetFileDetail(arg.file, arg.commit);
-  event.sender.send(IPC_EVENTS.REPO.FILE_DETAIL_RETRIEVED, {
-    result,
+  // Ensure result is serializable
+  const serializableResult = {
+    file: result.file || arg.file,
+    commit: result.commit || arg.commit,
+    content: typeof result.content === 'string' ? result.content : '',
+    encoding: result.encoding || 'utf8',
+    binary: Boolean(result.binary),
+    size: Number(result.size) || 0,
+    ...(result.diff && { diff: String(result.diff) }),
+    ...(result.patch && { patch: String(result.patch) }),
+    ...(result.additions && { additions: Number(result.additions) }),
+    ...(result.deletions && { deletions: Number(result.deletions) }),
+  };
+  safeEventSend(event, IPC_EVENTS.REPO.FILE_DETAIL_RETRIEVED, {
+    result: serializableResult,
   });
 };
 
 const subscribeUpdate = async (event, arg) => {
   const id = subscribeToFileUpdate(arg.file, arg.commit);
-  event.sender.send(IPC_EVENTS.REPO.SUBSCRIPTION_CREATED, { id });
+  safeEventSend(event, IPC_EVENTS.REPO.SUBSCRIPTION_CREATED, { id });
 };
 
 const unsubscribeUpdate = async (event, arg) => {
   unsubscribeFromFileUpdate(arg.id);
-  event.sender.send(IPC_EVENTS.REPO.SUBSCRIPTION_REMOVED, { id: arg.id });
+  safeEventSend(event, IPC_EVENTS.REPO.SUBSCRIPTION_REMOVED, { id: arg.id });
 };
 
 // Initialize module

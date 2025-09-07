@@ -132,9 +132,12 @@ export class CommitDetailInfoComponent implements OnInit, AfterViewChecked {
     return item.path;
   }
   stageAll() {
-    if (this.commit.virtual && (<WIPCommit>this.commit).unstaged.length) {
-      let unstagedPaths = (<WIPCommit>this.commit).unstaged.map(s => s.path);
-      this.commitChange.stage(unstagedPaths);
+    if (this.commit.virtual) {
+      const unstaged = (<WIPCommit>this.commit).unstaged || [];
+      if (Array.isArray(unstaged) && unstaged.length) {
+        let unstagedPaths = unstaged.map(s => s.path);
+        this.commitChange.stage(unstagedPaths);
+      }
     }
   }
   setCommitMessages() {
@@ -142,9 +145,12 @@ export class CommitDetailInfoComponent implements OnInit, AfterViewChecked {
     this.commitChange.newCommitDetail = this.newCommitDetail;
   }
   unstageAll() {
-    if (this.commit.virtual && (<WIPCommit>this.commit).staged.length) {
-      let stagedPaths = (<WIPCommit>this.commit).staged.map(s => s.path);
-      this.commitChange.unstage(stagedPaths);
+    if (this.commit.virtual) {
+      const staged = (<WIPCommit>this.commit).staged || [];
+      if (Array.isArray(staged) && staged.length) {
+        let stagedPaths = staged.map(s => s.path);
+        this.commitChange.unstage(stagedPaths);
+      }
     }
   }
   stage(file, $event) {

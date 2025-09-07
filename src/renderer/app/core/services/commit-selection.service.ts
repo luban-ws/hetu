@@ -63,13 +63,19 @@ export class CommitSelectionService {
       this.selectionChange.emit(this.selectedCommit);
     });
     this.electron.onCD(IPC_EVENTS.REPO.FILE_STATUS_RETRIEVED, (event, arg) => {
-      this._wipDetail.stagedSummary = arg.stagedSummary;
-      this._wipDetail.unstagedSummary = arg.unstagedSummary;
-      this._wipDetail.staged = arg.staged;
-      this._wipDetail.unstaged = arg.unstaged;
-      if (!this._wipDetail.staged.length && !this._wipDetail.unstaged.length && this.selectedCommit && this.selectedCommit.sha === '00000') {
-        this.selectedCommit = null;
-        this.selectionChange.emit(this.selectedCommit);
+      if (arg) {
+        this._wipDetail.stagedSummary = arg.stagedSummary || { ignored: 0, newCount: 0, deleted: 0, modified: 0, renamed: 0 };
+        this._wipDetail.unstagedSummary = arg.unstagedSummary || { ignored: 0, newCount: 0, deleted: 0, modified: 0, renamed: 0 };
+        this._wipDetail.staged = arg.staged || [];
+        this._wipDetail.unstaged = arg.unstaged || [];
+        
+        const stagedLength = Array.isArray(this._wipDetail.staged) ? this._wipDetail.staged.length : 0;
+        const unstagedLength = Array.isArray(this._wipDetail.unstaged) ? this._wipDetail.unstaged.length : 0;
+        
+        if (!stagedLength && !unstagedLength && this.selectedCommit && this.selectedCommit.sha === '00000') {
+          this.selectedCommit = null;
+          this.selectionChange.emit(this.selectedCommit);
+        }
       }
     });
     this.electron.onCD(IPC_EVENTS.REPO.FILE_DETAIL_RETRIEVED, (event, arg) => {
@@ -105,7 +111,10 @@ export class CommitSelectionService {
 
   selectFileDetail(file, sha = null, fullFile = false) {
     if (!sha) {
-      sha = this.selectedCommit.sha;
+      sha = this.selectedCommit?.sha;
+    }
+    if (!sha) {
+      return; // Can't get file detail without a commit SHA
     }
     this._selectedFile = file;
     this.selectedFileChange.emit(file);
@@ -133,7 +142,10 @@ export class CommitSelectionService {
   }
   openExternalFileView(file, sha = null) {
     if (!sha) {
-      sha = this.selectedCommit.sha;
+      sha = this.selectedCommit?.sha;
+    }
+    if (!sha) {
+      return; // Can't open file without a commit SHA
     }
     this.electron.ipcRenderer.send(IPC_EVENTS.REPO.OPEN_EXTERNAL_FILE, { file: file, commit: sha });
   }

@@ -1,7 +1,7 @@
 import { Injectable, Output, EventEmitter } from "@angular/core";
 import { ElectronService } from "../../infrastructure/electron.service";
 import { ToastrService } from "ngx-toastr";
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from "@common/ipc-events";
 
 @Injectable()
 export class SettingsService {
@@ -93,7 +93,7 @@ export class SettingsService {
   }
 }
 
-class Settings {
+export class Settings {
   app_settings: Map<string, string>;
   repo_settings: Map<string, string>;
   current_repo: RepoInfo = {

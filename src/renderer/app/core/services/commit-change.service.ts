@@ -210,10 +210,13 @@ export class CommitChangeService {
       !this.commiting
     ) {
       this.commiting = true;
-      if (this.selectedCommit.staged.length) {
+      const staged = this.selectedCommit.staged || [];
+      const unstaged = this.selectedCommit.unstaged || [];
+      
+      if (Array.isArray(staged) && staged.length) {
         this.commitStaged();
-      } else {
-        this.commit(this.selectedCommit.unstaged.map((us) => us.path));
+      } else if (Array.isArray(unstaged)) {
+        this.commit(unstaged.map((us) => us.path));
       }
     }
   }

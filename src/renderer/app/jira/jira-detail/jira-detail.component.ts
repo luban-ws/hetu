@@ -5,7 +5,7 @@ import { Issue } from '../models/issue';
 import { ElectronService } from '../../infrastructure/electron.service';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
-import * as moment from 'moment';
+import moment from 'moment';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
 import { AddCommentPromptComponent } from '../add-comment-prompt/add-comment-prompt.component';
 import { SubtaskPromptComponent } from '../subtask-prompt/subtask-prompt.component';

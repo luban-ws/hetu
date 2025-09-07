@@ -4,6 +4,10 @@ import { v4 as uuid } from "uuid";
 import { ipcMain, dialog } from "electron";
 import { requireArgParams } from "../infrastructure/handler-helper.js";
 import { IPC_EVENTS } from "@common/ipc-events";
+import { getLogger } from "@common/logger";
+import { safeSend } from "./ipc-wrapper.js";
+
+const logger = getLogger('settings');
 
 const homeDir = homedir();
 const appDir = homeDir + "/Explorasa Git/";
@@ -79,13 +83,12 @@ let notifySettingsUpdated = function () {
     repo_settings: repoSettingsObj,
     current_repo: settingsObj.currentRepo,
   };
-  window.webContents.send(IPC_EVENTS.SETTINGS.UPDATED, {
+  safeSend(window.webContents, IPC_EVENTS.SETTINGS.UPDATED, {
     currentSettings: obj,
   });
-  window.webContents.send(
-    IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED,
-    getEffectiveSettings()
-  );
+  
+  const effectiveSettings = getEffectiveSettings();
+  safeSend(window.webContents, IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, effectiveSettings);
 };
 
 let init = function (win, sec) {
@@ -158,7 +161,7 @@ let setRepo = function (workingDir, name) {
     (r) => r.workingDir === workingDir
   );
   if (!settingsObj.currentRepo) {
-    let newID = uuid.v4();
+    let newID = uuid();
     settingsObj.currentRepo = { name: name, workingDir: workingDir, id: newID };
     settingsObj.repos.push(settingsObj.currentRepo);
   }
@@ -246,7 +249,7 @@ function removeRepo(workingDir) {
   if (settingsObj.currentRepo.workingDir === workingDir) {
     settingsObj.currentRepo = undefined;
     save();
-    window.webContents.send(IPC_EVENTS.REPO.CURRENT_REMOVED, {});
+    safeSend(window.webContents, IPC_EVENTS.REPO.CURRENT_REMOVED, {});
     repoSettingsObj = undefined;
   }
   notifySettingsUpdated();

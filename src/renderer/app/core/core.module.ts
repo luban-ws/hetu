@@ -41,6 +41,7 @@ import { FileViewPanelComponent } from './file-view-panel/file-view-panel.compon
 import { ExternalFileViewerComponent } from './external-file-viewer/external-file-viewer.component';
 import { TagPromptComponent } from './tag-prompt/tag-prompt.component';
 import { MapSeparatorComponent } from './map-separator/map-separator.component';
+import { GitInitPromptComponent } from './git-init-prompt/git-init-prompt.component';
 // import { HotkeyModule } from 'angular2-hotkeys'; // TODO: Migrate to newer Angular hotkeys solution
 import { SubmodulesService } from './services/submodules.service';
 import { SubmoduleDetailsPanelComponent } from './submodule-details-panel/submodule-details-panel.component';
@@ -86,6 +87,7 @@ import { HotkeysService } from '@ngneat/hotkeys';
         CiConsoleOutputComponent,
         ForcePushPromptComponent,
         CreateBranchPromptComponent,
+        GitInitPromptComponent,
         TagPromptComponent,
         MapSeparatorComponent,
         SubmoduleDetailsPanelComponent,

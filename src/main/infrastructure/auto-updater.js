@@ -1,10 +1,33 @@
 import { autoUpdater } from "electron-updater";
 import { ipcMain } from "electron";
 import { IPC_EVENTS  } from '@common/ipc-events';
+import { getLogger } from "@common/logger";
+
+const logger = getLogger("auto-updater");
 let window;
 let settings;
 
 autoUpdater.autoDownload = false;
+
+// Suppress verbose electron-updater logging
+autoUpdater.logger = {
+  debug: () => {}, // Suppress debug logs
+  info: (msg) => {
+    if (msg && !msg.includes("406") && !msg.includes("HttpError")) {
+      logger.debug(msg);
+    }
+  },
+  warn: (msg) => {
+    if (msg && !msg.includes("406") && !msg.includes("HttpError")) {
+      logger.debug(msg);
+    }
+  },
+  error: (msg) => {
+    if (msg && !msg.includes("406") && !msg.includes("HttpError") && !msg.includes("Cannot parse releases feed")) {
+      logger.debug("Auto-updater error occurred");
+    }
+  }
+};
 
 autoUpdater.on("update-available", (info) => {
   if (window && window.webContents) {
@@ -42,7 +65,15 @@ autoUpdater.on("checking-for-update", () => {
 
 // 添加错误处理
 autoUpdater.on("error", (error) => {
-  console.error("Auto-updater error:", error);
+  // Only log HTTP status code for 406 errors, not the full error details
+  if (error.message && error.message.includes("406")) {
+    logger.debug("Auto-updater: No production release available (HTTP 406)");
+  } else if (error.message && error.message.includes("HttpError")) {
+    logger.debug(`Auto-updater: HTTP error occurred`);
+  } else {
+    logger.error(`Auto-updater error: ${error.message}`);
+  }
+  
   if (window && window.webContents) {
     window.webContents.send(IPC_EVENTS.UPDATER.CHECKING, { inProgress: false });
     window.webContents.send("Updater", {
@@ -78,20 +109,30 @@ function init(win, sett) {
 function checkUpdate() {
   if (window) {
     try {
+      logger.debug("Checking for updates...");
       autoUpdater.checkForUpdates().catch((error) => {
-        console.error("Failed to check for updates:", error);
+        // Silently handle 406 errors (no production release)
+        if (error.message && error.message.includes("406")) {
+          logger.debug("No production release available");
+        } else {
+          logger.warn(`Update check failed: ${error.message?.substring(0, 100)}`);
+        }
+        
         if (window && window.webContents) {
           window.webContents.send(IPC_EVENTS.UPDATER.CHECKING, {
             inProgress: false,
           });
-          window.webContents.send("Updater", {
-            msg: "error",
-            error: error.message || "Failed to check for updates",
-          });
+          // Don't send error to UI for expected 406 errors
+          if (!error.message?.includes("406")) {
+            window.webContents.send("Updater", {
+              msg: "error",
+              error: error.message || "Failed to check for updates",
+            });
+          }
         }
       });
     } catch (error) {
-      console.error("Error in checkUpdate:", error);
+      logger.warn(`Error in checkUpdate: ${error.message}`);
       if (window && window.webContents) {
         window.webContents.send(IPC_EVENTS.UPDATER.CHECKING, {
           inProgress: false,

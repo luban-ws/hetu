@@ -11,6 +11,7 @@ let conn;
 let window;
 let cache;
 let checkPeriodicUpdateHook;
+let registry = {};
 
 function init(sett, sec, win, cac) {
   secureStorage = sec;

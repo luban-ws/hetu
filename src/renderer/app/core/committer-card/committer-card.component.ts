@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { D3Service } from '../d3/d3.service';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
   standalone: false,

@@ -7,6 +7,10 @@ import { ipcMain } from "electron";
 import { requireArgParams } from "../infrastructure/handler-helper.js";
 import { createGitAdapter } from "./git-adapter-factory.js";
 import { IPC_EVENTS } from "@common/ipc-events";
+import { getLogger } from "@common/logger";
+import { safeSend, safeEventSend } from "../infrastructure/ipc-wrapper.js";
+
+const logger = getLogger("submodules");
 
 // Global state
 let Repo = null;
@@ -19,7 +23,7 @@ const withErrorHandling =
     try {
       return await fn(...args);
     } catch (error) {
-      console.error(`Error in ${fn.name}:`, error);
+      logger.error(`Error in ${fn.name}:`, error);
       throw error;
     }
   };
@@ -79,14 +83,14 @@ const getSubmoduleNamesHandler = async () => {
     submodule: true,
   }));
 
-  window?.webContents.send(IPC_EVENTS.REPO.SUBMODULE_NAMES_RETRIEVED, {
+  safeSend(window?.webContents, IPC_EVENTS.REPO.SUBMODULE_NAMES_RETRIEVED, {
     submodules,
   });
 };
 
 const getSubmoduleDetailsHandler = async (event, arg) => {
   const result = await wrappedGetSubmoduleDetails(arg.name);
-  event.sender.send(IPC_EVENTS.REPO.SUBMODULE_DETAILS_RETRIEVED, {
+  safeEventSend(event, IPC_EVENTS.REPO.SUBMODULE_DETAILS_RETRIEVED, {
     result,
   });
 };

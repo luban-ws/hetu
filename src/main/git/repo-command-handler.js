@@ -185,7 +185,7 @@ function initRepo(event, arg) {
 function setCredentials(event, arg) {
   settings.updateRepoSetting("auth-username", arg.username);
   repoService.getCurrentFirstRemote().then((remote) => {
-    let url = remote.url();
+    let url = remote.url;
     if (!helper.isSSH(url)) {
       secure.setPass(`${arg.username}@${url}`, arg.password);
     } else {
@@ -197,7 +197,7 @@ function setCredentials(event, arg) {
 function getStoredCredentials(event) {
   if (secure) {
     repoService.getCurrentFirstRemote().then((remote) => {
-      let url = remote.url();
+      let url = remote.url;
       if (!helper.isSSH(url)) {
         let storedUsername = settings.get("auth-username");
         if (storedUsername) {

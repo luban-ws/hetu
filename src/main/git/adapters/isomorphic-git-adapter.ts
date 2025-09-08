@@ -12,6 +12,119 @@ import { getLogger } from "@common/logger";
 const logger = getLogger("isomorphic-git");
 
 /**
+ * Custom error for authentication required scenarios
+ */
+export class AuthenticationRequiredError extends Error {
+  constructor(remote: string, message?: string) {
+    super(message || `Authentication required for remote: ${remote}`);
+    this.name = 'AuthenticationRequiredError';
+  }
+}
+
+/**
+ * Custom error for SSH transport not supported
+ */
+export class SSHTransportError extends Error {
+  constructor(sshUrl: string, httpsUrl?: string) {
+    const message = httpsUrl 
+      ? `SSH transport not supported. Try using HTTPS instead: ${httpsUrl}`
+      : `SSH transport not supported for: ${sshUrl}`;
+    super(message);
+    this.name = 'SSHTransportError';
+    this.sshUrl = sshUrl;
+    this.httpsUrl = httpsUrl;
+  }
+  
+  sshUrl: string;
+  httpsUrl?: string;
+}
+
+/**
+ * Detects if a URL uses SSH protocol
+ * @param {string} url - Git remote URL
+ * @returns {boolean} True if SSH protocol is detected
+ */
+const isSSHUrl = (url: string): boolean => {
+  if (!url) return false;
+  
+  // Common SSH URL patterns:
+  // git@github.com:user/repo.git
+  // ssh://git@github.com/user/repo.git
+  // ssh://user@host/path/repo.git
+  return url.startsWith('ssh://') || 
+         url.startsWith('git@') || 
+         /^[^@]+@[^:]+:[^/]/.test(url);
+};
+
+/**
+ * Converts SSH URL to HTTPS equivalent when possible
+ * @param {string} sshUrl - SSH URL to convert
+ * @returns {string|null} HTTPS URL or null if conversion not possible
+ */
+const convertSSHToHTTPS = (sshUrl: string): string | null => {
+  if (!isSSHUrl(sshUrl)) return null;
+  
+  try {
+    // Handle git@host:user/repo.git format
+    const gitAtMatch = sshUrl.match(/^git@([^:]+):(.+)$/);
+    if (gitAtMatch) {
+      const [, host, path] = gitAtMatch;
+      return `https://${host}/${path}`;
+    }
+    
+    // Handle ssh://git@host/user/repo.git format
+    const sshUrlMatch = sshUrl.match(/^ssh:\/\/(?:git@)?([^\/]+)\/(.+)$/);
+    if (sshUrlMatch) {
+      const [, host, path] = sshUrlMatch;
+      return `https://${host}/${path}`;
+    }
+    
+    // Handle ssh://user@host/path format
+    const userHostMatch = sshUrl.match(/^ssh:\/\/([^@]+@)?([^\/]+)\/(.+)$/);
+    if (userHostMatch) {
+      const [, , host, path] = userHostMatch;
+      return `https://${host}/${path}`;
+    }
+    
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
+/**
+ * Validates remote URL and throws error for SSH protocol
+ * @param {string} remote - Remote name or URL
+ * @returns {Promise<void>}
+ */
+const validateRemoteUrl = async (adapter: IsomorphicGitAdapter, remote: string): Promise<void> => {
+  try {
+    // If remote is a URL, validate directly
+    if (remote.includes('://') || remote.includes('@')) {
+      if (isSSHUrl(remote)) {
+        const httpsUrl = convertSSHToHTTPS(remote);
+        throw new SSHTransportError(remote, httpsUrl || undefined);
+      }
+      return;
+    }
+    
+    // If remote is a name, get the URL from git config
+    const remotes = await adapter.getRemotes();
+    const remoteObj = remotes.find(r => r.name === remote);
+    
+    if (remoteObj && isSSHUrl(remoteObj.url)) {
+      const httpsUrl = convertSSHToHTTPS(remoteObj.url);
+      throw new SSHTransportError(remoteObj.url, httpsUrl || undefined);
+    }
+  } catch (error) {
+    if (error instanceof SSHTransportError) {
+      throw error;
+    }
+    // Don't fail validation for other errors - let the operation proceed
+  }
+};
+
+/**
  * HTTP configuration for isomorphic-git remote operations
  */
 const getHttpConfig = () => {
@@ -167,18 +280,19 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
         })
         .map(([filepath, headStatus, workdirStatus, stageStatus]) => {
           return {
-            path: () => filepath,
-            isNew: () => headStatus === 0,
-            isModified: () => headStatus === 1 && workdirStatus === 2,
-            isDeleted: () => workdirStatus === 0,
-            isRenamed: () => false, // isomorphic-git doesn't track renames separately
-            isIgnored: () => false,
-            inIndex: () => stageStatus === 2,
-            inWorkingTree: () => workdirStatus === 2,
-            // Additional isomorphic-git specific properties
-            headStatus,
-            workdirStatus,
-            stageStatus,
+            // Direct primitive values for serialization - no functions
+            path: String(filepath || ""),
+            isNew: Boolean(headStatus === 0),
+            isModified: Boolean(headStatus === 1 && workdirStatus === 2),
+            isDeleted: Boolean(workdirStatus === 0),
+            isRenamed: false, // isomorphic-git doesn't track renames separately
+            isIgnored: false,
+            inIndex: Boolean(stageStatus === 2),
+            inWorkingTree: Boolean(workdirStatus === 2),
+            // Additional isomorphic-git specific properties (primitive values)
+            headStatus: Number(headStatus),
+            workdirStatus: Number(workdirStatus),
+            stageStatus: Number(stageStatus),
           };
         });
 
@@ -311,9 +425,9 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
       });
 
       return remotes.map((remote) => ({
-        name: remote.remote,
-        url: () => remote.url,
-        pushurl: () => remote.url,
+        name: String(remote.remote || ""),
+        url: String(remote.url || ""),
+        pushurl: String(remote.url || ""),
       }));
     } catch (error) {
       logger.error(`Failed to get remotes: ${error.message}`);
@@ -542,17 +656,17 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
 
       const [, headStatus, workdirStatus, stageStatus] = statusMatrix[0];
       return {
-        path: () => filepath,
-        isNew: () => headStatus === 0,
-        isModified: () => headStatus === 1 && workdirStatus === 2,
-        isDeleted: () => workdirStatus === 0,
-        isRenamed: () => false,
-        isIgnored: () => false,
-        inIndex: () => stageStatus === 2,
-        inWorkingTree: () => workdirStatus === 2,
-        headStatus,
-        workdirStatus,
-        stageStatus,
+        path: String(filepath || ""),
+        isNew: Boolean(headStatus === 0),
+        isModified: Boolean(headStatus === 1 && workdirStatus === 2),
+        isDeleted: Boolean(workdirStatus === 0),
+        isRenamed: false,
+        isIgnored: false,
+        inIndex: Boolean(stageStatus === 2),
+        inWorkingTree: Boolean(workdirStatus === 2),
+        headStatus: Number(headStatus),
+        workdirStatus: Number(workdirStatus),
+        stageStatus: Number(stageStatus),
       };
     } catch (error) {
       logger.error(
@@ -735,18 +849,43 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
     return await this.getRemotes();
   }
 
-  async fetch(remote = "origin", branch = null) {
+  async fetch(remote = "origin", branch = null, auth = null) {
     try {
-      const result = await git.fetch({
+      // Validate remote URL for SSH protocol
+      await validateRemoteUrl(this, remote);
+      
+      const httpConfig = getHttpConfig();
+      const fetchOptions: any = {
         fs: this.fs,
         dir: this.workingDir,
         remote,
         ref: branch,
-        http: getHttpConfig(),
-      });
+        ...httpConfig,
+      };
+      
+      // Add authentication if provided
+      if (auth && auth.username && auth.password) {
+        fetchOptions.onAuth = () => ({
+          username: auth.username,
+          password: auth.password
+        });
+      }
+      
+      const result = await git.fetch(fetchOptions);
       logger.debug(`Fetched from ${remote}`);
       return result;
-    } catch (error) {
+    } catch (error: any) {
+      // Handle SSH transport error - isomorphic-git doesn't support SSH
+      if (error.code === 'UnknownTransportError' && error.data?.transport === 'ssh') {
+        const httpsUrl = error.data?.suggestion;
+        throw new SSHTransportError(error.data?.url || remote, httpsUrl);
+      }
+      
+      // Throw custom authentication error for 401s - let higher level handle UI notification
+      if (error.code === 'HttpError' && error.data?.statusCode === 401) {
+        throw new AuthenticationRequiredError(remote, `Authentication required to access ${remote}`);
+      }
+      
       logger.error(`Failed to fetch from ${remote}: ${error.message}`);
       throw error;
     }
@@ -754,6 +893,8 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
 
   async pull(remote = "origin", branch = null) {
     try {
+      // Validate remote URL for SSH protocol - fetch will also validate but let's be explicit
+      await validateRemoteUrl(this, remote);
       await this.fetch(remote, branch);
       // Note: isomorphic-git requires explicit merge after fetch
       const currentBranch = await this.getCurrentBranch();
@@ -775,8 +916,12 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
 
   async push(remote = "origin", branch = null, options = {}) {
     try {
+      // Validate remote URL for SSH protocol
+      await validateRemoteUrl(this, remote);
+      
       const currentBranch = await this.getCurrentBranch();
       const targetRef = branch || currentBranch;
+      const httpConfig = getHttpConfig();
 
       const result = await git.push({
         fs: this.fs,
@@ -784,12 +929,23 @@ export class IsomorphicGitAdapter extends BaseGitAdapter {
         remote,
         ref: targetRef,
         force: options.force || false,
-        http: getHttpConfig(),
+        ...httpConfig,
       });
 
       logger.debug(`Pushed to ${remote}/${targetRef}`);
       return result;
-    } catch (error) {
+    } catch (error: any) {
+      // Handle SSH transport error - isomorphic-git doesn't support SSH
+      if (error.code === 'UnknownTransportError' && error.data?.transport === 'ssh') {
+        const httpsUrl = error.data?.suggestion;
+        throw new SSHTransportError(error.data?.url || remote, httpsUrl);
+      }
+      
+      // Throw custom authentication error for 401s - let higher level handle UI notification
+      if (error.code === 'HttpError' && error.data?.statusCode === 401) {
+        throw new AuthenticationRequiredError(remote, `Authentication required to push to ${remote}`);
+      }
+      
       logger.error(`Failed to push to ${remote}: ${error.message}`);
       throw error;
     }

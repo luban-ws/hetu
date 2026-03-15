@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+@theme {
+  /* === Subway-map inspired palette === */
+  --color-void: #07090e;
+  --color-deep: #0d1117;
+  --color-surface: #161b22;
+  --color-elevated: #1c2333;
+  --color-border: #30363d;
+
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted: #484f58;
+
+  /* Subway line accent colors */
+  --color-line-blue: #58a6ff;
+  --color-line-orange: #f0883e;
+  --color-line-green: #3fb950;
+  --color-line-red: #f85149;
+  --color-line-purple: #bc8cff;
+  --color-line-cyan: #39d2c0;
+
+  /* Semantic aliases */
+  --color-accent: var(--color-line-blue);
+  --color-accent-warm: var(--color-line-orange);
+  --color-success: var(--color-line-green);
+  --color-danger: var(--color-line-red);
+
+  /* Typography scale */
+  --font-display: 'Anybody', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Spacing rhythm */
+  --spacing-section: 6rem;
+
+  /* Transitions */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* === Base resets === */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-void);
+  color: var(--color-text-primary);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+/* === Subway decoration line — animated gradient bar === */
+.subway-bar {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-line-blue),
+    var(--color-line-green),
+    var(--color-line-orange),
+    var(--color-line-red),
+    var(--color-line-purple),
+    var(--color-line-cyan),
+    var(--color-line-blue)
+  );
+  background-size: 200% 100%;
+  animation: subway-flow 8s linear infinite;
+}
+
+@keyframes subway-flow {
+  to { background-position: 200% 0; }
+}
+
+/* === Prose styles for docs/blog === */
+.prose {
+  --tw-prose-body: var(--color-text-primary);
+  --tw-prose-headings: var(--color-text-primary);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-code: var(--color-line-purple);
+  max-width: 72ch;
+  line-height: 1.75;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.prose h1 { font-size: 2.25rem; margin-top: 2rem; }
+.prose h2 { font-size: 1.5rem; margin-top: 2.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; }
+.prose h3 { font-size: 1.25rem; margin-top: 1.5rem; }
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.prose a:hover { color: var(--color-accent-warm); }
+
+.prose code {
+  background: var(--color-surface);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+.prose pre {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.prose img {
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.prose ul, .prose ol { padding-left: 1.5rem; }
+.prose li { margin: 0.25rem 0; }
+
+/* === Entrance animations === */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s var(--ease-out-expo) both;
+}
+
+/* Stagger utility classes */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }

@@ -8,7 +8,7 @@
 
 ## Background
 
-The Electron app stores credentials via `electron.safeStorage.encryptString()` persisted to `credentials.json`. Settings (including SSH key paths) are stored in plain JSON at `~/Explorasa Git/settings.json` and per-repo `<repoId>.json`.
+The Electron app stores credentials via `electron.safeStorage.encryptString()` persisted to `credentials.json`. Settings (including SSH key paths) are stored in plain JSON at `~/Hetu/settings.json` and per-repo `<repoId>.json`.
 
 Credential types:
 - HTTPS username/password — `<username>@<remoteUrl>` → encrypted in credentials.json
@@ -36,11 +36,11 @@ App settings use a simple JSON file managed by `serde_json`.
 - `get_password(account: &str) -> Option<String>` via keyring
 - `set_password(account: &str, password: &str)` via keyring
 - `delete_password(account: &str)` via keyring
-- Service name: `"com.rhodiumcode.explorasa-git"`
+- Service name: `"com.rhodiumcode.hetu"`
 
 ### 3. Create `src-tauri/src/settings_store.rs`
-- Load/save `~/Explorasa Git/settings.json`
-- Per-repo settings: `~/Explorasa Git/<repoId>.json`
+- Load/save `~/Hetu/settings.json`
+- Per-repo settings: `~/Hetu/<repoId>.json`
 - `get(key) -> Option<String>`, `set(key, value)`, `get_repo(repo_id, key)`, `set_repo(repo_id, key, value)`
 
 ### 4. Add Tauri commands

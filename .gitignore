@@ -10,7 +10,7 @@
 /src/dist
 
 # dependencies
-/node_modules
+node_modules
 
 # Rust / Tauri build artifacts
 /src-tauri/target/

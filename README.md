@@ -1,81 +1,130 @@
+<div align="center">
 
-<img src="./build/Icon-48.png">
+<img src="./build/Icon-128.png" alt="Hetu logo" width="80" />
 
-# Hetu (河图) — Subway-Map Git Client
+# 河图 Hetu
 
-Hetu is a native desktop Git client with a subway-map style branch visualization, JIRA and AppVeyor integration — all in one consistent UI. Built with **Tauri + Rust + Angular**.
+**Subway-Map Git Client**
 
-## Feature Highlight
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-orange.svg)](https://tauri.app/)
+[![Rust](https://img.shields.io/badge/Rust-git2--rs-brown.svg)](https://github.com/rust-lang/git2-rs)
+[![Angular](https://img.shields.io/badge/Angular-18-red.svg)](https://angular.dev/)
 
- - Subway map style git visualization with commit details
- - Basic repo operations (pull, push, commit, stash, pop, create branch)
- - JIRA integration with native UI
- - Map integrated AppVeyor build status with periodic update and on-demand log download
- - OS-native credential storage (macOS Keychain, Windows Credential Manager, Linux Secret Service)
- - Repository specific settings
+A native desktop Git client that renders branch history as a beautiful, intuitive **subway map** — with JIRA and CI integration built in.
 
-## Built On
+<br />
 
-- [Tauri 2](https://tauri.app/) — Rust desktop shell
-- [Angular](https://angular.io/) — Frontend framework
-- [git2](https://github.com/rust-lang/git2-rs) — Rust Git implementation
-- [Feather Icons](https://feathericons.com/) — Icon set
+<img src="./misc/metrogit.gif" alt="Hetu demo" width="720" />
+
+</div>
+
+---
+
+## Features
+
+<table>
+<tr>
+<td width="50%">
+
+### Subway-Map Visualization
+
+Branches and commits rendered as colored metro lines. Merges, rebases, and parallel work — all clearly visible at a glance.
+
+<img src="./misc/metrogit1.PNG" alt="Main view" width="100%" />
+
+</td>
+<td width="50%">
+
+### Inline Diff Viewer
+
+Review changes without leaving the app. Toggle between hunk and file views with syntax-highlighted diffs.
+
+<img src="./misc/metrogit2.PNG" alt="Diff view" width="100%" />
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### JIRA Integration
+
+Native JIRA panel shows issue details, subtasks, and comments alongside your commits.
+
+<img src="./misc/metrogit4.PNG" alt="JIRA integration" width="100%" />
+
+</td>
+<td width="50%">
+
+### CI Build Status
+
+AppVeyor build results per-commit on the map. Pass/fail indicators with on-demand log download.
+
+<img src="./misc/metrogit5.PNG" alt="CI integration" width="100%" />
+
+</td>
+</tr>
+</table>
+
+### Also includes
+
+- Pull / push / commit / stash / pop / create branch
+- OS-native credential storage (macOS Keychain, Windows Credential Manager, Linux Secret Service)
+- Repository-specific settings
+- Diff viewer with hunk staging
+
+## Built With
+
+| Component | Technology |
+|-----------|-----------|
+| Desktop shell | [Tauri 2](https://tauri.app/) |
+| Backend | [Rust](https://www.rust-lang.org/) + [git2-rs](https://github.com/rust-lang/git2-rs) |
+| Frontend | [Angular](https://angular.dev/) + TypeScript |
+| Icons | [Feather Icons](https://feathericons.com/) |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 20+
-- Rust 1.70+
+- Rust 1.70+ (`rustup`, `cargo`)
 - npm
 
 ### Development
 
 ```bash
-# Install JS dependencies
 npm install
-
-# Run Tauri dev (opens app with hot-reload)
 npm run tauri:dev
-
-# Run Electron dev (legacy)
-npm run dev
 ```
 
-### Building
+### Production Build
 
 ```bash
-# Tauri production build
 npm run tauri:build
-
-# Electron production build
-npm run electron:build
 ```
 
 ### Testing
 
 ```bash
-# Frontend tests
-npm test
-
-# Rust tests
-cd src-tauri && cargo test
+npm test                       # Frontend (Vitest)
+cd src-tauri && cargo test     # Rust backend
 ```
 
-## Support this app
-
-If you like this app, find it useful or just like the subway map visualization, I'd love to hear your feedback — share with `admin@rhodiumcode.com`
-
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/mjCsGWDTS"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a tea"><span style="margin-left:5px">Buy me a tea</span></a>
+> The legacy Electron path (`npm run dev`) is still available but will be removed in a future release.
 
 ## Documentation
 
-- [RFCs](./docs/rfc/README.md) - Technical design documents and architectural decisions
-- [Roadmap](./docs/ROADMAP.md) - Migration roadmap and phase tracking
+| Resource | Description |
+|----------|-------------|
+| [Tauri Dev Guide](./docs/tauri.md) | Build, run, and debug the Tauri app |
+| [RFCs](./docs/rfc/README.md) | Technical design decisions |
+| [Roadmap](./ROADMAP.md) | Migration phases and tracking |
 
-## Issues
+## Support
 
-If you've found a bug, security issue or want to suggest a feature, feel free to post them to the Issues section.
+If you like this app or find the subway-map visualization useful, I'd love to hear your feedback.
+
+<a href="https://www.buymeacoffee.com/mjCsGWDTS" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a tea" height="20" /></a> [Buy me a tea](https://www.buymeacoffee.com/mjCsGWDTS) · [Report a Bug](https://github.com/luban-ws/hetu/issues) · [Request a Feature](https://github.com/luban-ws/hetu/issues)
 
 ## License
 

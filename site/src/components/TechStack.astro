@@ -1,0 +1,35 @@
+---
+/**
+ * Tech stack badges — show the modern foundation Hetu is built on.
+ */
+
+const TECH = [
+  { name: 'Tauri 2', url: 'https://tauri.app/', color: 'var(--color-line-orange)' },
+  { name: 'Rust', url: 'https://www.rust-lang.org/', color: 'var(--color-line-red)' },
+  { name: 'Angular', url: 'https://angular.dev/', color: 'var(--color-line-red)' },
+  { name: 'git2-rs', url: 'https://github.com/rust-lang/git2-rs', color: 'var(--color-line-green)' },
+  { name: 'TypeScript', url: 'https://www.typescriptlang.org/', color: 'var(--color-line-blue)' },
+] as const;
+---
+
+<section class="border-y py-16" style="border-color: var(--color-border); background: var(--color-deep);">
+  <div class="mx-auto max-w-7xl px-6 text-center">
+    <p class="mb-8 text-xs font-semibold uppercase tracking-widest" style="color: var(--color-text-muted);">
+      Built with
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      {TECH.map(({ name, url, color }) => (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-medium transition-all hover:-translate-y-0.5"
+          style={`border-color: var(--color-border); color: var(--color-text-secondary);`}
+        >
+          <span class="inline-block h-2 w-2 rounded-full" style={`background: ${color};`} />
+          {name}
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

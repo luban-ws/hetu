@@ -1,0 +1,95 @@
+---
+const CURRENT_YEAR = new Date().getFullYear();
+
+const LINKS = [
+  {
+    heading: 'Product',
+    items: [
+      { label: 'Features', href: '/#features' },
+      { label: 'Screenshots', href: '/#screenshots' },
+      { label: 'Download', href: '/#download' },
+    ],
+  },
+  {
+    heading: 'Resources',
+    items: [
+      { label: 'Documentation', href: '/docs/getting-started' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Changelog', href: '/blog' },
+    ],
+  },
+  {
+    heading: 'Community',
+    items: [
+      { label: 'GitHub', href: 'https://github.com/luban-ws/hetu' },
+      { label: 'Issues', href: 'https://github.com/luban-ws/hetu/issues' },
+      { label: 'Buy Me a Tea', href: 'https://www.buymeacoffee.com/mjCsGWDTS' },
+    ],
+  },
+];
+---
+
+<footer
+  class="border-t"
+  style="border-color: var(--color-border); background: var(--color-deep);"
+>
+  <div class="mx-auto max-w-7xl px-6 py-16">
+    <div class="grid gap-12 md:grid-cols-4">
+      <!-- Brand column -->
+      <div>
+        <a href="/" class="flex items-center gap-2">
+          <svg viewBox="0 0 48 48" class="h-7 w-7" aria-hidden="true">
+            <rect width="48" height="48" rx="10" fill="var(--color-surface)" />
+            <circle cx="14" cy="14" r="4" fill="var(--color-line-blue)" />
+            <circle cx="24" cy="24" r="4" fill="var(--color-line-green)" />
+            <circle cx="34" cy="34" r="4" fill="var(--color-line-orange)" />
+            <line x1="14" y1="14" x2="24" y2="24" stroke="var(--color-line-blue)" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="24" y1="24" x2="34" y2="34" stroke="var(--color-line-green)" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+          <span class="text-lg font-bold" style="font-family: var(--font-display);">Hetu</span>
+        </a>
+        <p class="mt-3 text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+          Subway-map style Git visualization.<br />
+          Built with Tauri + Rust + Angular.
+        </p>
+      </div>
+
+      <!-- Link columns -->
+      {LINKS.map(({ heading, items }) => (
+        <div>
+          <h4
+            class="mb-4 text-xs font-semibold uppercase tracking-widest"
+            style="color: var(--color-text-muted);"
+          >
+            {heading}
+          </h4>
+          <ul class="space-y-2.5">
+            {items.map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  class="text-sm transition-colors hover:text-[var(--color-accent)]"
+                  style="color: var(--color-text-secondary);"
+                  {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="subway-bar mt-12" />
+
+    <div class="mt-6 flex items-center justify-between">
+      <p class="text-xs" style="color: var(--color-text-muted);">
+        &copy; {CURRENT_YEAR} Ming-Hung (Michael) Lu. MIT License.
+      </p>
+      <p class="text-xs" style="color: var(--color-text-muted);">
+        河图 — Hetu
+      </p>
+    </div>
+  </div>
+</footer>

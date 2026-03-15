@@ -1,0 +1,109 @@
+---
+/**
+ * Hero section — animated GIF showcase with subway-line decorations.
+ * Designed to immediately convey the product's unique value proposition.
+ */
+---
+
+<section class="relative overflow-hidden pb-20 pt-28 md:pt-36">
+  <!-- Decorative subway lines in background -->
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="absolute left-[15%] top-0 h-full w-px opacity-[0.06]"
+      style="background: var(--color-line-blue);"
+    />
+    <div
+      class="absolute left-[50%] top-0 h-full w-px opacity-[0.06]"
+      style="background: var(--color-line-green);"
+    />
+    <div
+      class="absolute left-[85%] top-0 h-full w-px opacity-[0.06]"
+      style="background: var(--color-line-orange);"
+    />
+    <!-- Gradient glow behind hero image -->
+    <div
+      class="absolute left-1/2 top-1/2 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-20 blur-[120px]"
+      style="background: radial-gradient(ellipse, var(--color-line-blue), transparent 70%);"
+    />
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-6 text-center">
+    <!-- Badge -->
+    <div class="animate-fade-up mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium"
+      style="border-color: var(--color-border); color: var(--color-text-secondary);"
+    >
+      <span
+        class="inline-block h-1.5 w-1.5 rounded-full"
+        style="background: var(--color-line-green);"
+      />
+      v0.5 — Now powered by Tauri + Rust
+    </div>
+
+    <!-- Headline -->
+    <h1
+      class="animate-fade-up delay-100 mx-auto max-w-4xl text-4xl font-black leading-[1.1] tracking-tight md:text-6xl lg:text-7xl"
+      style="font-family: var(--font-display);"
+    >
+      Git visualization,
+      <br />
+      <span class="bg-gradient-to-r from-[var(--color-line-blue)] via-[var(--color-line-green)] to-[var(--color-line-orange)] bg-clip-text text-transparent">
+        reimagined as a subway map
+      </span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p
+      class="animate-fade-up delay-200 mx-auto mt-6 max-w-2xl text-lg md:text-xl"
+      style="color: var(--color-text-secondary);"
+    >
+      Hetu (河图) is a native desktop Git client that renders your branch history
+      as a beautiful, intuitive subway map — with JIRA and CI integration built in.
+    </p>
+
+    <!-- CTA buttons -->
+    <div class="animate-fade-up delay-300 mt-10 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="#download"
+        class="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--color-accent)]/20 transition-all hover:shadow-xl hover:shadow-[var(--color-accent)]/30 hover:-translate-y-0.5"
+        style="background: var(--color-accent);"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Download
+      </a>
+      <a
+        href="https://github.com/luban-ws/hetu"
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 rounded-xl border px-7 py-3.5 text-sm font-semibold transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+        style="border-color: var(--color-border); color: var(--color-text-secondary);"
+      >
+        View Source
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Hero image -->
+    <div class="animate-fade-up delay-400 relative mx-auto mt-16 max-w-5xl">
+      <div
+        class="overflow-hidden rounded-2xl border shadow-2xl shadow-black/50"
+        style="border-color: var(--color-border);"
+      >
+        <img
+          src="/screenshots/demo.gif"
+          alt="Hetu subway-map Git visualization demo"
+          class="w-full"
+          loading="eager"
+        />
+      </div>
+      <!-- Reflection glow -->
+      <div
+        class="pointer-events-none absolute -bottom-8 left-0 right-0 h-32 opacity-40 blur-2xl"
+        style="background: linear-gradient(to top, var(--color-void), transparent);"
+      />
+    </div>
+  </div>
+</section>

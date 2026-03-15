@@ -1,0 +1,19 @@
+{
+  "name": "hetu-site",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Hetu — Subway-Map Git Client showcase site",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.0",
+    "@astrojs/sitemap": "^3.3.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "astro": "^6.0.4",
+    "tailwindcss": "^4.2.1"
+  }
+}

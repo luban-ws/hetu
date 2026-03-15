@@ -1,0 +1,40 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+
+interface Props {
+  title: string;
+  date: string;
+  description?: string;
+}
+
+const { title, date, description } = Astro.props;
+---
+
+<BaseLayout title={`${title} — Hetu Blog`} description={description}>
+  <Header />
+  <main class="mx-auto max-w-3xl px-6 py-16">
+    <a
+      href="/blog"
+      class="mb-8 inline-flex items-center gap-1 text-sm transition-colors"
+      style="color: var(--color-text-secondary);"
+    >
+      <span>&larr;</span> All posts
+    </a>
+    <article class="prose">
+      <header class="mb-10">
+        <time
+          datetime={date}
+          class="text-sm"
+          style="color: var(--color-text-muted);"
+        >
+          {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </time>
+        <h1 class="mt-2">{title}</h1>
+      </header>
+      <slot />
+    </article>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,77 @@
+---
+/**
+ * Download / CTA section with platform-specific links.
+ */
+
+const PLATFORMS = [
+  {
+    name: 'macOS',
+    icon: 'M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8z',
+    note: 'Apple Silicon & Intel',
+  },
+  {
+    name: 'Windows',
+    icon: 'M3 5.5l7.5-1v7H3V5.5zm0 7.5h7.5v7L3 18.5V13zm8.5-8.5L21 3v8.5h-9.5V4.5zM11.5 13H21v8l-9.5-1.5V13z',
+    note: 'Windows 10+',
+  },
+  {
+    name: 'Linux',
+    icon: 'M12 2a2 2 0 00-2 2c0 .74.4 1.39 1 1.73V7a5 5 0 00-5 5v1H4a2 2 0 100 4h1v1a5 5 0 005 5h4a5 5 0 005-5v-1h1a2 2 0 100-4h-2v-1a5 5 0 00-5-5V5.73c.6-.34 1-.99 1-1.73a2 2 0 00-2-2z',
+    note: 'AppImage & deb',
+  },
+] as const;
+---
+
+<section id="download" class="relative py-24 md:py-32">
+  <!-- Decorative glow -->
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="absolute left-1/2 top-0 h-[400px] w-[600px] -translate-x-1/2 rounded-full opacity-15 blur-[100px]"
+      style="background: radial-gradient(ellipse, var(--color-line-green), transparent 70%);"
+    />
+  </div>
+
+  <div class="relative mx-auto max-w-4xl px-6 text-center">
+    <h2
+      class="text-3xl font-bold tracking-tight md:text-4xl"
+      style="font-family: var(--font-display);"
+    >
+      Ready to try Hetu?
+    </h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg" style="color: var(--color-text-secondary);">
+      Free and open source. Download for your platform or build from source.
+    </p>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-3">
+      {PLATFORMS.map(({ name, note }) => (
+        <a
+          href="#"
+          class="group flex flex-col items-center gap-3 rounded-2xl border p-8 transition-all duration-300 hover:border-[var(--color-accent)] hover:shadow-lg hover:shadow-[var(--color-accent)]/10 hover:-translate-y-1"
+          style="border-color: var(--color-border); background: var(--color-surface);"
+        >
+          <span class="text-lg font-semibold">{name}</span>
+          <span class="text-xs" style="color: var(--color-text-muted);">{note}</span>
+          <span
+            class="mt-2 inline-flex items-center gap-1 text-sm font-medium transition-colors group-hover:text-[var(--color-accent)]"
+            style="color: var(--color-text-secondary);"
+          >
+            Download
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </span>
+        </a>
+      ))}
+    </div>
+
+    <p class="mt-8 text-sm" style="color: var(--color-text-muted);">
+      Or build from source:
+      <code
+        class="ml-1 rounded px-2 py-1 text-xs"
+        style="background: var(--color-surface); color: var(--color-line-purple); font-family: var(--font-mono);"
+      >
+        git clone &amp;&amp; npm install &amp;&amp; npm run tauri:dev
+      </code>
+    </p>
+  </div>
+</section>

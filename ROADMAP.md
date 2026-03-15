@@ -146,7 +146,7 @@
 ## 阶段 3：凭证存储迁移（RFC 0007）✅
 
 - `keyring` crate 集成 OS 原生密钥链（macOS Keychain / Windows Credential Manager / Linux Secret Service）。
-- `settings_store.rs` 管理 `~/Explorasa Git/settings.json` 和每仓库配置。
+- `settings_store.rs` 管理 `~/Hetu/settings.json` 和每仓库配置。
 - `git2` 远程操作支持 HTTPS + SSH 双路凭证。
 - 14 个新 Tauri 命令注册。
 

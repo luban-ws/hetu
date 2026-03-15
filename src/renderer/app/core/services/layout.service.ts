@@ -1,6 +1,6 @@
-import { Injectable, EventEmitter, Output } from "@angular/core";
+import { Injectable, EventEmitter, Output, Inject, NgZone } from "@angular/core";
 import { HotkeysService } from "@ngneat/hotkeys";
-import { ElectronService } from "../../infrastructure/electron.service";
+import { DESKTOP_ADAPTER, DesktopAdapter } from '../../infrastructure/desktop-adapter';
 import { IPC_EVENTS  } from '@common/ipc-events';
 
 @Injectable()
@@ -48,7 +48,8 @@ export class LayoutService {
 
   constructor(
     private hotkeys: HotkeysService,
-    private electron: ElectronService
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
+    private zone: NgZone
   ) {
     this.hotkeys.addShortcut({
       keys: "shift.arrowleft",
@@ -66,11 +67,13 @@ export class LayoutService {
         event.preventDefault();
       },
     });
-    this.electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
-      this.tooltipEnabled =
-        arg && arg["gen-tooltip"] === ""
-          ? true
-          : Boolean(arg && arg["gen-tooltip"]);
+    this.adapter.on(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.tooltipEnabled =
+          arg && arg["gen-tooltip"] === ""
+            ? true
+            : Boolean(arg && arg["gen-tooltip"]);
+      });
     });
   }
 }

@@ -3,8 +3,55 @@
     src: url('assets/fonts/Lato-Regular.ttf');
 }
 
+:root {
+    --app-font-size-xs: 11px;
+    --app-font-size-sm: 12px;
+    --app-font-size-base: 13px;
+    --app-font-size-md: 14px;
+    --app-font-size-lg: 16px;
+    --app-font-size-icon: 20px;
+    --app-font-size-icon-lg: 24px;
+    --app-line-height: 1.45;
+    --app-spacing-xs: 2px;
+    --app-spacing-sm: 4px;
+    --app-spacing-md: 8px;
+    --app-spacing-lg: 12px;
+    --app-spacing-xl: 16px;
+    --app-toolbar-height: 40px;
+    --app-toolbar-icon: 20px;
+    --app-row-height: 26px;
+    --app-radius-sm: 3px;
+    --app-radius-md: 5px;
+}
+
+html {
+    font-size: var(--app-font-size-base);
+    line-height: var(--app-line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 body {
     user-select: none;
+    font-size: var(--app-font-size-base);
+    line-height: var(--app-line-height);
+}
+
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; font-weight: 600; }
+h5 { font-size: 0.9rem; font-weight: 600; }
+h6 { font-size: 0.85rem; }
+small, .small { font-size: var(--app-font-size-sm); }
+
+.btn {
+    font-size: var(--app-font-size-sm);
+    padding: var(--app-spacing-sm) var(--app-spacing-md);
+}
+.btn-sm {
+    font-size: var(--app-font-size-xs);
+    padding: var(--app-spacing-xs) var(--app-spacing-sm);
 }
 
 .nav-tabs .nav-item.show .nav-link,

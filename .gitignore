@@ -12,6 +12,9 @@
 # dependencies
 /node_modules
 
+# Rust / Tauri build artifacts
+/src-tauri/target/
+
 # IDEs and editors
 /.idea
 .project
@@ -42,6 +45,10 @@ testem.log
 # e2e
 /e2e/*.js
 /e2e/*.map
+
+# Secrets and local config
+logs/security/
+.claude/settings.local.json
 
 # System Files
 .DS_Store

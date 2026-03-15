@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { ElectronService } from "../electron.service";
+import { Component, OnInit, Inject } from "@angular/core";
+import { DesktopAdapter, DESKTOP_ADAPTER } from '../desktop-adapter';
 import { IPC_EVENTS } from "@common/ipc-events";
 
 @Component({
@@ -9,17 +9,20 @@ import { IPC_EVENTS } from "@common/ipc-events";
   standalone: false,
 })
 export class AboutPageComponent implements OnInit {
-  constructor(private electron: ElectronService) {}
+  constructor(@Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter) {}
 
   ngOnInit() {}
 
+  /** @description Open the project repository in the default browser */
   goToRepo() {
-    this.electron.ipcRenderer.send(IPC_EVENTS.SHELL.OPEN, {
-      url: "https://github.com/systembugtj/explorasa-git",
+    this.adapter.send(IPC_EVENTS.SHELL.OPEN, {
+      url: "https://github.com/systembugtj/hetu",
     });
   }
+
+  /** @description Open the Buy Me a Coffee page in the default browser */
   goToBMC() {
-    this.electron.ipcRenderer.send(IPC_EVENTS.SHELL.OPEN, {
+    this.adapter.send(IPC_EVENTS.SHELL.OPEN, {
       url: "https://www.buymeacoffee.com/mjCsGWDTS",
     });
   }

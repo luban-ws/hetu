@@ -1,5 +1,5 @@
-import { Injectable, EventEmitter, Output } from "@angular/core";
-import { ElectronService } from "../../infrastructure/electron.service";
+import { Injectable, EventEmitter, Output, Inject, NgZone } from "@angular/core";
+import { DESKTOP_ADAPTER, DesktopAdapter } from "../../infrastructure/desktop-adapter";
 import { CredentialsService } from "./credentials.service";
 import { ToastrService } from "ngx-toastr";
 import { Router } from "@angular/router";
@@ -40,7 +40,8 @@ export class CommitChangeService {
   private _commiting = false;
   private selectedCommit: WIPCommit | null = null;
   constructor(
-    private electron: ElectronService,
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
+    private zone: NgZone,
     private cred: CredentialsService,
     private route: Router,
     private toastr: ToastrService,
@@ -48,52 +49,66 @@ export class CommitChangeService {
     private hotkeys: HotkeysService,
     private loading: LoadingService
   ) {
-    this.electron.onCD(IPC_EVENTS.REPO.COMMITTED, (event: any, arg: any) => {
-      this.newCommitMessage = "";
-      this.newCommitDetail = "";
-      this.commiting = false;
+    this.adapter.on(IPC_EVENTS.REPO.COMMITTED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.newCommitMessage = "";
+        this.newCommitDetail = "";
+        this.commiting = false;
+      });
     });
-    this.electron.onCD(IPC_EVENTS.REPO.COMMIT_FAIL, (event: any, arg: any) => {
-      this.toastr.error(
-        "An error occured during commit, please try again",
-        "Commit Error"
-      );
-      this.commiting = false;
-    });
-    this.electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
-      if (arg && arg["jira-enabled"] && arg["jira-keys"]) {
-        let keys = arg["jira-keys"].split(";");
-        let key = "";
-        if (keys.length) {
-          key = keys[0];
-        }
-        this.defaultKey = key;
-      } else {
-        this.defaultKey = "";
-      }
-    });
-    this.electron.onCD(IPC_EVENTS.REPO.STASH_FAILED, (event: any, arg: any) => {
-      this.toastr.error(
-        "There was an error during stash, please try again",
-        "Stash Error"
-      );
-      this.stashed.emit();
-    });
-    this.electron.onCD(IPC_EVENTS.REPO.POP_FAILED, (event: any, arg: any) => {
-      if (arg.detail === "NO_STASH") {
-        this.toastr.info("There's no stashed commits", "No Stash");
-      } else {
+    this.adapter.on(IPC_EVENTS.REPO.COMMIT_FAIL, (event: any, arg: any) => {
+      this.zone.run(() => {
         this.toastr.error(
-          "There was an error during pop, please try again",
-          "Pop Error"
+          "An error occured during commit, please try again",
+          "Commit Error"
         );
-      }
+        this.commiting = false;
+      });
     });
-    this.electron.onCD(IPC_EVENTS.REPO.STASHED, (event: any, arg: any) => {
-      this.stashed.emit();
+    this.adapter.on(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        if (arg && arg["jira-enabled"] && arg["jira-keys"]) {
+          let keys = arg["jira-keys"].split(";");
+          let key = "";
+          if (keys.length) {
+            key = keys[0];
+          }
+          this.defaultKey = key;
+        } else {
+          this.defaultKey = "";
+        }
+      });
     });
-    this.electron.onCD(IPC_EVENTS.REPO.POPPED, (event: any, arg: any) => {
-      this.popped.emit();
+    this.adapter.on(IPC_EVENTS.REPO.STASH_FAILED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.toastr.error(
+          "There was an error during stash, please try again",
+          "Stash Error"
+        );
+        this.stashed.emit();
+      });
+    });
+    this.adapter.on(IPC_EVENTS.REPO.POP_FAILED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        if (arg.detail === "NO_STASH") {
+          this.toastr.info("There's no stashed commits", "No Stash");
+        } else {
+          this.toastr.error(
+            "There was an error during pop, please try again",
+            "Pop Error"
+          );
+        }
+      });
+    });
+    this.adapter.on(IPC_EVENTS.REPO.STASHED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.stashed.emit();
+      });
+    });
+    this.adapter.on(IPC_EVENTS.REPO.POPPED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.popped.emit();
+      });
     });
     cmtSelect.selectionChange.subscribe((newSelect) => {
       if (<WIPCommit>newSelect) {
@@ -136,30 +151,39 @@ export class CommitChangeService {
   }
 
   init() {}
+  /** Stage files by their paths */
   stage(paths: any): void {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.STAGE, { paths: paths });
+    this.adapter.send(IPC_EVENTS.REPO.STAGE, { paths: paths });
   }
+
+  /** Stage individual lines within a file */
   stageLines(path: any, lines: any) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.STAGE_LINES, {
+    this.adapter.send(IPC_EVENTS.REPO.STAGE_LINES, {
       path: path,
       lines: lines,
     });
   }
+
+  /** Unstage files by their paths */
   unstage(paths: any): void {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.UNSTAGE, { paths: paths });
+    this.adapter.send(IPC_EVENTS.REPO.UNSTAGE, { paths: paths });
   }
+
+  /** Unstage individual lines within a file */
   unstageLines(path: any, lines: any) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.UNSTAGE_LINES, {
+    this.adapter.send(IPC_EVENTS.REPO.UNSTAGE_LINES, {
       path: path,
       lines: lines,
     });
   }
+
+  /** Commit specified files with the current message and profile */
   commit(paths: any): void {
     if (this.checkProfileExists()) {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.COMMIT, {
+      this.adapter.send(IPC_EVENTS.REPO.COMMIT, {
         name: name,
         email: email,
         message: message,
@@ -167,41 +191,53 @@ export class CommitChangeService {
       });
     }
   }
+
+  /** Commit all currently staged files */
   commitStaged(): void {
     if (this.checkProfileExists()) {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.COMMIT_STAGED, {
+      this.adapter.send(IPC_EVENTS.REPO.COMMIT_STAGED, {
         name: name,
         email: email,
         message: message,
       });
     }
   }
+
+  /** Stash current working changes */
   stash(): void {
     if (this.checkProfileExists()) {
       let name = this.cred.name;
       let email = this.cred.email;
       let message = `${this._message}\n${this.newCommitDetail}`;
-      this.electron.ipcRenderer.send(IPC_EVENTS.REPO.STASH, {
+      this.adapter.send(IPC_EVENTS.REPO.STASH, {
         name: name,
         email: email,
         message: message,
       });
     }
   }
+
+  /** Pop a stash entry by index (-1 for latest) */
   pop(index: any = -1): void {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.POP, { index: index });
+    this.adapter.send(IPC_EVENTS.REPO.POP, { index: index });
   }
+
+  /** Apply a stash entry without removing it */
   apply(index: any = -1): void {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.APPLY, { index: index });
+    this.adapter.send(IPC_EVENTS.REPO.APPLY, { index: index });
   }
+
+  /** Delete a stash entry by index */
   deleteStash(index: any): void {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DELETE_STASH, { index: index });
+    this.adapter.send(IPC_EVENTS.REPO.DELETE_STASH, { index: index });
   }
+
+  /** Discard all working directory changes */
   discardAll(): void {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.DISCARD_ALL, {});
+    this.adapter.send(IPC_EVENTS.REPO.DISCARD_ALL, {});
   }
   tryCommit(): void {
     if (

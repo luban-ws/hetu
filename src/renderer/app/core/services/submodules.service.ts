@@ -1,5 +1,5 @@
-import { Injectable, Output, EventEmitter } from "@angular/core";
-import { ElectronService } from "../../infrastructure/electron.service";
+import { Injectable, Output, EventEmitter, Inject, NgZone } from "@angular/core";
+import { DESKTOP_ADAPTER, DesktopAdapter } from "../../infrastructure/desktop-adapter";
 import { IPC_EVENTS } from "@common/ipc-events";
 
 @Injectable()
@@ -10,30 +10,39 @@ export class SubmodulesService {
   submodules: any[] | undefined;
   submoduleDetails: any;
   selectedSubmodule: any;
-  constructor(private electron: ElectronService) {
-    this.electron.onCD(
+  constructor(
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
+    private zone: NgZone
+  ) {
+    this.adapter.on(
       IPC_EVENTS.REPO.SUBMODULE_NAMES_RETRIEVED,
-      (event, arg) => {
-        this.submodules = arg.submodules;
-        this.submoduleChanged.emit(this.submodules);
+      (event: any, arg: any) => {
+        this.zone.run(() => {
+          this.submodules = arg.submodules;
+          this.submoduleChanged.emit(this.submodules);
+        });
       }
     );
-    this.electron.onCD(
+    this.adapter.on(
       IPC_EVENTS.REPO.SUBMODULE_DETAILS_RETRIEVED,
-      (event, arg) => {
-        this.submoduleDetails = arg.result;
-        this.submoduleDetailChanged.emit(this.submoduleDetails);
+      (event: any, arg: any) => {
+        this.zone.run(() => {
+          this.submoduleDetails = arg.result;
+          this.submoduleDetailChanged.emit(this.submoduleDetails);
+        });
       }
     );
   }
 
-  selectSubmodule(name) {
+  /** Select a submodule by name and emit the selection event */
+  selectSubmodule(name: any) {
     this.selectedSubmodule = name;
     this.submoduleSelected.emit(name);
   }
 
-  getSubmoduleDetails(name) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.REPO.GET_SUBMODULE_DETAILS, {
+  /** Request submodule details from the backend */
+  getSubmoduleDetails(name: any) {
+    this.adapter.send(IPC_EVENTS.REPO.GET_SUBMODULE_DETAILS, {
       name: name,
     });
   }

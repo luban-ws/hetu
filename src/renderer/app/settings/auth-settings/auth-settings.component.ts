@@ -23,12 +23,12 @@ export class AuthSettingsComponent extends SettingsComponent {
     this.pubPath = this.settings.getAppSetting('auth-pubpath');
   }
 
-  browseKey() {
-    this.keyPath = this.settings.browseFile();
+  async browseKey() {
+    this.keyPath = await this.settings.browseFile();
     this.settings.setSetting('auth-keypath', this.keyPath);
   }
-  browsePub() {
-    this.pubPath = this.settings.browseFile();
+  async browsePub() {
+    this.pubPath = await this.settings.browseFile();
     this.settings.setSetting('auth-pubpath', this.pubPath);
   }
 

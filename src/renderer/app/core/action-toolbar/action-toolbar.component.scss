@@ -1,5 +1,5 @@
-$item-height: 55px;
-$badge-size: 20px;
+$item-height: var(--app-toolbar-height);
+$badge-size: 16px;
 
 :host{
     width: 100%;
@@ -10,16 +10,16 @@ $badge-size: 20px;
     min-height: $item-height;
     cursor: pointer;
     .action-button{
-        width: 80px;
+        width: 44px;
         height: $item-height;
-        padding: 5px 10px;
-        font-size: 35px;
+        padding: 4px 6px;
+        font-size: var(--app-font-size-icon);
         text-align: center;
         position: relative;
         app-spinner{
             position: absolute;
-            top: 10px;
-            left: 20px;
+            top: 8px;
+            left: 12px;
         }
         &:hover{
             background: rgba(0, 0, 0, 0.2);
@@ -31,13 +31,12 @@ $badge-size: 20px;
             background: rgb(5, 142, 217);
             width: $badge-size;
             height: $badge-size;
-            top: 8px;
-            right: 13px;
-            font-size: 12px;
-            padding: 0.25em 0;
-            line-height: 14px;
+            top: 4px;
+            right: 4px;
+            font-size: var(--app-font-size-xs);
+            padding: 0.15em 0;
+            line-height: 12px;
             color: #FFF !important;
         }
     }
-    
 }

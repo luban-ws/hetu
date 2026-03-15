@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild, Inject } from '@angular/core';
 import { CommitMessage } from '../models/commit-message';
 import { JiraIntegrationService } from '../services/jira-integration.service';
 import { Issue } from '../models/issue';
-import { ElectronService } from '../../infrastructure/electron.service';
+import { DesktopAdapter, DESKTOP_ADAPTER } from '../../infrastructure/desktop-adapter';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
 import moment from 'moment';
@@ -49,7 +49,7 @@ export class JiraDetailComponent implements OnInit, OnDestroy {
   public tooltip = true;
   private subs: Subscription[] = [];
   constructor(
-    private electron: ElectronService,
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
     private jira: JiraIntegrationService,
     private sanitizer: DomSanitizer,
     private promptInj: PromptInjectorService,
@@ -137,10 +137,11 @@ export class JiraDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
   }
+  /** @description Open the current JIRA issue in the default browser */
   openIssue() {
     let baseLinks = this.issue.self.split('/rest/api/2');
     if (baseLinks.length) {
-      this.electron.openUrlExternal(`${baseLinks[0]}/browse/${this.issue.key}`);
+      this.adapter.openExternal(`${baseLinks[0]}/browse/${this.issue.key}`);
     }
   }
   onRequestPosted() {

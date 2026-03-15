@@ -26,7 +26,7 @@
   
   h3 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: var(--app-font-size-md);
     color: var(--bs-body-color, #212529);
   }
 }

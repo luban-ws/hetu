@@ -10,7 +10,7 @@ import { safeSend } from "./ipc-wrapper.js";
 const logger = getLogger('settings');
 
 const homeDir = homedir();
-const appDir = homeDir + "/Explorasa Git/";
+const appDir = homeDir + "/Hetu/";
 let window;
 let secureStorage;
 let settingsFile;

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1d2e"/>
+      <stop offset="100%" stop-color="#0d1017"/>
+    </linearGradient>
+    <linearGradient id="line1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#58a6ff"/>
+      <stop offset="100%" stop-color="#1f6feb"/>
+    </linearGradient>
+    <linearGradient id="line2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3fb950"/>
+      <stop offset="100%" stop-color="#238636"/>
+    </linearGradient>
+    <linearGradient id="line3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f78166"/>
+      <stop offset="100%" stop-color="#da3633"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#58a6ff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#58a6ff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="nodeGlow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <rect width="1024" height="512" rx="220" fill="url(#glow)"/>
+  <path d="M 512 160 L 512 864" stroke="url(#line1)" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <path d="M 512 320 C 580 320, 700 340, 700 420 L 700 620 C 700 700, 620 720, 512 720" stroke="url(#line2)" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <path d="M 512 520 C 440 520, 330 540, 330 620 L 330 680" stroke="url(#line3)" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <circle cx="512" cy="320" r="32" fill="#1a1d2e" stroke="#58a6ff" stroke-width="10" filter="url(#nodeGlow)"/>
+  <circle cx="512" cy="520" r="32" fill="#1a1d2e" stroke="#58a6ff" stroke-width="10" filter="url(#nodeGlow)"/>
+  <circle cx="512" cy="720" r="36" fill="#58a6ff" filter="url(#nodeGlow)"/>
+  <circle cx="700" cy="520" r="28" fill="#1a1d2e" stroke="#3fb950" stroke-width="9" filter="url(#nodeGlow)"/>
+  <circle cx="330" cy="680" r="24" fill="#f78166" filter="url(#nodeGlow)"/>
+  <circle cx="512" cy="720" r="14" fill="#1a1d2e"/>
+  <circle cx="512" cy="320" r="14" fill="#58a6ff"/>
+  <circle cx="512" cy="520" r="14" fill="#58a6ff"/>
+</svg>

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { OpenRepoPanelComponent } from '../open-repo-panel/open-repo-panel.component';
-import { ElectronService } from '../../infrastructure/electron.service';
+
 import { RepoService } from '../services/repo.service';
 import { Router } from '@angular/router';
 import { LayoutService } from '../services/layout.service';

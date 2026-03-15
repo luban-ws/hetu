@@ -18,10 +18,11 @@
         user-select: initial;
         cursor: pointer;
         position: relative;
+        font-size: var(--app-font-size-sm);
         .btn-sm {
-            height: 24px;
-            font-size: 12px;
-            padding: 2px;
+            height: 20px;
+            font-size: var(--app-font-size-xs);
+            padding: 1px 3px;
         }
         &:hover {
             background: rgba(0, 0, 0, 0.2);
@@ -33,16 +34,16 @@
             display: none;
             position: absolute;
             right: 3px;
-            top: 3px;
-            line-height: 20px;
+            top: 2px;
+            line-height: 18px;
         }
     }
 }
 
 .action-button {
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--app-font-size-xs);
     background: var(--gray);
-    border-radius: 3px;
-    padding: 3px;
+    border-radius: var(--app-radius-sm);
+    padding: 2px 3px;
 }

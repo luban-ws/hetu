@@ -1,5 +1,5 @@
-import { Injectable, EventEmitter, Output } from "@angular/core";
-import { ElectronService } from "../../infrastructure/electron.service";
+import { Injectable, EventEmitter, Output, Inject, NgZone } from "@angular/core";
+import { DESKTOP_ADAPTER, DesktopAdapter } from '../../infrastructure/desktop-adapter';
 import { RepoService } from "./repo.service";
 import { StatusBarService } from "../../infrastructure/status-bar.service";
 import { IPC_EVENTS  } from '@common/ipc-events';
@@ -13,54 +13,63 @@ export class CiIntegrationService {
   enabled = false;
   private repoID = "";
   constructor(
-    private electron: ElectronService,
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
+    private zone: NgZone,
     private status: StatusBarService,
     private repo: RepoService
   ) {
     this.buildResults = {};
-    electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event, arg) => {
-      if (!arg || !arg["ci-appveyor"]) {
-        this.enabled = false;
-      } else {
-        this.enabled = true;
-      }
-      this.enabledChanged.emit(this.enabled);
-      if (arg && arg.currentRepo && arg.currentRepo.id) {
-        this.repoID = arg.currentRepo.id;
-        electron.ipcRenderer.send(IPC_EVENTS.CI.REPO_CHANGED, { id: this.repoID });
-      }
-    });
-    electron.onCD(IPC_EVENTS.CI.REQUEST_ERROR, (event, arg) => {
-      this.status.flash(
-        "danger",
-        "Failed to get CI build info. The failing service is : " + arg.service
-      );
-    });
-    electron.onCD(IPC_EVENTS.CI.QUERY_BEGAN, (event, arg) => {
-      this.status.enableLoading(`Querying CI service: ${arg.service}`);
-    });
-    electron.onCD(IPC_EVENTS.CI.BUILDS_RETRIEVED, (event, arg) => {
-      this.status.disableLoading();
-      let updated = {};
-      arg.data.forEach((b) => {
-        if (
-          this.buildResults[b.commit] &&
-          this.buildResults[b.commit].results[arg.service] !== b.status
-        ) {
-          this.buildResults[b.commit].results[arg.service] = b.status;
-          updated[b.commit] = this.buildResults[b.commit];
-        } else if (!this.buildResults[b.commit]) {
-          this.buildResults[b.commit] = {
-            commit: b.commit,
-            results: {},
-          };
-          this.buildResults[b.commit].results[arg.service] = b.status;
-          updated[b.commit] = this.buildResults[b.commit];
+    this.adapter.on(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        if (!arg || !arg["ci-appveyor"]) {
+          this.enabled = false;
+        } else {
+          this.enabled = true;
         }
-        this.updateOverallStatus(this.buildResults[b.commit]);
+        this.enabledChanged.emit(this.enabled);
+        if (arg && arg.currentRepo && arg.currentRepo.id) {
+          this.repoID = arg.currentRepo.id;
+          this.adapter.send(IPC_EVENTS.CI.REPO_CHANGED, { id: this.repoID });
+        }
       });
-      this.pruneOldBuilds();
-      this.buildsUpdated.emit(updated);
+    });
+    this.adapter.on(IPC_EVENTS.CI.REQUEST_ERROR, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.status.flash(
+          "danger",
+          "Failed to get CI build info. The failing service is : " + arg.service
+        );
+      });
+    });
+    this.adapter.on(IPC_EVENTS.CI.QUERY_BEGAN, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.status.enableLoading(`Querying CI service: ${arg.service}`);
+      });
+    });
+    this.adapter.on(IPC_EVENTS.CI.BUILDS_RETRIEVED, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.status.disableLoading();
+        let updated = {};
+        arg.data.forEach((b) => {
+          if (
+            this.buildResults[b.commit] &&
+            this.buildResults[b.commit].results[arg.service] !== b.status
+          ) {
+            this.buildResults[b.commit].results[arg.service] = b.status;
+            updated[b.commit] = this.buildResults[b.commit];
+          } else if (!this.buildResults[b.commit]) {
+            this.buildResults[b.commit] = {
+              commit: b.commit,
+              results: {},
+            };
+            this.buildResults[b.commit].results[arg.service] = b.status;
+            updated[b.commit] = this.buildResults[b.commit];
+          }
+          this.updateOverallStatus(this.buildResults[b.commit]);
+        });
+        this.pruneOldBuilds();
+        this.buildsUpdated.emit(updated);
+      });
     });
   }
 

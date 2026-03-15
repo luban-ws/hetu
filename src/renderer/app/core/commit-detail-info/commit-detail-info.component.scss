@@ -17,7 +17,7 @@
         flex-shrink: 0;
     }
     .summary-container {
-        height: 230px;
+        height: 180px;
         width: 100%;
         flex-shrink: 0;
     }
@@ -26,13 +26,13 @@
     }
     .committer-badge {
         flex-shrink: 0;
-        width: 70px;
-        height: 70px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        line-height: 70px;
+        line-height: 40px;
         text-align: center;
-        font-size: 36px;
-        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        font-size: var(--app-font-size-icon);
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
     }
     .sha-container {
         width: 200px;
@@ -52,7 +52,7 @@
             color: #fff;
             background: transparent;
             width: 100%;
-            font-size: 1.25rem;
+            font-size: var(--app-font-size-md);
             &:focus {
                 outline: none !important;
             }
@@ -93,9 +93,9 @@
             cursor: pointer;
             position: relative;
             .btn-sm {
-                height: 24px;
-                font-size: 12px;
-                padding: 2px;
+                height: 20px;
+                font-size: var(--app-font-size-xs);
+                padding: 1px 3px;
             }
             &:hover {
                 background: rgba(0, 0, 0, 0.2);

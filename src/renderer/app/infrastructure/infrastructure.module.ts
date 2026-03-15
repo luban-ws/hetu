@@ -11,6 +11,21 @@ import { UpdaterService } from './updater.service';
 import { ReleaseNoteComponent } from './release-note/release-note.component';
 import { AboutPageComponent } from './about-page/about-page.component';
 import { CacheService } from './cache.service';
+import { TauriBridgeService } from './tauri-bridge.service';
+import { DESKTOP_ADAPTER, DesktopAdapter } from './desktop-adapter';
+import { ElectronAdapter } from './electron-adapter';
+import { TauriAdapter } from './tauri-adapter';
+
+/**
+ * Factory that selects the correct DesktopAdapter at runtime.
+ * Tauri injects `window.__TAURI__`; if absent, fall back to Electron.
+ */
+function desktopAdapterFactory(): DesktopAdapter {
+  const isTauri =
+    typeof window !== 'undefined' &&
+    !!(window as unknown as { __TAURI__?: unknown }).__TAURI__;
+  return isTauri ? new TauriAdapter() : new ElectronAdapter();
+}
 
 @NgModule({
   imports: [
@@ -18,6 +33,15 @@ import { CacheService } from './cache.service';
   ],
   exports: [LoadingScreenComponent, SpinnerComponent, IcheckComponent],
   declarations: [LoadingScreenComponent, SpinnerComponent, IcheckComponent, ReleaseNoteComponent, AboutPageComponent],
-  providers: [LoadingService, ElectronService, PromptInjectorService, StatusBarService, UpdaterService, CacheService]
+  providers: [
+    LoadingService,
+    ElectronService,
+    PromptInjectorService,
+    StatusBarService,
+    UpdaterService,
+    CacheService,
+    TauriBridgeService,
+    { provide: DESKTOP_ADAPTER, useFactory: desktopAdapterFactory },
+  ]
 })
 export class InfrastructureModule { }

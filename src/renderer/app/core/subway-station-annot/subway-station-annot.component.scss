@@ -1,7 +1,7 @@
 $main-width: 180px;
 :host {
     height: 100%;
-    padding-top: 4px;
+    padding-top: 3px;
     width: $main-width;
 }
 
@@ -12,7 +12,7 @@ $main-width: 180px;
 }
 
 .annot {
-    margin-top: 8px;
+    margin-top: 4px;
     width: 100%;
     position: absolute;
     max-width: $main-width;
@@ -22,14 +22,14 @@ $main-width: 180px;
     .connect-line {
         position: absolute;
         height: 2px;
-        top: 14px;
+        top: 12px;
         .line {
             stroke: var(--blue);
             stroke-width: 2px;
         }
     }
     ul {
-        margin-top: 3px;
+        margin-top: 2px;
         list-style: none;
         float: right;
         max-width: 100%;
@@ -48,18 +48,18 @@ $main-width: 180px;
                 display: block;
             }
         }
-        
+
         li {
-            line-height: 17px;
-            border-radius: 3px;
+            line-height: 15px;
+            border-radius: var(--app-radius-sm);
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
-            font-size: 14px;
+            font-size: var(--app-font-size-sm);
             i {
-                font-size: 12px;
+                font-size: var(--app-font-size-xs);
             }
-            padding: 2px 5px;
+            padding: 1px 4px;
         }
     }
 }

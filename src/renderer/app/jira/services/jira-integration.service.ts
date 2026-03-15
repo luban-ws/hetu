@@ -1,5 +1,5 @@
-import { Injectable, Output, EventEmitter } from "@angular/core";
-import { ElectronService } from "../../infrastructure/electron.service";
+import { Injectable, Output, EventEmitter, Inject, NgZone } from "@angular/core";
+import { DesktopAdapter, DESKTOP_ADAPTER } from '../../infrastructure/desktop-adapter';
 import { Issue } from "../models/issue";
 import { ToastrService } from "ngx-toastr";
 import { StatusBarService } from "../../infrastructure/status-bar.service";
@@ -37,80 +37,103 @@ export class JiraIntegrationService {
   private issueTypes: IssueType[] = [];
   private subtaskType: IssueType;
   constructor(
-    private electron: ElectronService,
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
+    private zone: NgZone,
     private toastr: ToastrService,
     private statusBarSvc: StatusBarService
   ) {
-    electron.onCD(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (event, arg) => {
-      if (
-        !arg ||
-        !arg["jira-enabled"] ||
-        !arg["jira-keys"] ||
-        arg["jira-keys"].split(";").length === 0
-      ) {
-        this.enabled = false;
-        this.jiraKeys = [];
-        this.jiraUrl = "";
-      } else {
-        this.jiraKeys = arg["jira-keys"].split(";");
-        this.jiraUrl = arg["jira-address"];
-        this.enabled = true;
-      }
-      this.enabledChanged.emit(this.enabled);
-      if (arg && arg.currentRepo && arg.currentRepo.id) {
-        electron.ipcRenderer.send(IPC_EVENTS.JIRA.REPO_CHANGED, {
-          id: arg.currentRepo.id,
-        });
-      }
+    this.adapter.on(IPC_EVENTS.SETTINGS.EFFECTIVE_UPDATED, (_event: unknown, arg: any) => {
+      this.zone.run(() => {
+        if (
+          !arg ||
+          !arg["jira-enabled"] ||
+          !arg["jira-keys"] ||
+          arg["jira-keys"].split(";").length === 0
+        ) {
+          this.enabled = false;
+          this.jiraKeys = [];
+          this.jiraUrl = "";
+        } else {
+          this.jiraKeys = arg["jira-keys"].split(";");
+          this.jiraUrl = arg["jira-address"];
+          this.enabled = true;
+        }
+        this.enabledChanged.emit(this.enabled);
+        if (arg && arg.currentRepo && arg.currentRepo.id) {
+          this.adapter.send(IPC_EVENTS.JIRA.REPO_CHANGED, {
+            id: arg.currentRepo.id,
+          });
+        }
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.ISSUE_RETRIEVED, (event, arg) => {
-      this.issueRetrieved.emit(arg.issue);
+    this.adapter.on(IPC_EVENTS.JIRA.ISSUE_RETRIEVED, (_event: unknown, arg: any) => {
+      this.zone.run(() => {
+        this.issueRetrieved.emit(arg.issue);
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.RESOLUTIONS_RETRIEVED, (event, arg) => {
-      this.resolutions = arg.resolutions;
-      this.resolutionRetrieved.emit(this.resolutions);
+    this.adapter.on(IPC_EVENTS.JIRA.RESOLUTIONS_RETRIEVED, (_event: unknown, arg: any) => {
+      this.zone.run(() => {
+        this.resolutions = arg.resolutions;
+        this.resolutionRetrieved.emit(this.resolutions);
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.ISSUE_TYPES_RETRIEVED, (event, arg) => {
-      this.issueTypes = arg.issueTypes;
-      this.subtaskType = arg.subtaskType;
+    this.adapter.on(IPC_EVENTS.JIRA.ISSUE_TYPES_RETRIEVED, (_event: unknown, arg: any) => {
+      this.zone.run(() => {
+        this.issueTypes = arg.issueTypes;
+        this.subtaskType = arg.subtaskType;
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.ERROR, (event, arg) => {
-      this.toastr.error(
-        "Your JIRA setup doesn't seemed to be correct, please enter the correct settings",
-        "Error"
-      );
+    this.adapter.on(IPC_EVENTS.JIRA.ERROR, () => {
+      this.zone.run(() => {
+        this.toastr.error(
+          "Your JIRA setup doesn't seemed to be correct, please enter the correct settings",
+          "Error"
+        );
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.TIMEOUT, (event, arg) => {
-      statusBarSvc.flash(
-        "warning",
-        "JIRA connection timeout, your network connection might be unstable"
-      );
+    this.adapter.on(IPC_EVENTS.JIRA.TIMEOUT, () => {
+      this.zone.run(() => {
+        this.statusBarSvc.flash(
+          "warning",
+          "JIRA connection timeout, your network connection might be unstable"
+        );
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.OPERATION_FAILED, (event, arg) => {
-      this.toastr.error(
-        "Operation failed, please reload this issue and try again",
-        "Failed"
-      );
-      this.issueRetrieved.emit(null);
+    this.adapter.on(IPC_EVENTS.JIRA.OPERATION_FAILED, () => {
+      this.zone.run(() => {
+        this.toastr.error(
+          "Operation failed, please reload this issue and try again",
+          "Failed"
+        );
+        this.issueRetrieved.emit(null);
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.NOT_FOUND, (event, arg) => {
-      this.toastr.warning(
-        "JIRA issue not found, server returned 404",
-        "Not Found"
-      );
-      this.issueRetrieved.emit(null);
+    this.adapter.on(IPC_EVENTS.JIRA.NOT_FOUND, () => {
+      this.zone.run(() => {
+        this.toastr.warning(
+          "JIRA issue not found, server returned 404",
+          "Not Found"
+        );
+        this.issueRetrieved.emit(null);
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.CAPTCHA_REQUIRED, (event, arg) => {
-      this.toastr.warning(
-        "You have triggered JIRA's CAPTCHA detection, please login using your browser and solve the challenge before attempting more requests",
-        "JIRA Limiting"
-      );
+    this.adapter.on(IPC_EVENTS.JIRA.CAPTCHA_REQUIRED, () => {
+      this.zone.run(() => {
+        this.toastr.warning(
+          "You have triggered JIRA's CAPTCHA detection, please login using your browser and solve the challenge before attempting more requests",
+          "JIRA Limiting"
+        );
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.ASSIGNABLE_USERS_RETRIEVED, (event, arg) => {
-      this.assignableRetrieved.emit(arg.result);
+    this.adapter.on(IPC_EVENTS.JIRA.ASSIGNABLE_USERS_RETRIEVED, (_event: unknown, arg: any) => {
+      this.zone.run(() => {
+        this.assignableRetrieved.emit(arg.result);
+      });
     });
-    electron.onCD(IPC_EVENTS.JIRA.ISSUE_QUERY_RESULT_RETRIEVED, (event, arg) => {
-      this.issueQueryRetrieved.emit(arg.issues);
+    this.adapter.on(IPC_EVENTS.JIRA.ISSUE_QUERY_RESULT_RETRIEVED, (_event: unknown, arg: any) => {
+      this.zone.run(() => {
+        this.issueQueryRetrieved.emit(arg.issues);
+      });
     });
   }
   parseKeyFromMessage(message, detail) {
@@ -136,12 +159,17 @@ export class JiraIntegrationService {
       return [];
     }
   }
+  /** @description Fetch a single JIRA issue by key */
   getIssue(key) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.GET_ISSUE, { key: key });
+    this.adapter.send(IPC_EVENTS.JIRA.GET_ISSUE, { key: key });
   }
+
+  /** @description Add a comment to a JIRA issue */
   addComment(key, body) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.ADD_COMMENT, { key: key, body: body });
+    this.adapter.send(IPC_EVENTS.JIRA.ADD_COMMENT, { key: key, body: body });
   }
+
+  /** @description Update JIRA issue fields and/or transition */
   updateIssue(key, fields, transition?) {
     let data = {};
     if (fields) {
@@ -150,41 +178,51 @@ export class JiraIntegrationService {
     if (transition) {
       data["transition"] = transition;
     }
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.UPDATE_ISSUE, {
+    this.adapter.send(IPC_EVENTS.JIRA.UPDATE_ISSUE, {
       key: key,
       data: data,
     });
   }
+
+  /** @description Find users assignable to a JIRA issue */
   findAssignableUsers(key, search = "") {
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.GET_ASSIGNABLE_USERS, {
+    this.adapter.send(IPC_EVENTS.JIRA.GET_ASSIGNABLE_USERS, {
       key: key,
       search: search,
     });
   }
+
+  /** @description Assign a JIRA issue to a user */
   assignIssue(key, name) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.ASSIGN_ISSUE, {
+    this.adapter.send(IPC_EVENTS.JIRA.ASSIGN_ISSUE, {
       key: key,
       name: name,
     });
   }
+
+  /** @description Create a subtask under a JIRA issue */
   addSubtask(key, name, projectId) {
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.ADD_SUBTASK, {
+    this.adapter.send(IPC_EVENTS.JIRA.ADD_SUBTASK, {
       key: key,
       name: name,
       projectId: projectId,
       subtaskId: this.subtaskType.id,
     });
   }
+
+  /** @description Search JIRA issues by exact key */
   searchIssuesByKey(keyQuery, fields?) {
     let jql = `key = "${keyQuery}"`;
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.SEARCH_ISSUES, {
+    this.adapter.send(IPC_EVENTS.JIRA.SEARCH_ISSUES, {
       jql: jql,
       fields: fields,
     });
   }
+
+  /** @description Search JIRA issues by summary text */
   searchIssuesBySummary(textQuery, fields?) {
     let jql = `summary ~ "\\"${textQuery}\\""`;
-    this.electron.ipcRenderer.send(IPC_EVENTS.JIRA.SEARCH_ISSUES, {
+    this.adapter.send(IPC_EVENTS.JIRA.SEARCH_ISSUES, {
       jql: jql,
       fields: fields,
     });

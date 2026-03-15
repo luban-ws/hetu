@@ -1,0 +1,17 @@
+{
+  "identifier": "default",
+  "description": "Default capability for the main window; allows invoke of app commands (ping, get_app_version).",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:default",
+    "core:app:default",
+    "core:event:default",
+    "core:path:default",
+    "shell:allow-open",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message",
+    "dialog:allow-ask"
+  ]
+}

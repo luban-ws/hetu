@@ -1,12 +1,13 @@
 {
-  "appId": "com.rhodiumcode.explorasa-git",
-  "productName": "explorasa-git",
+  "appId": "me.systembug.hetu",
+  "productName": "Hetu",
   "directories": {
     "buildResources": "build"
   },
   "publish": {
     "provider": "github"
   },
+  "files": ["out/**/*"],
   "win": {
     "target": "nsis",
     "icon": "build/icon.ico"

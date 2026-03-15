@@ -9,7 +9,7 @@ const logger = getLogger("main");
 import { init as initRepoCommandHandler } from "./git/repo-command-handler.js";
 import * as settingsModule from "./infrastructure/settings.js";
 import { init as initAutoUpdater } from "./infrastructure/auto-updater.js";
-import * as secureModule from "./infrastructure/secure.js";
+import * as secureModule from "./infrastructure/secure";
 import { init as initAppVeyor } from "./ci-integration/appveyor.js";
 import { init as initJira } from "./jira-integration/jira.js";
 
@@ -220,12 +220,12 @@ app.on("ready", () => {
   initAutoFetch(win, settingsInstance); // auto-fetch 需要 window 和 settings
   initSubmodules(win); // submodules 需要 window
   initRepoHistory(settingsInstance, win); // repo-history 需要 settings 和 window
-  
+
   // Create repo history instance for the new system
   const repoHistoryInstance = {
-    updateRepos: updateRepos
+    updateRepos: updateRepos,
   };
-  
+
   initRepo(win, settingsInstance, repoHistoryInstance, null); // repo 需要 window, settings, history, file-watcher
 
   // 创建 repo 对象实例 - 桥接新旧系统API差异

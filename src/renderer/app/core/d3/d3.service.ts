@@ -6,7 +6,7 @@ import { Commit } from "../prototypes/commit";
 
 import * as d3 from "d3";
 import { Color } from "./models/color";
-import { ElectronService } from "../../infrastructure/electron.service";
+
 import { CiIntegrationService } from "../services/ci-integration.service";
 
 @Injectable()

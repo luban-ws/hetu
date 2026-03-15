@@ -5,9 +5,10 @@
 .branch-folder,
 .branch {
     width: 100%;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    height: 30px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    height: var(--app-row-height);
+    font-size: var(--app-font-size-sm);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -16,7 +17,7 @@
     .color-marker {
         position: absolute;
         height: 100%;
-        width: 5px;
+        width: 4px;
         left: 0;
         opacity: 0;
     }

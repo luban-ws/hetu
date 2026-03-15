@@ -8,25 +8,25 @@ $primary-color: #FFF;
 }
 
 .panel-container{
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
     width: 0px;
     color: $primary-color;
     height: 100%;
     position: relative;
     overflow: hidden;
     &.toggled{
-        width: 600px;
+        width: 440px;
     }
 
     .close-btn-container{
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
         .close-btn{
             cursor: pointer;
         }
         i{
-            font-size: 30px;
+            font-size: var(--app-font-size-icon);
         }
     }
 }
@@ -34,8 +34,13 @@ $primary-color: #FFF;
     width: 100%;
     cursor: pointer;
     border-top: 1px solid #222;
+    padding: var(--app-spacing-sm) var(--app-spacing-lg);
     h5{
         margin: 0;
+        font-size: var(--app-font-size-base);
+    }
+    small {
+        font-size: var(--app-font-size-xs);
     }
     &:hover{
         background: rgba(0, 0, 0, 0.2);
@@ -47,7 +52,6 @@ $primary-color: #FFF;
         opacity: 0;
         align-items: center;
     }
-
 }
 .full-width{
     width: 100%;

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { SettingsComponent } from '../prototypes/settings-component';
 import { SettingsService } from '../services/settings.service';
-import { ElectronService } from '../../infrastructure/electron.service';
+import { DesktopAdapter, DESKTOP_ADAPTER } from '../../infrastructure/desktop-adapter';
 
 @Component({
   standalone: false,
@@ -19,14 +19,14 @@ export class JiraSettingsComponent extends SettingsComponent {
   private jiraKeyInput = "";
   constructor(
     settings: SettingsService,
-    private electron: ElectronService
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter
   ) {
     super(settings);
   }
 
-  getSettings() {
+  async getSettings() {
     this.jira = this.settings.getRepoSetting('jira-enabled');
-    this.jiraToken = this.settings.getSecureRepoSetting('jira-token');
+    this.jiraToken = await this.settings.getSecureRepoSetting('jira-token');
     this.jiraAddress = this.settings.getRepoSetting('jira-address');
     this.jiraUsername = this.settings.getRepoSetting('jira-username');
     let keysString = this.settings.getRepoSetting('jira-keys');
@@ -53,7 +53,8 @@ export class JiraSettingsComponent extends SettingsComponent {
   upperCase(str: string) {
     this.jiraKeyInput = str.toUpperCase();
   }
+  /** @description Open the Atlassian API tokens help page */
   openHelp() {
-    this.electron.openUrlExternal('https://confluence.atlassian.com/cloud/api-tokens-938839638.html');
+    this.adapter.openExternal('https://confluence.atlassian.com/cloud/api-tokens-938839638.html');
   }
 }

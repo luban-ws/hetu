@@ -1,197 +1,135 @@
-# 0001: WASM-Git Migration
+# 0001: Tauri Shell Scaffold
 
-**Status**: Accepted  
-**Date**: 2025-09-06  
-**Author**: Claude Code Assistant  
+**Status**: Active  
+**Date**: 2026-03-07  
+**Author**: —  
+
+**Scope (one job)**: Scaffold a Tauri 2.x application shell alongside Electron. The Angular renderer loads in Tauri's WebView; two minimal Tauri commands (`ping`, `get_app_version`) prove the IPC bridge. No frontend changes beyond adding Tauri JS types. Electron code untouched.
 
 ## Summary
 
-Migration of MetroGit from NodeGit and isomorphic-git to a WASM-Git only implementation. This change eliminates native dependencies, simplifies the architecture, and provides a more consistent Git implementation across all platforms.
+Add `src-tauri/` to the repository with a minimal Rust backend, configure `tauri.conf.json` to load the Angular build output, and register two stub commands. The result: `npm run tauri dev` opens a Tauri window showing the existing Angular UI, and `invoke('ping')` / `invoke('get_app_version')` return expected values from DevTools.
 
 ## Motivation
 
-The existing implementation used a complex adapter system that supported multiple Git backends:
-- NodeGit (native libgit2 bindings)
-- isomorphic-git (pure JavaScript implementation)
-- WASM-Git (WebAssembly libgit2)
-
-This multi-backend approach caused several issues:
-
-1. **Complexity**: Maintaining compatibility across three different Git implementations
-2. **Native Dependencies**: NodeGit required native compilation, causing installation issues
-3. **Inconsistent Behavior**: Different backends had varying levels of feature support
-4. **Maintenance Burden**: Updates needed testing across all three implementations
-5. **Bundle Size**: Shipping multiple Git implementations increased application size
+- Prove Tauri 2.x can host the existing Angular app without changes.
+- Establish the `src-tauri/` project structure for future RFCs.
+- Provide a foundation for RFC 0002 (standalone build) and RFC 0003 (adapter).
 
 ## Detailed Design
 
 ### Architecture
 
-The new architecture uses a single WASM-Git adapter with a NodeGit compatibility layer:
-
 ```
-Application Code
-       ↓
-NodeGit Compatibility Layer (nodegit-compatibility.js)
-       ↓
-WASM-Git Adapter (wasm-git-adapter.js)
-       ↓
-WASM-Git Library (libgit2 WebAssembly)
+┌─────────────────────────────────────────────────────┐
+│  Tauri WebView                                       │
+│  Loads Angular static assets from out/renderer/      │
+│  ↔ window.__TAURI__.core.invoke()                    │
+└─────────────────────────────────────────────────────┘
+                         ↕ Tauri IPC
+┌─────────────────────────────────────────────────────┐
+│  Tauri Core (Rust)                                   │
+│  lib.rs → commands: ping, get_app_version            │
+└─────────────────────────────────────────────────────┘
 ```
 
-### Implementation Details
+### Files
 
-#### 1. WASM-Git Adapter (`src/main/git/adapters/wasm-git-adapter.js`)
+| Action | Path | Purpose |
+|--------|------|---------|
+| **New** | `src-tauri/Cargo.toml` | Tauri 2.x + serde deps |
+| **New** | `src-tauri/tauri.conf.json` | Window config, `frontendDist: ../out/renderer`, `devUrl: http://localhost:5174` |
+| **New** | `src-tauri/build.rs` | Tauri build script |
+| **New** | `src-tauri/src/main.rs` | Binary entry |
+| **New** | `src-tauri/src/lib.rs` | App setup + command registration |
+| **New** | `src-tauri/src/commands/mod.rs` | Command module |
+| **New** | `src-tauri/src/commands/ping.rs` | `ping()` → `"pong"` |
+| **New** | `src-tauri/src/commands/app_version.rs` | `get_app_version()` → version string |
+| **New** | `src-tauri/capabilities/default.json` | Allow invoke for ping, get_app_version |
+| **Modified** | `package.json` | Add `"tauri"`, `"tauri:dev"`, `"tauri:build"` scripts; add `@tauri-apps/cli` devDep, `@tauri-apps/api` dep |
+| **Unchanged** | Electron code, Angular code | No changes |
 
-- Implements full Git functionality using WASM-Git
-- Provides async/await API for all Git operations
-- Handles file system operations, commits, branches, remotes, and more
-- Includes robust error handling and logging
+### Out of Scope
 
-Key features implemented:
-- Repository initialization and opening
-- Commit creation, retrieval, and traversal
-- Branch management (create, delete, checkout, merge)
-- Remote operations (fetch, push, pull)
-- Stash operations (save, pop, apply, drop, list)
-- Status and diff operations
-- Tag management
-- Reset operations (soft, mixed, hard)
-- File staging and unstaging
-
-#### 2. Git Adapter Factory (`src/main/git/git-adapter-factory.js`)
-
-- Simplified factory that creates only WASM-Git adapters
-- Removed multi-backend detection logic
-- Streamlined adapter creation process
-
-#### 3. NodeGit Compatibility Layer (`src/main/git/nodegit-compatibility.js`)
-
-- Provides NodeGit-compatible API surface
-- Maps NodeGit method calls to WASM-Git operations
-- Maintains backward compatibility for existing application code
-- Includes pure functions for credentials, signatures, and operations
-
-#### 4. Base Adapter Architecture (`src/main/git/adapters/base-git-adapter.js`)
-
-- Abstract base class defining the Git adapter interface
-- Provides common logging and error handling utilities
-- Ensures consistent API across any future adapter implementations
-
-### Files Modified
-
-**Created:**
-- `src/main/git/adapters/wasm-git-adapter.js` - New WASM-Git implementation
-- `src/main/git/git-adapter-factory.js` - Simplified factory
-- `src/main/git/nodegit-compatibility.js` - Compatibility layer
-- `src/main/git/adapters/base-git-adapter.js` - Base adapter class
-
-**Modified:**
-- `src/main/git/file-watcher.js` - Updated imports to use compatibility layer
-- `src/main/git/submodules.js` - Updated imports to use compatibility layer
-- `src/main/git/repo.js` - Updated imports to use compatibility layer
-
-**Removed:**
-- `src/main/git/git-adapter-extended.js` - Multi-backend adapter
-- `src/main/git/adapters/isomorphic-git-adapter.js` - isomorphic-git implementation
-- `src/main/git/adapters/git-adapter.js` - Old adapter implementation
-- `src/main/git/adapters/wasm-git-adapter.js` - Old WASM-Git implementation
+- Standalone frontend build (RFC 0002).
+- DesktopAdapter / frontend decoupling (RFC 0003).
+- Service migration (RFC 0004).
+- Rust Git (RFC 0005).
 
 ## Alternatives Considered
 
-### 1. Continue Multi-Backend Support
-- **Pros**: Flexibility, fallback options
-- **Cons**: Complexity, maintenance burden, inconsistent behavior
-- **Rejected**: Maintenance costs outweighed benefits
-
-### 2. Pure JavaScript Implementation (isomorphic-git)
-- **Pros**: No native dependencies, smaller bundle
-- **Cons**: Limited feature set, performance concerns
-- **Rejected**: Missing critical Git features needed by MetroGit
-
-### 3. NodeGit Only
-- **Pros**: Full libgit2 feature set, mature
-- **Cons**: Native compilation issues, platform dependencies
-- **Rejected**: Installation and distribution problems
-
-### 4. WASM-Git Only (Selected)
-- **Pros**: Full libgit2 features, no native deps, consistent behavior
-- **Cons**: Learning curve, newer technology
-- **Selected**: Best balance of features, performance, and maintainability
-
-## Migration Strategy
-
-### Phase 1: Implementation ✅
-- Create new WASM-Git adapter with full feature parity
-- Implement NodeGit compatibility layer
-- Update factory to use WASM-Git only
-
-### Phase 2: Integration ✅
-- Update existing Git modules to use compatibility layer
-- Remove old adapter implementations
-- Update imports throughout codebase
-
-### Phase 3: Testing ✅
-- Test all Git operations with new implementation
-- Verify compatibility with existing application features
-- Performance testing and optimization
-
-### Phase 4: Cleanup ✅
-- Remove unused dependencies from package.json
-- Clean up old adapter files
-- Update documentation
+| Option | Pros | Cons | Decision |
+|--------|------|------|----------|
+| Tauri 1.x | More docs | Tauri 2 is current | Rejected |
+| Single RFC (shell + Git) | One doc | Two jobs; hard to verify | Rejected; split |
 
 ## Testing Strategy
 
-The migration was tested through:
-
-1. **Unit Testing**: Individual adapter methods tested in isolation
-2. **Integration Testing**: End-to-end workflows tested with WASM-Git
-3. **Compatibility Testing**: Verified existing application code works unchanged
-4. **Performance Testing**: Ensured WASM-Git performance meets requirements
-5. **Manual Testing**: Key workflows tested through the application UI
-
-Critical test cases:
-- Repository opening and initialization
-- Commit creation and history traversal
-- Branch operations (create, switch, merge, delete)
-- Remote operations (clone, fetch, push, pull)
-- File operations (stage, unstage, status, diff)
-- Stash operations
-- Tag management
-- Reset operations
+- Manual: `cargo build` in `src-tauri/`; no errors.
+- Manual: `npm run tauri dev` → window opens with Angular UI.
+- Manual: DevTools → `await window.__TAURI__.core.invoke('ping')` → `"pong"`.
+- Manual: DevTools → `await window.__TAURI__.core.invoke('get_app_version')` → version string.
 
 ## Timeline
 
-- **Planning**: 2025-09-05 - Architecture design and approach validation
-- **Implementation**: 2025-09-06 - Core adapter and compatibility layer
-- **Integration**: 2025-09-06 - Update existing modules and remove old code
-- **Testing**: 2025-09-06 - Comprehensive testing and validation
-- **Completion**: 2025-09-06 - Migration complete and documented
+| Milestone | Estimate |
+|-----------|----------|
+| Scaffold + window | 1-2 days |
+| Commands + capabilities | 1 day |
+| **Total** | **~2-3 days** |
 
-## Benefits Achieved
+---
 
-1. **Simplified Architecture**: Single Git backend reduces complexity
-2. **Eliminated Native Dependencies**: No more NodeGit compilation issues
-3. **Consistent Behavior**: Single libgit2 implementation across all platforms
-4. **Reduced Bundle Size**: Removed redundant Git implementations
-5. **Improved Maintainability**: Single code path to maintain and test
-6. **Better Performance**: WASM-Git provides near-native performance
-7. **Cross-Platform Compatibility**: Works consistently across all Electron platforms
+## Implementation Plan
 
-## Technical Debt Resolved
+### 1. Prerequisites
 
-- Removed complex multi-backend adapter system
-- Eliminated NodeGit native dependency issues
-- Simplified error handling across Git operations
-- Reduced code duplication between adapters
-- Streamlined testing requirements
+1.1. Ensure Rust toolchain: `rustup` and `cargo` (`rustc 1.75+`).  
+1.2. In `package.json`, add: `@tauri-apps/cli` to devDependencies, `@tauri-apps/api` to dependencies.  
+1.3. Add scripts: `"tauri": "tauri"`, `"tauri:dev": "tauri dev"`, `"tauri:build": "npm run build && tauri build"`.
 
-## Open Questions
+### 2. Create src-tauri/
 
-None. Migration is complete and operational.
+2.1. Create `src-tauri/Cargo.toml` with `tauri` (2.x), `serde`, `serde_json` dependencies.  
+2.2. Create `src-tauri/build.rs`: `fn main() { tauri_build::build() }`.  
+2.3. Create `src-tauri/tauri.conf.json`: productName "explorasa-git", window 1200x800, `build.frontendDist: "../out/renderer"`, `build.devUrl: "http://localhost:5174"`, `app.withGlobalTauri: true`.  
+2.4. Create `src-tauri/src/main.rs`: `fn main() { app_lib::run(); }` (or Tauri default entry).  
+2.5. Create `src-tauri/src/lib.rs`: Tauri builder with `invoke_handler(generate_handler![commands::ping::ping, commands::app_version::get_app_version])`.
+
+### 3. Minimal commands
+
+3.1. Create `src-tauri/src/commands/mod.rs`: declare `pub mod ping; pub mod app_version;`.  
+3.2. Create `src-tauri/src/commands/ping.rs`: `#[tauri::command] pub fn ping() -> String { "pong".into() }`.  
+3.3. Create `src-tauri/src/commands/app_version.rs`: `#[tauri::command] pub fn get_app_version() -> String { env!("CARGO_PKG_VERSION").into() }`.  
+3.4. Create `src-tauri/capabilities/default.json`: allow invoke for `ping`, `get_app_version`.
+
+### 4. Verify
+
+4.1. Run `cargo build` in `src-tauri/`; fix any compile errors.  
+4.2. Build Angular: `npm run build` (electron-vite build); confirm `out/renderer/index.html` exists.  
+4.3. Run `npm run tauri dev` (start a Vite dev server on port 5174 manually or point to built assets); confirm window opens.  
+4.4. In DevTools: `await window.__TAURI__.core.invoke('ping')` → `"pong"`.  
+4.5. `await window.__TAURI__.core.invoke('get_app_version')` → version string.
+
+## Quality Gates
+
+| # | Check | How to verify |
+|---|--------|----------------|
+| 1.1 | Rust compiles | `cargo build` in `src-tauri/` no errors |
+| 1.2 | Window shows UI | `tauri dev` → Angular app visible |
+| 1.3 | Commands work | `invoke('ping')` → `"pong"`; `invoke('get_app_version')` → version |
+| 1.4 | Electron untouched | `npm run dev` still works |
+
+## Implementation Status
+
+| Step | Status | Notes |
+|------|--------|-------|
+| 1. Prerequisites | [x] Done | @tauri-apps/cli, @tauri-apps/api, scripts added |
+| 2. Create src-tauri/ | [x] Done | Cargo.toml, tauri.conf.json, main.rs, lib.rs |
+| 3. Minimal commands | [x] Done | ping, get_app_version, capabilities |
+| 4. Verify | [x] Done | cargo build OK, window opens, commands work |
 
 ## Status History
 
-- **2025-09-06**: RFC created as Accepted (post-implementation documentation)
-- **2025-09-06**: Implementation completed successfully
+- **2026-03-07**: RFC created; scoped to Tauri shell scaffold only.
+- **2026-03-15**: RFC trimmed to single job (shell scaffold). Adapter, build, service migration moved to RFCs 0003-0004. All steps completed.

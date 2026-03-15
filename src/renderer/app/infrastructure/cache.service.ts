@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { ElectronService } from './electron.service';
+import { Injectable, Inject, NgZone } from '@angular/core';
+import { DESKTOP_ADAPTER, DesktopAdapter } from './desktop-adapter';
 import { StatusBarService } from './status-bar.service';
 import { IPC_EVENTS  } from '@common/ipc-events';
 
@@ -7,14 +7,19 @@ import { IPC_EVENTS  } from '@common/ipc-events';
 export class CacheService {
 
   constructor(
-    private electron: ElectronService,
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
+    private zone: NgZone,
     private statusBar: StatusBarService
   ) {
-    this.electron.onCD(IPC_EVENTS.CACHE.AUTO_CLEAN_BEGIN, (event, arg) => {
-      this.statusBar.enableLoading('Starting auto cache cleanup');
+    this.adapter.on(IPC_EVENTS.CACHE.AUTO_CLEAN_BEGIN, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.statusBar.enableLoading('Starting auto cache cleanup');
+      });
     });
-    this.electron.onCD(IPC_EVENTS.CACHE.AUTO_CLEAN_SUCCESS, (event, arg) => {
-      this.statusBar.flash('success', "Auto cache cleanup successful");
+    this.adapter.on(IPC_EVENTS.CACHE.AUTO_CLEAN_SUCCESS, (event: any, arg: any) => {
+      this.zone.run(() => {
+        this.statusBar.flash('success', "Auto cache cleanup successful");
+      });
     });
   }
   init() {

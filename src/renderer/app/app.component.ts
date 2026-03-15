@@ -29,6 +29,13 @@ export class AppComponent implements OnInit {
     this.appveyor.init();
     this.d3.init();
     this.commitChange.init();
+
+    this.settings.initialCurrentRepo.subscribe((repo) => {
+      if (repo?.workingDir) {
+        this.repo.openRepo(repo.workingDir);
+      }
+    });
+
     this.settings.init();
     this.cache.init();
   }

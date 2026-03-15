@@ -1,12 +1,9 @@
 
-<img src="./app/visual/Icon-48.png">
-<a href="https://travis-ci.com/systembugtj/explorasa-git"><img src="https://travis-ci.com/systembugtj/explorasa-git.svg?branch=master"></a>
+<img src="./build/Icon-48.png">
 
-# Metro themed Git UI
+# Hetu (河图) — Subway-Map Git Client
 
-explorasa-git is a native desktop git app with JIRA, AppVeyor and other tools integrated into one consistent UI. So no more switching windows and jumping between browser tabs 🤓. More integration and feature still yet to come...
-
-![alt text](https://github.com/systembugtj/explorasa-git/raw/master/misc/explorasa-git.gif "Preview")
+Hetu is a native desktop Git client with a subway-map style branch visualization, JIRA and AppVeyor integration — all in one consistent UI. Built with **Tauri + Rust + Angular**.
 
 ## Feature Highlight
 
@@ -14,69 +11,71 @@ explorasa-git is a native desktop git app with JIRA, AppVeyor and other tools in
  - Basic repo operations (pull, push, commit, stash, pop, create branch)
  - JIRA integration with native UI
  - Map integrated AppVeyor build status with periodic update and on-demand log download
- - Credential caching with Windows Credential Manager (through keytar)
+ - OS-native credential storage (macOS Keychain, Windows Credential Manager, Linux Secret Service)
  - Repository specific settings
 
 ## Built On
-This app is built with some really awsome frameworks, including:
 
-<a href="https://electronjs.org/"><img src="https://camo.githubusercontent.com/627c774e3070482b180c3abd858ef2145d46303b/68747470733a2f2f656c656374726f6e6a732e6f72672f696d616765732f656c656374726f6e2d6c6f676f2e737667" width="250"></a>
-<a href="https://angular.io/"><img src="https://angular.io/assets/images/logos/angular/angular.svg" width="150"></a>
-
-<a href="http://www.nodegit.org/"><img src="https://www.nodegit.org/img/nodegit.svg" width="150"></a>
-
-<a href="https://feathericons.com/"><img src="https://raw.githubusercontent.com/feathericons/feather/master/icons/feather.svg?sanitize=true"> Feathericons</a>
+- [Tauri 2](https://tauri.app/) — Rust desktop shell
+- [Angular](https://angular.io/) — Frontend framework
+- [git2](https://github.com/rust-lang/git2-rs) — Rust Git implementation
+- [Feather Icons](https://feathericons.com/) — Icon set
 
 ## Getting Started
 
-### Downlading and Installation
+### Prerequisites
 
-#### Github Releases
+- Node.js 20+
+- Rust 1.70+
+- npm
 
-To start using this app, go to Releases, download and run the latest setup.exe or dmg and off you go.
+### Development
 
-#### Building
+```bash
+# Install JS dependencies
+npm install
 
-This app is built on: NodeJS 8.10
+# Run Tauri dev (opens app with hot-reload)
+npm run tauri:dev
 
-To build this from the scratch, global dependencies `electron-builder` and `@angular/cli` is needed. 
+# Run Electron dev (legacy)
+npm run dev
+```
 
-  - You can install global dependencies via `npm install -g electron-builder @angular/cli`
+### Building
 
-After installing correct dependencies, do the following.
- 
-  1. Clone this repo
-  2. `cd` into this repo, `yarn install`
-  3. `cd app/frontend`
-  4. `yarn install`
-  5. `cd ../..` back to project root directory
-  6. `.\build.ps1` (for windows) or `.\build.sh` (for Mac)
-  7. The output is in `dist` folder
+```bash
+# Tauri production build
+npm run tauri:build
+
+# Electron production build
+npm run electron:build
+```
+
+### Testing
+
+```bash
+# Frontend tests
+npm test
+
+# Rust tests
+cd src-tauri && cargo test
+```
 
 ## Support this app
 
-Hi there, if you like this app, find it useful or just like this subway map, I'd loved to hear your feedback and experiences, you can share them with `admin@rhodiumcode.com`
+If you like this app, find it useful or just like the subway map visualization, I'd love to hear your feedback — share with `admin@rhodiumcode.com`
 
-Also, please consider <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/mjCsGWDTS"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a tea"><span style="margin-left:5px">Buy me a tea</span></a>, I live on black tea basically 😉
-
-Or, alternatively
-
-BTC: 3CAgw9vNPNXHR1YaWmJe98DDiTqdgKkv8Y
-
-ETH: 0xea96AA397a799E77f5991A2568099698329C3D39
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/mjCsGWDTS"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a tea"><span style="margin-left:5px">Buy me a tea</span></a>
 
 ## Documentation
 
 - [RFCs](./docs/rfc/README.md) - Technical design documents and architectural decisions
-- [Wiki FAQ Page](https://github.com/systembugtj/explorasa-git/wiki/FAQ) - Frequently asked questions
+- [Roadmap](./docs/ROADMAP.md) - Migration roadmap and phase tracking
 
 ## Issues
 
-If you've found a bug, security issue or want to suggest a feature, feel free to post them to the Issues section (please search for existing issues and FAQ before posting new ones 🙂)
-
-## Contributing
-
-Interested in contributing? Please read our [Contributing Guide](https://github.com/systembugtj/explorasa-git/wiki/Contributing) and [Code of Conduct](https://github.com/systembugtj/explorasa-git/blob/master/CODE_OF_CONDUCT.md)
+If you've found a bug, security issue or want to suggest a feature, feel free to post them to the Issues section.
 
 ## License
 

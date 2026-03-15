@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { SettingsComponent } from '../prototypes/settings-component';
 import { SettingsService } from '../services/settings.service';
-import { ElectronService } from '../../infrastructure/electron.service';
+import { DesktopAdapter, DESKTOP_ADAPTER } from '../../infrastructure/desktop-adapter';
 
 @Component({
   standalone: false,
@@ -16,12 +16,12 @@ export class CiSettingsComponent extends SettingsComponent {
   private appveyorAccount = "";
   private appveyorProject = "";
 
-  constructor(settings: SettingsService, private electron: ElectronService) {
+  constructor(settings: SettingsService, @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter) {
     super(settings);
   }
-  getSettings() {
+  async getSettings() {
     this.appveyor = this.settings.getRepoSetting('ci-appveyor');
-    this.appveyorToken = this.settings.getSecureRepoSetting('ci-appveyor-token');
+    this.appveyorToken = await this.settings.getSecureRepoSetting('ci-appveyor-token');
     this.appveyorAccount = this.settings.getRepoSetting('ci-appveyor-account');
     this.appveyorProject = this.settings.getRepoSetting('ci-appveyor-project');
   }
@@ -38,7 +38,8 @@ export class CiSettingsComponent extends SettingsComponent {
   updateAppveyorToken() {
     this.settings.setSecureRepoSetting('ci-appveyor-token', this.appveyorToken);
   }
+  /** @description Open the Appveyor API token help page */
   openHelp() {
-    this.electron.openUrlExternal('https://ci.appveyor.com/api-token');
+    this.adapter.openExternal('https://ci.appveyor.com/api-token');
   }
 }

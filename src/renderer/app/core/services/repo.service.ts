@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter, NgZone, OnDestroy } from "@angular/core";
+import { Inject, Injectable, Output, EventEmitter, NgZone, OnDestroy } from "@angular/core";
 import { LoadingService } from "../../infrastructure/loading-service.service";
 import { ToastrService } from "ngx-toastr";
 import { CredentialsService } from "./credentials.service";
@@ -11,64 +11,56 @@ import { CreateBranchPromptComponent } from "../create-branch-prompt/create-bran
 import { GitInitPromptComponent } from "../git-init-prompt/git-init-prompt.component";
 import { HotkeysService } from "@ngneat/hotkeys";
 import { Branch } from "../prototypes/branch";
+import { DESKTOP_ADAPTER, DesktopAdapter } from "../../infrastructure/desktop-adapter";
 
-// Preload API interface
-declare global {
-  interface Window {
-    electronAPI: {
-      git: {
-        openRepository: (workingDir: string) => boolean;
-        initRepository: (path: string) => boolean;
-        browseRepository: () => boolean;
-        browseFolderForInit: () => boolean;
-        closeRepository: () => boolean;
-        fetch: (credentials: any) => boolean;
-        pull: (credentials: any) => boolean;
-        push: (credentials: any) => boolean;
-        createBranch: (name: string, commit: string) => boolean;
-        checkout: (branch: string) => boolean;
-        removeHistory: (workingDir: string) => boolean;
-      };
-      gitEvents: {
-        onOpenSuccessful: (callback: Function) => () => void;
-        onOpenFailed: (callback: Function) => () => void;
-        onClosed: (callback: Function) => () => void;
-        onCurrentRemoved: (callback: Function) => () => void;
-        onCommitsUpdated: (callback: Function) => () => void;
-        onBranchChanged: (callback: Function) => () => void;
-        onBranchPositionRetrieved: (callback: Function) => () => void;
-        onRemotesChanged: (callback: Function) => () => void;
-        onFileStatusRetrieved: (callback: Function) => () => void;
-        onCredentialIssue: (callback: Function) => () => void;
-        onPulled: (callback: Function) => () => void;
-        onPullFailed: (callback: Function) => () => void;
-        onPushed: (callback: Function) => () => void;
-        onPushFailed: (callback: Function) => () => void;
-        onFetched: (callback: Function) => () => void;
-        onFetchFailed: (callback: Function) => () => void;
-        onFolderSelected: (callback: Function) => () => void;
-        onInitPathSelected: (callback: Function) => () => void;
-        onInitSuccessful: (callback: Function) => () => void;
-        onInitFailed: (callback: Function) => () => void;
-        onBlockingOperationBegan: (callback: Function) => () => void;
-        onBlockingOperationEnd: (callback: Function) => () => void;
-        onBlockingUpdate: (callback: Function) => () => void;
-        onBranchCreated: (callback: Function) => () => void;
-        onBranchCreateFailed: (callback: Function) => () => void;
-        onTagCreated: (callback: Function) => () => void;
-        onTagDeleted: (callback: Function) => () => void;
-        onRefRetrieved: (callback: Function) => () => void;
-      };
-      settingsEvents: {
-        onEffectiveUpdated: (callback: Function) => () => void;
-      };
-      autoFetchEvents: {
-        onTimeout: (callback: Function) => () => void;
-      };
-    };
-  }
-}
+/** IPC channel constants for repo-related events */
+const CH_REPO_OPEN_SUCCESSFUL   = 'Repo-OpenSuccessful';
+const CH_REPO_CURRENT_REMOVED   = 'Repo-CurrentRemoved';
+const CH_REPO_CLOSED            = 'Repo-Closed';
+const CH_REPO_BRANCH_POS        = 'Repo-BranchPositionRetrieved';
+const CH_REPO_PULLED            = 'Repo-Pulled';
+const CH_REPO_PUSHED            = 'Repo-Pushed';
+const CH_REPO_COMMITS_UPDATED   = 'Repo-CommitsUpdated';
+const CH_REPO_FETCHED           = 'Repo-Fetched';
+const CH_REPO_OPEN_FAILED       = 'Repo-OpenFailed';
+const CH_REPO_BRANCH_CREATE_FAIL = 'Repo-BranchCreateFailed';
+const CH_REPO_FOLDER_SELECTED   = 'Repo-FolderSelected';
+const CH_REPO_BRANCH_CHANGED    = 'Repo-BranchChanged';
+const CH_REPO_CREDENTIAL_ISSUE  = 'Repo-CredentialIssue';
+const CH_REPO_FETCH_FAILED      = 'Repo-FetchFailed';
+const CH_REPO_PULL_FAILED       = 'Repo-PullFailed';
+const CH_REPO_PUSH_FAILED       = 'Repo-PushFailed';
+const CH_REPO_REF_RETRIEVED     = 'Repo-RefRetrieved';
+const CH_REPO_REMOTES_CHANGED   = 'Repo-RemotesChanged';
+const CH_REPO_BLOCKING_BEGAN    = 'Repo-BlockingOperationBegan';
+const CH_REPO_BLOCKING_END      = 'Repo-BlockingOperationEnd';
+const CH_REPO_BLOCKING_UPDATE   = 'Repo-BlockingUpdate';
+const CH_REPO_FILE_STATUS       = 'Repo-FileStatusRetrieved';
+const CH_REPO_TAG_CREATED       = 'Repo-TagCreated';
+const CH_REPO_TAG_DELETED       = 'Repo-TagDeleted';
+const CH_REPO_INIT_PATH_SELECTED = 'Repo-InitPathSelected';
+const CH_REPO_INIT_SUCCESSFUL   = 'Repo-InitSuccessful';
+const CH_REPO_INIT_FAILED       = 'Repo-InitFailed';
+const CH_SETTINGS_EFFECTIVE     = 'Settings-EffectiveUpdated';
+const CH_AUTO_FETCH_TIMEOUT     = 'AutoFetch-Timeout';
 
+/** IPC channel constants for repo commands */
+const CMD_REPO_OPEN           = 'Repo-Open';
+const CMD_REPO_BROWSE         = 'Repo-Browse';
+const CMD_REPO_CLOSE          = 'Repo-Close';
+const CMD_REPO_FETCH          = 'Repo-Fetch';
+const CMD_REPO_PULL           = 'Repo-Pull';
+const CMD_REPO_PUSH           = 'Repo-Push';
+const CMD_REPO_CREATE_BRANCH  = 'Repo-CreateBranch';
+const CMD_REPO_CHECKOUT       = 'Repo-Checkout';
+const CMD_REPO_REMOVE_HISTORY = 'Repo-RemoveHistory';
+const CMD_REPO_INIT_BROWSE    = 'Repo-InitBrowse';
+const CMD_REPO_INIT           = 'Repo-Init';
+
+/**
+ * Central service for repository lifecycle, git operations,
+ * and IPC event wiring via DesktopAdapter.
+ */
 @Injectable()
 export class RepoService implements OnDestroy {
   @Output() repoChange = new EventEmitter<string>();
@@ -108,6 +100,7 @@ export class RepoService implements OnDestroy {
   private unsubscribers: Array<() => void> = [];
 
   constructor(
+    @Inject(DESKTOP_ADAPTER) private adapter: DesktopAdapter,
     private loading: LoadingService,
     private toastr: ToastrService,
     private status: StatusBarService,
@@ -120,14 +113,14 @@ export class RepoService implements OnDestroy {
   ) {}
 
   ngOnDestroy(): void {
-    // Clean up all event subscriptions
     this.unsubscribers.forEach(unsubscribe => unsubscribe());
     this.unsubscribers = [];
   }
 
+  /** Initialise IPC listeners, credential handling and hotkeys. */
   init(): void {
-    if (!window.electronAPI) {
-      console.error("electronAPI not available");
+    if (!this.adapter.available) {
+      console.error("DesktopAdapter not available");
       return;
     }
 
@@ -139,7 +132,7 @@ export class RepoService implements OnDestroy {
   private setupEventHandlers(): void {
     // Repository lifecycle events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onOpenSuccessful((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_OPEN_SUCCESSFUL, (event: any, arg: any) => {
         this.ngZone.run(() => {
           this._currentWorkingPath = arg.workingDir;
           this.repoName = arg.repoName;
@@ -151,15 +144,15 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onCurrentRemoved((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_CURRENT_REMOVED, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
-          window.electronAPI.git.closeRepository();
+          this.adapter.send(CMD_REPO_CLOSE);
         });
       })
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onClosed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_CLOSED, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           this._currentWorkingPath = "";
           this.repoName = "";
@@ -173,7 +166,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onBranchPositionRetrieved((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_BRANCH_POS, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.currentPos = arg;
           this.posUpdate.emit(this.currentPos);
@@ -183,7 +176,7 @@ export class RepoService implements OnDestroy {
 
     // Git operation result events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onPulled((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_PULLED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.pulling.emit(false);
           if (arg.result === "UP_TO_DATE") {
@@ -202,7 +195,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onPushed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_PUSHED, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           this.pushing.emit(false);
           this.toastr.success("Successfully pushed to remote", "Pushed");
@@ -211,7 +204,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onCommitsUpdated((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_COMMITS_UPDATED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           if (arg && arg.commits) {
             this.notifyCommitDifference(arg.commits);
@@ -221,7 +214,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onFetched((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_FETCHED, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           // Handle fetch success if needed
         });
@@ -230,18 +223,18 @@ export class RepoService implements OnDestroy {
 
     // Error handling events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onOpenFailed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_OPEN_FAILED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.loading.disableLoading();
-          
+
           if (arg.error === 'NOT_GIT_REPOSITORY' && arg.canInitialize && arg.workingDir) {
             const gitInitPrompt = this.promptIj.injectComponent(GitInitPromptComponent);
             gitInitPrompt.configure(arg.detail_message, arg.workingDir);
-            
-            gitInitPrompt.onResult.subscribe((shouldInitialize) => {
+
+            gitInitPrompt.onResult.subscribe((shouldInitialize: boolean) => {
               if (shouldInitialize) {
                 this.loading.enableLoading("Initializing git repository...");
-                window.electronAPI.git.initRepository(arg.workingDir);
+                this.adapter.send(CMD_REPO_INIT, { path: arg.workingDir });
               }
             });
           } else {
@@ -253,7 +246,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onBranchCreateFailed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_BRANCH_CREATE_FAIL, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           const detail = arg?.detail || "unknown error";
           this.toastr.error("Failed to create branch, " + detail, "Error");
@@ -263,7 +256,7 @@ export class RepoService implements OnDestroy {
 
     // Browse and folder selection events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onFolderSelected((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_FOLDER_SELECTED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this._pendingOperation = null;
           if (arg?.path) {
@@ -275,7 +268,7 @@ export class RepoService implements OnDestroy {
 
     // Branch and state change events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onBranchChanged((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_BRANCH_CHANGED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.currentBranch = arg;
           this._wipCommit.parents = [this.currentBranch?.target || ""];
@@ -287,7 +280,7 @@ export class RepoService implements OnDestroy {
 
     // Credential handling
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onCredentialIssue((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_CREDENTIAL_ISSUE, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           if (this.remote) {
             if (
@@ -305,7 +298,7 @@ export class RepoService implements OnDestroy {
 
     // Fetch failure handling
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onFetchFailed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_FETCH_FAILED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           const detail = arg?.detail || "";
           if (detail.indexOf("403") !== -1) {
@@ -323,7 +316,7 @@ export class RepoService implements OnDestroy {
 
     // Pull failure handling
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onPullFailed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_PULL_FAILED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           const detail = arg?.detail || "";
           if (detail === "LOCAL_AHEAD") {
@@ -347,13 +340,13 @@ export class RepoService implements OnDestroy {
 
     // Push failure handling
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onPushFailed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_PUSH_FAILED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           const detail = arg?.detail || "";
           if (detail === "FORCE_REQUIRED") {
             const inst = this.promptIj.injectComponent(ForcePushPromptComponent);
             this._pendingOperation = this.push;
-            inst.onResult.subscribe((force) => {
+            inst.onResult.subscribe((force: boolean) => {
               if (force) {
                 this.push(true);
                 this._pendingOperation = null;
@@ -381,7 +374,7 @@ export class RepoService implements OnDestroy {
 
     // Settings and state events
     this.unsubscribers.push(
-      window.electronAPI.settingsEvents.onEffectiveUpdated((event: any, arg: any) => {
+      this.adapter.on(CH_SETTINGS_EFFECTIVE, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.pulloption = arg && arg["gen-pulloption"] ? arg["gen-pulloption"] : "";
           if (
@@ -396,7 +389,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onRefRetrieved((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_REF_RETRIEVED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.refDict = arg.refDict;
           this.refs = arg.references;
@@ -409,7 +402,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onRemotesChanged((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_REMOTES_CHANGED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.remote = arg.remote;
         });
@@ -418,7 +411,7 @@ export class RepoService implements OnDestroy {
 
     // Auto-fetch timeout
     this.unsubscribers.push(
-      window.electronAPI.autoFetchEvents.onTimeout((event: any, arg: any) => {
+      this.adapter.on(CH_AUTO_FETCH_TIMEOUT, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           if (!this._pendingOperation) {
             this.fetch();
@@ -429,7 +422,7 @@ export class RepoService implements OnDestroy {
 
     // Loading state events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onBlockingOperationBegan((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_BLOCKING_BEGAN, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.loading.enableLoading(arg.operation);
         });
@@ -437,7 +430,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onBlockingOperationEnd((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_BLOCKING_END, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           this.loading.disableLoading();
         });
@@ -445,7 +438,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onBlockingUpdate((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_BLOCKING_UPDATE, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.loading.updateMessage(arg.operation);
         });
@@ -454,7 +447,7 @@ export class RepoService implements OnDestroy {
 
     // File status events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onFileStatusRetrieved((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_FILE_STATUS, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           const oldStatus = this._wipCommit.enabled;
           this._wipCommit.fileSummary = arg?.summary || {};
@@ -475,7 +468,7 @@ export class RepoService implements OnDestroy {
 
     // Tag events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onTagCreated((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_TAG_CREATED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.toastr
             .success(
@@ -490,7 +483,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onTagDeleted((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_TAG_DELETED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           this.toastr.success(
             `Tag ${arg.name} deleted successfully.`,
@@ -503,17 +496,17 @@ export class RepoService implements OnDestroy {
 
     // Init events
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onInitPathSelected((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_INIT_PATH_SELECTED, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           if (arg?.path) {
-            window.electronAPI.git.initRepository(arg.path);
+            this.adapter.send(CMD_REPO_INIT, { path: arg.path });
           }
         });
       })
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onInitSuccessful((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_INIT_SUCCESSFUL, (_event: any, arg: any) => {
         this.ngZone.run(() => {
           if (arg?.path) {
             this.openRepo(arg.path);
@@ -523,7 +516,7 @@ export class RepoService implements OnDestroy {
     );
 
     this.unsubscribers.push(
-      window.electronAPI.gitEvents.onInitFailed((event: any, arg: any) => {
+      this.adapter.on(CH_REPO_INIT_FAILED, (_event: any, _arg: any) => {
         this.ngZone.run(() => {
           this.toastr.error(
             "Failed to initialize repository",
@@ -535,11 +528,11 @@ export class RepoService implements OnDestroy {
   }
 
   private setupCredentialHandling(): void {
-    this.cred.credentialChange.subscribe((newCreds) => {
+    this.cred.credentialChange.subscribe(() => {
       this.retry();
     });
 
-    this.commitChange.messageChange.subscribe((msg) => {
+    this.commitChange.messageChange.subscribe((msg: string) => {
       this._wipCommit.message = msg;
     });
   }
@@ -568,6 +561,7 @@ export class RepoService implements OnDestroy {
     });
   }
 
+  /** @returns commits list prepended with WIP commit when active */
   getCommitsWithWIP() {
     if (this._wipCommit.enabled) {
       return [this._wipCommit].concat(this.commits);
@@ -586,6 +580,7 @@ export class RepoService implements OnDestroy {
     }
   }
 
+  /** Emit commit change only when the sha list actually differs. */
   notifyCommitDifference(newCommits: any) {
     let different = false;
     if (this.commits.length !== newCommits.length) {
@@ -604,33 +599,36 @@ export class RepoService implements OnDestroy {
     }
   }
 
-  // Public API methods using preload
+  /** Open a repository at the given working directory. */
   openRepo(workingDir: any): void {
-    if (window.electronAPI) {
+    if (this.adapter.available) {
       this.loading.enableLoading("Opening Repo...");
-      window.electronAPI.git.openRepository(workingDir);
+      this.adapter.send(CMD_REPO_OPEN, { workingDir });
     }
   }
 
+  /** Open native folder-browse dialog for repository selection. */
   openBrowse(): void {
-    if (window.electronAPI) {
-      window.electronAPI.git.browseRepository();
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_BROWSE);
     }
   }
 
+  /** Fetch from remote with current credentials. */
   fetch(): void {
-    if (window.electronAPI) {
-      window.electronAPI.git.fetch({
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_FETCH, {
         username: this.cred.username,
         password: this.cred.password,
       });
     }
   }
 
+  /** Pull from remote with current credentials and pull option. */
   pull(): void {
     this.pulling.emit(true);
-    if (window.electronAPI) {
-      window.electronAPI.git.pull({
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_PULL, {
         username: this.cred.username,
         password: this.cred.password,
         option: this.pulloption,
@@ -638,43 +636,48 @@ export class RepoService implements OnDestroy {
     }
   }
 
+  /** Push to remote, optionally forcing. */
   push(force = false): void {
     this.pushing.emit(true);
-    if (window.electronAPI) {
-      window.electronAPI.git.push({
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_PUSH, {
         username: this.cred.username,
         password: this.cred.password,
-        force: force,
+        force,
       });
     }
   }
 
+  /** Prompt user for a branch name and create it at the current HEAD. */
   createBranch(): void {
     const prompt = this.promptIj.injectComponent(CreateBranchPromptComponent);
-    prompt.onEnter.subscribe((name) => {
-      if (window.electronAPI) {
-        window.electronAPI.git.createBranch(name, this.currentBranch?.target || "");
+    prompt.onEnter.subscribe((name: string) => {
+      if (this.adapter.available) {
+        this.adapter.send(CMD_REPO_CREATE_BRANCH, { name, commit: this.currentBranch?.target || "" });
       }
     });
   }
 
+  /** Checkout the given branch shorthand. */
   checkout(shorthand: any): void {
-    if (window.electronAPI) {
-      window.electronAPI.git.checkout(shorthand);
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_CHECKOUT, { branch: shorthand });
     }
   }
 
+  /** Push (or delete) a tag to remote. */
   pushTag(name: any, toDelete = false): void {
-    if (window.electronAPI) {
-      window.electronAPI.git.push({
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_PUSH, {
         username: this.cred.username,
         password: this.cred.password,
-        name: name,
+        name,
         delete: toDelete,
       });
     }
   }
 
+  /** Retry the last failed operation after credential refresh. */
   retry(): void {
     if (this._pendingOperation) {
       this._pendingOperation();
@@ -682,15 +685,17 @@ export class RepoService implements OnDestroy {
     }
   }
 
+  /** Remove persisted history for a given working directory. */
   removeRepoSetting(workingDir: any): void {
-    if (window.electronAPI) {
-      window.electronAPI.git.removeHistory(workingDir);
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_REMOVE_HISTORY, { workingDir });
     }
   }
 
+  /** Open native folder-browse dialog for git-init target. */
   browseInitFolder(): void {
-    if (window.electronAPI) {
-      window.electronAPI.git.browseFolderForInit();
+    if (this.adapter.available) {
+      this.adapter.send(CMD_REPO_INIT_BROWSE);
     }
   }
 }

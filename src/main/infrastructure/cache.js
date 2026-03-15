@@ -5,7 +5,7 @@ import readLastLine from "read-last-line";
 import getSize from "get-folder-size";
 import path from "path";
 import { IPC_EVENTS } from "@common/ipc-events";
-const cacheDir = `${homedir()}${path.sep}Explorasa Git${path.sep}cache`;
+const cacheDir = `${homedir()}${path.sep}Hetu${path.sep}cache`;
 
 let settings;
 let window;

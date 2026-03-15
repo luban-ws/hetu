@@ -1,6 +1,6 @@
 # 0001: Tauri Shell Scaffold
 
-**Status**: Active  
+**Status**: Done  
 **Date**: 2026-03-07  
 **Author**: —  
 

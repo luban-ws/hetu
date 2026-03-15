@@ -89,21 +89,21 @@ RFCs are numbered sequentially starting from 0001. Use the next available number
 
 ## Current RFCs
 
-### Tauri Migration (Phase 1: Shell + Frontend Decoupling)
+### Phase 1: Shell + Frontend Decoupling
 
 | RFC | Title | Status | One job | Depends on |
 |-----|-------|--------|---------|------------|
-| [0001](./0001-wasm-git-migration.md) | Tauri Shell Scaffold | Active (done) | Scaffold src-tauri/, minimal commands, window loads Angular | — |
-| [0002](./0002-standalone-frontend-build.md) | Standalone Frontend Build | In Progress | Decouple renderer build from electron-vite for Tauri | 0001 |
-| [0003](./0003-desktop-adapter.md) | DesktopAdapter + Adapters | Draft | Adapter interface, ElectronAdapter, TauriAdapter stub, DI | 0002 |
-| [0004](./0004-service-migration.md) | Frontend Service Migration | Draft | Refactor all 13 services from ElectronService to adapter | 0003 |
+| [0001](./0001-tauri-shell-scaffold.md) | Tauri Shell Scaffold | Done | Scaffold src-tauri/, minimal commands, window loads Angular | — |
+| [0002](./0002-standalone-frontend-build.md) | Standalone Frontend Build | Done | Decouple renderer build from electron-vite for Tauri | 0001 |
+| [0003](./0003-desktop-adapter.md) | DesktopAdapter + Adapters | Done | Adapter interface, ElectronAdapter, TauriAdapter stub, DI | 0002 |
+| [0004](./0004-service-migration.md) | Frontend Service Migration | Done | Refactor all 13 services from ElectronService to adapter | 0003 |
 
-### Rust Git (Phase 2: Git Backend)
+### Phase 2: Rust Git Backend
 
 | RFC | Title | Status | One job | Depends on |
 |-----|-------|--------|---------|------------|
-| [0005](./0005-rust-git-core.md) | Rust Git Core (git2) | Draft | Implement Git ops in Rust, expose as Tauri commands | 0001 |
-| [0006](./0006-tauri-git-wiring.md) | TauriAdapter Git Wiring | Draft | Wire TauriAdapter to Rust Git commands, verify E2E | 0004, 0005 |
+| [0005](./0005-rust-git-core.md) | Rust Git Core (git2) | Done | Implement Git ops in Rust, expose as Tauri commands | 0001 |
+| [0006](./0006-tauri-git-wiring.md) | TauriAdapter Git Wiring | Done | Wire TauriAdapter to Rust Git commands, verify E2E | 0004, 0005 |
 
 ### Phase 3: Backend Integrations
 

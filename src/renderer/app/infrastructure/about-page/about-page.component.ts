@@ -16,14 +16,14 @@ export class AboutPageComponent implements OnInit {
   /** @description Open the project repository in the default browser */
   goToRepo() {
     this.adapter.send(IPC_EVENTS.SHELL.OPEN, {
-      url: "https://github.com/systembugtj/hetu",
+      url: "https://github.com/luban-ws/hetu",
     });
   }
 
   /** @description Open the Buy Me a Coffee page in the default browser */
   goToBMC() {
     this.adapter.send(IPC_EVENTS.SHELL.OPEN, {
-      url: "https://www.buymeacoffee.com/mjCsGWDTS",
+      url: "https://www.buymeacoffee.com/PpVB0uO",
     });
   }
 }

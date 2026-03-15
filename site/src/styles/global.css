@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  /* === Subway-map inspired palette === */
-  --color-void: #07090e;
-  --color-deep: #0d1117;
-  --color-surface: #161b22;
-  --color-elevated: #1c2333;
-  --color-border: #30363d;
+  /* === Hetu "河图" palette: deep ink + neon transit lines === */
+  --color-void: #05080f;
+  --color-deep: #0a111d;
+  --color-surface: #111a2a;
+  --color-elevated: #162338;
+  --color-border: #273247;
 
-  --color-text-primary: #e6edf3;
-  --color-text-secondary: #8b949e;
-  --color-text-muted: #484f58;
+  --color-text-primary: #ebf2ff;
+  --color-text-secondary: #9daec8;
+  --color-text-muted: #64748f;
 
-  /* Subway line accent colors */
-  --color-line-blue: #58a6ff;
-  --color-line-orange: #f0883e;
-  --color-line-green: #3fb950;
-  --color-line-red: #f85149;
-  --color-line-purple: #bc8cff;
-  --color-line-cyan: #39d2c0;
+  /* Transit line accents */
+  --color-line-blue: #3ba7ff;
+  --color-line-orange: #ff9f40;
+  --color-line-green: #41d07d;
+  --color-line-red: #ff5d73;
+  --color-line-purple: #b388ff;
+  --color-line-cyan: #34d8eb;
 
   /* Semantic aliases */
   --color-accent: var(--color-line-blue);
@@ -46,8 +46,20 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--color-void);
+  background:
+    radial-gradient(1200px 500px at 50% -10%, rgba(59, 167, 255, 0.22), transparent 60%),
+    radial-gradient(900px 420px at 85% 110%, rgba(65, 208, 125, 0.14), transparent 65%),
+    radial-gradient(800px 360px at 0% 100%, rgba(179, 136, 255, 0.12), transparent 60%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(157, 174, 200, 0.03) 0px,
+      rgba(157, 174, 200, 0.03) 1px,
+      transparent 1px,
+      transparent 14px
+    ),
+    var(--color-void);
   color: var(--color-text-primary);
+  min-height: 100vh;
 }
 
 ::selection {
@@ -56,7 +68,7 @@ body {
 
 /* === Subway decoration line — animated gradient bar === */
 .subway-bar {
-  height: 3px;
+  height: 4px;
   background: linear-gradient(
     90deg,
     var(--color-line-blue),
@@ -67,8 +79,11 @@ body {
     var(--color-line-cyan),
     var(--color-line-blue)
   );
-  background-size: 200% 100%;
-  animation: subway-flow 8s linear infinite;
+  background-size: 220% 100%;
+  box-shadow:
+    0 0 12px rgba(59, 167, 255, 0.4),
+    0 0 22px rgba(255, 159, 64, 0.24);
+  animation: subway-flow 10s linear infinite;
 }
 
 @keyframes subway-flow {
@@ -103,7 +118,7 @@ body {
 .prose a:hover { color: var(--color-accent-warm); }
 
 .prose code {
-  background: var(--color-surface);
+  background: color-mix(in srgb, var(--color-surface) 86%, black);
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-family: var(--font-mono);

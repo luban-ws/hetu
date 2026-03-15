@@ -9,11 +9,19 @@
 /out
 /src/dist
 
+# Site build output
+site/dist/
+site/.vercel/
+site/.astro/
+
 # dependencies
 node_modules
 
 # Rust / Tauri build artifacts
 /src-tauri/target/
+
+# package-lock for site subproject (generated)
+site/package-lock.json
 
 # IDEs and editors
 /.idea

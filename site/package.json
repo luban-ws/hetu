@@ -1,5 +1,6 @@
 {
-  "name": "hetu-site",
+  "name": "@luban-ws/site",
+  "private": true,
   "version": "1.0.0",
   "type": "module",
   "description": "Hetu — Subway-Map Git Client showcase site",

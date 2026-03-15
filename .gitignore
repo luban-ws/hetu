@@ -1,28 +1,24 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-
 # compiled output
-/dist
-/dist-server
-/app/dist
-/tmp
-/out-tsc
-/out
-/src/dist
+dist/
+out/
+out-tsc/
+
+# dependencies
+node_modules/
+
+# Rust / Tauri build artifacts
+apps/desktop/src-tauri/target/
 
 # Site build output
 site/dist/
 site/.vercel/
 site/.astro/
 
-# dependencies
-node_modules
-
-# Rust / Tauri build artifacts
-/src-tauri/target/
-
+# Turborepo
+.turbo/
 
 # IDEs and editors
-/.idea
+.idea/
 .project
 .classpath
 .c9/
@@ -38,19 +34,19 @@ node_modules
 !.vscode/extensions.json
 
 # misc
-/.angular/cache
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
+.angular/cache
+.sass-cache/
+connect.lock
+coverage/
+libpeerconnection.log
 npm-debug.log
 yarn-error.log
 testem.log
-/typings
+typings/
 
 # e2e
-/e2e/*.js
-/e2e/*.map
+e2e/*.js
+e2e/*.map
 
 # Secrets and local config
 logs/security/

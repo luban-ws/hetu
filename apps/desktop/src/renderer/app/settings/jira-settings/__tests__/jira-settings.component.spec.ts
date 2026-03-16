@@ -4,8 +4,8 @@ import { JiraSettingsComponent } from "../jira-settings.component";
 import { SettingsService } from "../../services/settings.service";
 import { MockSettings } from "./mock-settings-service";
 import { NO_ERRORS_SCHEMA } from "@angular/core";
-import { ElectronService } from "../../infrastructure/electron.service";
-import { MockElectron } from "../../infrastructure/mocks/mock-electron-service";
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 
 describe("JiraSettingsComponent", () => {
   let component: JiraSettingsComponent;
@@ -16,7 +16,7 @@ describe("JiraSettingsComponent", () => {
       declarations: [JiraSettingsComponent],
       providers: [
         { provide: SettingsService, useClass: MockSettings },
-        { provide: ElectronService, useClass: MockElectron },
+        { provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

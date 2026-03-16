@@ -2,7 +2,7 @@ import { Injectable, EventEmitter, Output, Inject, NgZone } from "@angular/core"
 import { DESKTOP_ADAPTER, DesktopAdapter } from '../../infrastructure/desktop-adapter';
 import { RepoService } from "./repo.service";
 import { StatusBarService } from "../../infrastructure/status-bar.service";
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class CiIntegrationService {

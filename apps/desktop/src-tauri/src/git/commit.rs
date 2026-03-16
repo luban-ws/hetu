@@ -39,11 +39,69 @@ pub fn get_commits(repo: &Repository, max_count: usize) -> Result<Vec<CommitInfo
     Ok(commits)
 }
 
-/// Get a single commit by SHA.
-pub fn get_commit(repo: &Repository, sha: &str) -> Result<CommitInfo, GitError> {
+/// Changed file entry in a commit.
+#[derive(Debug, Serialize, Clone)]
+pub struct CommitFileEntry {
+    pub path: String,
+    pub status: String,
+}
+
+/// Full commit detail including changed files.
+#[derive(Debug, Serialize, Clone)]
+pub struct CommitDetail {
+    #[serde(flatten)]
+    pub info: CommitInfo,
+    pub files: Vec<CommitFileEntry>,
+}
+
+/// Get a single commit by SHA with its changed files list.
+pub fn get_commit(repo: &Repository, sha: &str) -> Result<CommitDetail, GitError> {
     let oid = Oid::from_str(sha).map_err(GitError::from)?;
     let commit = repo.find_commit(oid).map_err(GitError::from)?;
-    Ok(commit_to_info(&commit))
+    let info = commit_to_info(&commit);
+
+    let tree = commit.tree().map_err(GitError::from)?;
+    let parent_tree = if commit.parent_count() > 0 {
+        Some(
+            commit
+                .parent(0)
+                .map_err(GitError::from)?
+                .tree()
+                .map_err(GitError::from)?,
+        )
+    } else {
+        None
+    };
+
+    let diff = repo
+        .diff_tree_to_tree(parent_tree.as_ref(), Some(&tree), None)
+        .map_err(GitError::from)?;
+
+    let files: Vec<CommitFileEntry> = diff
+        .deltas()
+        .map(|delta| {
+            let path = delta
+                .new_file()
+                .path()
+                .unwrap_or_else(|| std::path::Path::new(""))
+                .to_string_lossy()
+                .to_string();
+            let status = match delta.status() {
+                git2::Delta::Added => "new",
+                git2::Delta::Deleted => "deleted",
+                git2::Delta::Modified => "modified",
+                git2::Delta::Renamed => "renamed",
+                git2::Delta::Copied => "copied",
+                _ => "unknown",
+            };
+            CommitFileEntry {
+                path,
+                status: status.to_string(),
+            }
+        })
+        .collect();
+
+    Ok(CommitDetail { info, files })
 }
 
 /// Create a commit with all staged changes.

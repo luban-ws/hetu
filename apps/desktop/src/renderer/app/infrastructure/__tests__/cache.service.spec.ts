@@ -1,8 +1,8 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { CacheService } from './cache.service';
-import { ElectronService } from './electron.service';
-import { MockElectron } from './mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { StatusBarService } from './status-bar.service';
 import { MockStatusBar } from './mocks/mock-status-bar-service';
 
@@ -11,7 +11,7 @@ describe('CacheService', () => {
     TestBed.configureTestingModule({
       providers: [
         CacheService,
-        {provide: ElectronService, useClass: MockElectron},
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter},
         {provide: StatusBarService, useClass: MockStatusBar}
       ],
     });

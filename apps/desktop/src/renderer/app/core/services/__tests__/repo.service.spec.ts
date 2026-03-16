@@ -10,21 +10,21 @@ import { HotkeysService } from '../../../../node_modules/angular2-hotkeys';
 import { MockCommitChange } from '../mocks/mock-commit-change-service';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
 import { MockPromptInjector } from '../../infrastructure/mocks/mock-prompt-injector-service';
-import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
-import { ElectronService } from '../../infrastructure/electron.service';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { LoadingService } from '../../infrastructure/loading-service.service';
 import { SimpleNotificationsComponent, SimpleNotificationsModule, NotificationsService } from '../../../../node_modules/angular2-notifications';
 import { RouterTestingModule } from '../../../../node_modules/@angular/router/testing';
 import { MockCredential } from '../mocks/mock-credential-service';
 import { CredentialsService } from './credentials.service';
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 describe('RepoService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         RepoService,
-        {provide: ElectronService, useClass: MockElectron},
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter},
         {provide: LoadingService, useClass: MockLoading},
         {provide: StatusBarService, useClass: MockStatusBar},
         {provide: PromptInjectorService, useClass: MockPromptInjector},
@@ -44,36 +44,36 @@ describe('RepoService', () => {
   }));
 
   it('should send Repo-InitBrowse on browseInitFolder', inject([RepoService], (service: RepoService) => {
-    let electronSvc = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
 
     service.browseInitFolder();
 
-    expect(electronSvc.messageWasSent(IPC_EVENTS.REPO.INIT_BROWSE)).toBeTruthy();
+    expect(adapter.messageWasSent(IPC_EVENTS.REPO.INIT_BROWSE)).toBeTruthy();
   }));
 
   it('should send Repo-Init on Repo-InitPathSelected', inject([RepoService], (service: RepoService) => {
-    let electronSvc = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
     service.init();
 
-    electronSvc.receiveEvent(IPC_EVENTS.REPO.INIT_PATH_SELECTED, {path: 'TestPath'});
+    adapter.receiveEvent(IPC_EVENTS.REPO.INIT_PATH_SELECTED, {path: 'TestPath'});
 
-    expect(electronSvc.messageWasSent(IPC_EVENTS.REPO.INIT)).toBeTruthy();
+    expect(adapter.messageWasSent(IPC_EVENTS.REPO.INIT)).toBeTruthy();
   }));
   it('should openRepo on Repo-InitSuccessful', inject([RepoService], (service: RepoService) => {
-    let electronSvc = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
     service.init();
 
-    electronSvc.receiveEvent(IPC_EVENTS.REPO.INIT_SUCCESSFUL, {path: 'TestPath'});
+    adapter.receiveEvent(IPC_EVENTS.REPO.INIT_SUCCESSFUL, {path: 'TestPath'});
 
-    expect(electronSvc.messageWasSent(IPC_EVENTS.REPO.OPEN)).toBeTruthy();
+    expect(adapter.messageWasSent(IPC_EVENTS.REPO.OPEN)).toBeTruthy();
   }));
   it('should show error notification on Repo-InitFailed', inject([RepoService], (service: RepoService) => {
     let noti = TestBed.get(NotificationsService) as NotificationsService;
-    let electronSvc = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
     let notiSpy = spyOn(noti, 'error').and.callThrough();
     service.init();
 
-    electronSvc.receiveEvent(IPC_EVENTS.REPO.INIT_FAILED, {});
+    adapter.receiveEvent(IPC_EVENTS.REPO.INIT_FAILED, {});
 
     expect(notiSpy).toHaveBeenCalled();
   }));

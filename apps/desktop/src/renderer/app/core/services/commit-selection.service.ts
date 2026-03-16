@@ -7,7 +7,7 @@ import { PromptInjectorService } from '../../infrastructure/prompt-injector.serv
 import { TagPromptComponent } from '../tag-prompt/tag-prompt.component';
 import { ToastrService } from 'ngx-toastr';
 import { CredentialsService } from './credentials.service';
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class CommitSelectionService {

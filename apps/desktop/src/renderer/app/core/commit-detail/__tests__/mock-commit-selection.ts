@@ -11,7 +11,7 @@ export class MockCommitSelection {
   @Output() gettingFileDetail = new EventEmitter();
   selectedCommit: CommitDetail | WIPCommit;
   constructor(
-    private electron: any,
+    private adapter: any,
     private promptInj: any,
     private toastr: any,
     private cred: any

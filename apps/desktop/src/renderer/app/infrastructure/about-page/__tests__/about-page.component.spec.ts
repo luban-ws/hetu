@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AboutPageComponent } from './about-page.component';
-import { ElectronService } from '../electron.service';
-import { MockElectron } from '../mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 
 describe('AboutPageComponent', () => {
   let component: AboutPageComponent;
@@ -12,7 +12,7 @@ describe('AboutPageComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ AboutPageComponent ],
       providers: [
-        {provide: ElectronService, useClass: MockElectron}
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter}
       ]
     })
     .compileComponents();

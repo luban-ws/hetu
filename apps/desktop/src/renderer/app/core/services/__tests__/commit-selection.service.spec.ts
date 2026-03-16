@@ -5,10 +5,10 @@ import { MockPromptInjector } from '../../infrastructure/mocks/mock-prompt-injec
 import { CredentialsService } from './credentials.service';
 import { MockCredential } from '../mocks/mock-credential-service';
 import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
-import { ElectronService } from '../../infrastructure/electron.service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
-import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 describe('CommitSelectionService', () => {
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('CommitSelectionService', () => {
       ],
       providers: [
         CommitSelectionService,
-        {provide: ElectronService, useClass: MockElectron},
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter},
         {provide: PromptInjectorService, useClass: MockPromptInjector},
         {provide: CredentialsService, useClass: MockCredential}
       ]
@@ -31,22 +31,22 @@ describe('CommitSelectionService', () => {
 
   it('should set selectedCommit to null and emit changes on repo closed', inject([CommitSelectionService], (service: CommitSelectionService) => {
     let emit = false;
-    let electron = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
     service.selectionChange.subscribe(s => {
       emit = true;
     });
-    electron.receiveEvent(IPC_EVENTS.REPO.CLOSED, {});
+    adapter.receiveEvent(IPC_EVENTS.REPO.CLOSED, {});
 
     expect(service.selectedCommit).toBeNull();
     expect(emit).toBeTruthy();
   }));
   it('should set selectedCommit to null and emit changes on repo opened', inject([CommitSelectionService], (service: CommitSelectionService) => {
     let emit = false;
-    let electron = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
     service.selectionChange.subscribe(s => {
       emit = true;
     });
-    electron.receiveEvent(IPC_EVENTS.REPO.OPEN_SUCCESSFUL, {});
+    adapter.receiveEvent(IPC_EVENTS.REPO.OPEN_SUCCESSFUL, {});
 
     expect(service.selectedCommit).toBeNull();
     expect(emit).toBeTruthy();

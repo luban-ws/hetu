@@ -6,7 +6,7 @@ import { StatusBarService } from "../../infrastructure/status-bar.service";
 import { Profile } from "../models/profile";
 import { IssueType } from "../models/issue-type";
 import { Resolution } from "../models/resolution";
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class JiraIntegrationService {

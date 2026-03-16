@@ -2,7 +2,8 @@
   "name": "hetu",
   "version": "0.5.0",
   "private": true,
-  "description": "Hetu monorepo \u2014 subway-map style Git client",
+  "description": "Hetu monorepo — subway-map style Git client",
+  "homepage": "https://luban-ws.github.io/hetu/",
   "repository": {
     "type": "git",
     "url": "https://github.com/luban-ws/hetu.git"
@@ -31,12 +32,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
-      "electron",
       "esbuild",
-      "lmdb",
-      "lzma-native",
-      "msgpackr-extract",
-      "nodegit",
       "sharp"
     ]
   }

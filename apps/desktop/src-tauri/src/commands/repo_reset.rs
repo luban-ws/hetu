@@ -32,7 +32,7 @@ pub async fn repo_reset(
 
     match result {
         Ok(()) => {
-            let _ = app.emit("Repo-ResetDone", serde_json::json!({}));
+            let _ = app.emit("Repo-Resetted", serde_json::json!({}));
             Ok(())
         }
         Err(e) => Err(e.to_string()),

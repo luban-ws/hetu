@@ -9,9 +9,7 @@
       "@core/*": ["./app/core/*"],
       "@infrastructure/*": ["./app/infrastructure/*"],
       "@settings/*": ["./app/settings/*"],
-      "@jira/*": ["./app/jira/*"],
-      "@common/*": ["../common/*"],
-      "@shared/*": ["../shared/*"]
+      "@jira/*": ["./app/jira/*"]
     }
   },
   "files": ["./main.ts", "./polyfills.ts"],

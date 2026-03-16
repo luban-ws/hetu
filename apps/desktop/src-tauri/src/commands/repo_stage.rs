@@ -44,6 +44,46 @@ pub async fn repo_unstage(
     Ok(())
 }
 
+#[derive(Debug, Deserialize)]
+pub struct StageLinesPayload {
+    #[serde(default)]
+    pub path: String,
+    #[serde(default)]
+    pub lines: Vec<usize>,
+}
+
+/// Stage specific lines within a file (partial staging).
+#[tauri::command]
+pub async fn repo_stage_lines(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    payload: StageLinesPayload,
+) -> Result<(), String> {
+    let guard = state.repo.lock();
+    let repo = guard.as_ref().ok_or("No repository open")?;
+    git::status::stage_lines(repo, &payload.path, &payload.lines).map_err(|e| e.to_string())?;
+    if let Ok(status) = git::status::get_status(repo) {
+        let _ = app.emit("Repo-FileStatusRetrieved", &status);
+    }
+    Ok(())
+}
+
+/// Unstage specific lines within a file (partial unstaging).
+#[tauri::command]
+pub async fn repo_unstage_lines(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    payload: StageLinesPayload,
+) -> Result<(), String> {
+    let guard = state.repo.lock();
+    let repo = guard.as_ref().ok_or("No repository open")?;
+    git::status::unstage_lines(repo, &payload.path, &payload.lines).map_err(|e| e.to_string())?;
+    if let Ok(status) = git::status::get_status(repo) {
+        let _ = app.emit("Repo-FileStatusRetrieved", &status);
+    }
+    Ok(())
+}
+
 /// Discard all working directory changes.
 #[tauri::command]
 pub async fn repo_discard_all(

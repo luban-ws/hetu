@@ -1,6 +1,6 @@
 //! Secure credential storage using OS keychain via the `keyring` crate.
 //!
-//! Maps the Electron `safeStorage` + `credentials.json` pattern to native
+//! Maps the `credentials.json` pattern to native
 //! platform keychains (macOS Keychain, Windows Credential Manager, Linux
 //! Secret Service).
 

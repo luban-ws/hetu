@@ -5,8 +5,8 @@ import { FileCountsComponent } from "../file-counts.component";
 import { LayoutService } from "../../services/layout.service";
 import { MockLayout } from "./mock-layout";
 import { HotkeysService } from "@ngneat/hotkeys";
-import { ElectronService } from "../../../infrastructure/electron.service";
-import { MockElectron } from "./mock-electron";
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 describe("FileCountsComponent", () => {
@@ -26,7 +26,7 @@ describe("FileCountsComponent", () => {
           },
         },
         { provide: HotkeysService, useValue: {} },
-        { provide: ElectronService, useValue: {} },
+        { provide: DESKTOP_ADAPTER, useValue: new MockDesktopAdapter() },
       ],
     })
       .overrideComponent(FileCountsComponent, {

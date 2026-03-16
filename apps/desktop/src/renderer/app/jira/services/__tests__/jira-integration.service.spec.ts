@@ -1,8 +1,8 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { JiraIntegrationService } from './jira-integration.service';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { StatusBarService } from '../../infrastructure/status-bar.service';
 import { MockStatusBar } from '../../infrastructure/mocks/mock-status-bar-service';
 import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
@@ -15,7 +15,7 @@ describe('JiraIntegrationService', () => {
       ],
       providers: [
         JiraIntegrationService,
-        {provide: ElectronService, useClass: MockElectron},
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter},
         {provide: StatusBarService, useClass: MockStatusBar},
       ]
     });

@@ -1,15 +1,15 @@
 import { TestBed, inject } from "@angular/core/testing";
 
 import { SubmodulesService } from "../submodules.service";
-import { ElectronService } from "../../../infrastructure/electron.service";
-import { MockElectron } from "./mock-electron";
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 
 describe("SubmodulesService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         SubmodulesService,
-        { provide: ElectronService, useValue: new MockElectron() },
+        { provide: DESKTOP_ADAPTER, useValue: new MockDesktopAdapter() },
       ],
     });
   });

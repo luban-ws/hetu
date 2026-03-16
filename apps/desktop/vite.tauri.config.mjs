@@ -1,9 +1,6 @@
 /**
  * Standalone Vite config for the Angular renderer.
- * Used by Tauri's beforeDevCommand / beforeBuildCommand so that
- * `npm run tauri dev` and `npm run tauri build` work without electron-vite.
- *
- * Mirrors the renderer section of electron.vite.config.mjs.
+ * Used by Tauri's beforeDevCommand / beforeBuildCommand.
  */
 import { defineConfig } from "vite";
 import { resolve } from "path";
@@ -51,8 +48,6 @@ export default defineConfig({
       "@infrastructure": resolve(__dirname, "src/renderer/app/infrastructure"),
       "@settings": resolve(__dirname, "src/renderer/app/settings"),
       "@jira": resolve(__dirname, "src/renderer/app/jira"),
-      "@common": resolve(__dirname, "src/common"),
-      "@shared": resolve(__dirname, "src/shared"),
     },
   },
   build: {
@@ -73,7 +68,7 @@ export default defineConfig({
             "ngx-toastr",
             "@perfectmemory/ngx-contextmenu",
           ],
-          utils: ["rxjs", "moment", "d3", "axios"],
+          utils: ["rxjs", "moment", "d3"],
         },
       },
     },

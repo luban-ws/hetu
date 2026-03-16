@@ -1,6 +1,6 @@
 //! Tauri commands for composite credential operations.
 //!
-//! Maps the Electron `Repo-SetCred` / credential retrieval flow to
+//! Maps the `Repo-SetCred` / credential retrieval flow to
 //! OS-keychain-backed storage + settings.
 
 use serde::Deserialize;
@@ -14,7 +14,7 @@ pub struct SetCredPayload {
 
 /// Store credentials for the currently open repository.
 ///
-/// Mirrors the Electron `setCredentials` handler:
+/// Stores credentials:
 /// - Saves username in per-repo settings
 /// - Saves password in OS keychain keyed by `<username>@<remoteUrl>` (HTTPS)
 ///   or `<remoteUrl>` (SSH)

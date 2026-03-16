@@ -5,7 +5,7 @@ import { ToastrService } from "ngx-toastr";
 import { Router } from "@angular/router";
 import { SshPasswordPromptComponent } from "../ssh-password-prompt/ssh-password-prompt.component";
 import { PromptInjectorService } from "../../infrastructure/prompt-injector.service";
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class CredentialsService {

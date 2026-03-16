@@ -3,9 +3,7 @@ import { invoke as tauriInvoke, isTauri as tauriIsTauri } from '@tauri-apps/api/
 
 /**
  * Bridge service for Tauri 2 backend communication.
- * Use only when the app runs inside Tauri; when running under Electron or browser,
- * {@link isTauri} is false and {@link invoke} rejects.
- * Does not replace or remove Electron IPC usage elsewhere.
+ * {@link isTauri} is false outside a Tauri WebView; {@link invoke} rejects.
  */
 @Injectable()
 export class TauriBridgeService {
@@ -23,7 +21,7 @@ export class TauriBridgeService {
 
   /**
    * Invokes a Tauri command. Resolves with the command result when running in Tauri;
-   * rejects when not in Tauri so callers can handle fallback (e.g. Electron IPC).
+   * rejects when not running inside Tauri.
    *
    * @param cmd - Tauri command name (e.g. 'ping', 'get_app_version')
    * @param args - Optional arguments object for the command

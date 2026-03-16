@@ -8,12 +8,12 @@ import { LoadingService } from '../../infrastructure/loading-service.service';
 import { MockLoading } from '../../infrastructure/mocks/mock-loading-service';
 import { CommitSelectionService } from './commit-selection.service';
 import { CredentialsService } from './credentials.service';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { MockCredential } from '../mocks/mock-credential-service';
 import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
 import { RouterTestingModule } from '../../../../node_modules/@angular/router/testing';
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 describe('CommitChangeService', () => {
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('CommitChangeService', () => {
       ],
       providers: [
         CommitChangeService,
-        {provide: ElectronService, useClass: MockElectron},
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter},
         {provide: CredentialsService, useClass: MockCredential},
         {provide: CommitSelectionService, useClass: MockCommitSelection},
         {provide: HotkeysService, useClass: MockHotkeys},
@@ -38,13 +38,13 @@ describe('CommitChangeService', () => {
   }));
 
   it('should emit popped when Repo-Popped', inject([CommitChangeService], (service: CommitChangeService)  => {
-    let electron = TestBed.get(ElectronService) as MockElectron;
+    let adapter = TestBed.get(DESKTOP_ADAPTER) as MockDesktopAdapter;
     let emit = false;
     service.popped.subscribe(() => {
       emit = true;
     });
 
-    electron.receiveEvent(IPC_EVENTS.REPO.POPPED, {});
+    adapter.receiveEvent(IPC_EVENTS.REPO.POPPED, {});
 
     expect(emit).toBeTruthy();
   }));

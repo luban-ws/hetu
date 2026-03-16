@@ -33,7 +33,7 @@ pub async fn repo_stash_save(
     let repo = guard.as_mut().ok_or("No repository open")?;
     git::stash::stash_save(repo, &payload.name, &payload.email, &payload.message)
         .map_err(|e| e.to_string())?;
-    let _ = app.emit("Repo-StashSaved", serde_json::json!({}));
+    let _ = app.emit("Repo-Stashed", serde_json::json!({}));
     Ok(())
 }
 
@@ -47,7 +47,7 @@ pub async fn repo_stash_pop(
     let mut guard = state.repo.lock();
     let repo = guard.as_mut().ok_or("No repository open")?;
     git::stash::stash_pop(repo, payload.index).map_err(|e| e.to_string())?;
-    let _ = app.emit("Repo-StashPopped", serde_json::json!({}));
+    let _ = app.emit("Repo-Popped", serde_json::json!({}));
     Ok(())
 }
 
@@ -61,7 +61,7 @@ pub async fn repo_stash_apply(
     let mut guard = state.repo.lock();
     let repo = guard.as_mut().ok_or("No repository open")?;
     git::stash::stash_apply(repo, payload.index).map_err(|e| e.to_string())?;
-    let _ = app.emit("Repo-StashApplied", serde_json::json!({}));
+    let _ = app.emit("Repo-Applied", serde_json::json!({}));
     Ok(())
 }
 
@@ -75,6 +75,6 @@ pub async fn repo_stash_drop(
     let mut guard = state.repo.lock();
     let repo = guard.as_mut().ok_or("No repository open")?;
     git::stash::stash_drop(repo, payload.index).map_err(|e| e.to_string())?;
-    let _ = app.emit("Repo-StashDropped", serde_json::json!({}));
+    let _ = app.emit("Repo-StashDeleted", serde_json::json!({}));
     Ok(())
 }

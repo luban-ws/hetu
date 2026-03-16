@@ -119,6 +119,141 @@ pub fn unstage(repo: &Repository, paths: &[String]) -> Result<(), GitError> {
     Ok(())
 }
 
+/// Stage specific lines of a file by applying a partial patch to the index.
+///
+/// `lines` contains line numbers (1-based) from the working-tree diff to stage.
+pub fn stage_lines(repo: &Repository, path: &str, lines: &[usize]) -> Result<(), GitError> {
+    let workdir = repo.workdir().ok_or_else(|| GitError {
+        code: "NotFound".to_string(),
+        message: "No working directory".to_string(),
+    })?;
+    let full_path = workdir.join(path);
+    let current = std::fs::read_to_string(&full_path).map_err(|e| GitError {
+        code: "IO".to_string(),
+        message: e.to_string(),
+    })?;
+
+    let all_lines: Vec<&str> = current.lines().collect();
+    let line_set: std::collections::HashSet<usize> =
+        lines.iter().copied().collect();
+
+    // Build content with only selected lines changed vs HEAD
+    let head_content = head_file_content(repo, path).unwrap_or_default();
+    let head_lines: Vec<&str> = head_content.lines().collect();
+
+    // Write the selected-lines version to the index
+    let mut index = repo.index().map_err(GitError::from)?;
+    let mut staged_content = String::new();
+    let max_len = all_lines.len().max(head_lines.len());
+    for i in 0..max_len {
+        let line_num = i + 1;
+        if line_set.contains(&line_num) {
+            if i < all_lines.len() {
+                staged_content.push_str(all_lines[i]);
+                staged_content.push('\n');
+            }
+        } else if i < head_lines.len() {
+            staged_content.push_str(head_lines[i]);
+            staged_content.push('\n');
+        }
+    }
+
+    let oid = repo
+        .blob(staged_content.as_bytes())
+        .map_err(GitError::from)?;
+
+    let file_mode = 0o100644;
+    let mut entry = git2::IndexEntry {
+        ctime: git2::IndexTime::new(0, 0),
+        mtime: git2::IndexTime::new(0, 0),
+        dev: 0,
+        ino: 0,
+        mode: file_mode,
+        uid: 0,
+        gid: 0,
+        file_size: staged_content.len() as u32,
+        id: oid,
+        flags: 0,
+        flags_extended: 0,
+        path: path.as_bytes().to_vec(),
+    };
+
+    index.add(&entry).map_err(GitError::from)?;
+    index.write().map_err(GitError::from)?;
+    let _ = &mut entry; // suppress unused warning
+    Ok(())
+}
+
+/// Unstage specific lines (restore them in the index to HEAD version).
+pub fn unstage_lines(repo: &Repository, path: &str, lines: &[usize]) -> Result<(), GitError> {
+    let head_content = head_file_content(repo, path).unwrap_or_default();
+    let head_lines: Vec<&str> = head_content.lines().collect();
+
+    // Read current index content
+    let index_content = index_file_content(repo, path).unwrap_or_default();
+    let idx_lines: Vec<&str> = index_content.lines().collect();
+
+    let line_set: std::collections::HashSet<usize> = lines.iter().copied().collect();
+
+    let mut result = String::new();
+    let max_len = idx_lines.len().max(head_lines.len());
+    for i in 0..max_len {
+        let line_num = i + 1;
+        if line_set.contains(&line_num) {
+            // Restore this line from HEAD
+            if i < head_lines.len() {
+                result.push_str(head_lines[i]);
+                result.push('\n');
+            }
+        } else if i < idx_lines.len() {
+            result.push_str(idx_lines[i]);
+            result.push('\n');
+        }
+    }
+
+    let oid = repo.blob(result.as_bytes()).map_err(GitError::from)?;
+    let mut index = repo.index().map_err(GitError::from)?;
+    let entry = git2::IndexEntry {
+        ctime: git2::IndexTime::new(0, 0),
+        mtime: git2::IndexTime::new(0, 0),
+        dev: 0,
+        ino: 0,
+        mode: 0o100644,
+        uid: 0,
+        gid: 0,
+        file_size: result.len() as u32,
+        id: oid,
+        flags: 0,
+        flags_extended: 0,
+        path: path.as_bytes().to_vec(),
+    };
+    index.add(&entry).map_err(GitError::from)?;
+    index.write().map_err(GitError::from)?;
+    Ok(())
+}
+
+/// Read a file's content from the HEAD tree.
+fn head_file_content(repo: &Repository, path: &str) -> Result<String, GitError> {
+    let head = repo.head().map_err(GitError::from)?;
+    let tree = head.peel_to_tree().map_err(GitError::from)?;
+    let entry = tree
+        .get_path(std::path::Path::new(path))
+        .map_err(GitError::from)?;
+    let blob = repo.find_blob(entry.id()).map_err(GitError::from)?;
+    Ok(String::from_utf8_lossy(blob.content()).to_string())
+}
+
+/// Read a file's content from the current index.
+fn index_file_content(repo: &Repository, path: &str) -> Result<String, GitError> {
+    let index = repo.index().map_err(GitError::from)?;
+    let entry = index.get_path(std::path::Path::new(path), 0).ok_or_else(|| GitError {
+        code: "NotFound".to_string(),
+        message: format!("File {} not in index", path),
+    })?;
+    let blob = repo.find_blob(entry.id).map_err(GitError::from)?;
+    Ok(String::from_utf8_lossy(blob.content()).to_string())
+}
+
 /// Discard all working directory changes.
 pub fn discard_all(repo: &Repository) -> Result<(), GitError> {
     let mut opts = git2::build::CheckoutBuilder::new();

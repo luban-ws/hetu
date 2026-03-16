@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { JiraDetailComponent } from './jira-detail.component';
-import { ElectronService } from '../../infrastructure/electron.service';
-import { MockElectron } from '../../infrastructure/mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { JiraIntegrationService } from '../services/jira-integration.service';
 import { MockJira } from '../../core/mocks/mock-jira-service';
 import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
@@ -19,7 +19,7 @@ describe('JiraDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [JiraDetailComponent],
       providers: [
-        { provide: ElectronService, useClass: MockElectron },
+        { provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter },
         { provide: JiraIntegrationService, useClass: MockJira },
         { provide: PromptInjectorService, useClass: MockPromptInjector },
         { provide: LayoutService, useClass: MockLayout }

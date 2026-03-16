@@ -1,8 +1,8 @@
 import { TestBed, inject } from "@angular/core/testing";
 
 import { SettingsService } from "../settings.service";
-import { ElectronService } from "../../../infrastructure/electron.service";
-import { MockElectron } from "../../../infrastructure/mocks/mock-electron-service";
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { beforeEach, describe, expect, it } from "vitest";
 
 // Mock ToastrService
@@ -18,7 +18,7 @@ describe("SettingsService", () => {
     TestBed.configureTestingModule({
       providers: [
         SettingsService,
-        { provide: ElectronService, useClass: MockElectron },
+        { provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter },
         { provide: "ToastrService", useClass: MockToastrService },
       ],
     });

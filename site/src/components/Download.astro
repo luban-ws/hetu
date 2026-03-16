@@ -3,21 +3,26 @@
  * Download / CTA section with platform-specific links.
  */
 
+const GITHUB_RELEASES = 'https://github.com/luban-ws/hetu/releases/latest';
+
 const PLATFORMS = [
   {
     name: 'macOS',
     icon: 'M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8z',
     note: 'Apple Silicon & Intel',
+    href: GITHUB_RELEASES,
   },
   {
     name: 'Windows',
     icon: 'M3 5.5l7.5-1v7H3V5.5zm0 7.5h7.5v7L3 18.5V13zm8.5-8.5L21 3v8.5h-9.5V4.5zM11.5 13H21v8l-9.5-1.5V13z',
     note: 'Windows 10+',
+    href: GITHUB_RELEASES,
   },
   {
     name: 'Linux',
     icon: 'M12 2a2 2 0 00-2 2c0 .74.4 1.39 1 1.73V7a5 5 0 00-5 5v1H4a2 2 0 100 4h1v1a5 5 0 005 5h4a5 5 0 005-5v-1h1a2 2 0 100-4h-2v-1a5 5 0 00-5-5V5.73c.6-.34 1-.99 1-1.73a2 2 0 00-2-2z',
     note: 'AppImage & deb',
+    href: GITHUB_RELEASES,
   },
 ] as const;
 ---
@@ -43,9 +48,11 @@ const PLATFORMS = [
     </p>
 
     <div class="mt-12 grid gap-4 sm:grid-cols-3">
-      {PLATFORMS.map(({ name, note }) => (
+      {PLATFORMS.map(({ name, note, href }) => (
         <a
-          href="#"
+          href={href}
+          target="_blank"
+          rel="noopener"
           class="group flex flex-col items-center gap-3 rounded-2xl border p-8 transition-all duration-300 hover:border-[var(--color-accent)] hover:shadow-lg hover:shadow-[var(--color-accent)]/10 hover:-translate-y-1"
           style="border-color: var(--color-border); background: var(--color-surface);"
         >
@@ -70,7 +77,7 @@ const PLATFORMS = [
         class="ml-1 rounded px-2 py-1 text-xs"
         style="background: var(--color-surface); color: var(--color-line-purple); font-family: var(--font-mono);"
       >
-        git clone &amp;&amp; npm install &amp;&amp; npm run tauri:dev
+        git clone &amp;&amp; pnpm install &amp;&amp; pnpm desktop:tauri:dev
       </code>
     </p>
   </div>

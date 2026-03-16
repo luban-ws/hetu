@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter, Output, Inject, NgZone } from "@angular/core";
 import { HotkeysService } from "@ngneat/hotkeys";
 import { DESKTOP_ADAPTER, DesktopAdapter } from '../../infrastructure/desktop-adapter';
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class LayoutService {

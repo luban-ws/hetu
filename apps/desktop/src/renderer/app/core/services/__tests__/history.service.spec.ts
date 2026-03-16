@@ -1,15 +1,15 @@
 import { TestBed, inject } from "@angular/core/testing";
 
 import { HistoryService } from "../history.service";
-import { ElectronService } from "../../../infrastructure/electron.service";
-import { MockElectron } from "../../../infrastructure/mocks/mock-electron-service";
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 
 describe("HistoryService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         HistoryService,
-        { provide: ElectronService, useClass: MockElectron },
+        { provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter },
       ],
     });
   });

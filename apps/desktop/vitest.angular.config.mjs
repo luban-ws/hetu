@@ -23,7 +23,6 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      "@common": resolve(process.cwd(), "src/common"),
       "rxjs/operators": resolve(
         process.cwd(),
         "node_modules/rxjs/operators/index.js"

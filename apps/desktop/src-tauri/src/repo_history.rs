@@ -3,7 +3,7 @@
 //! Persists recently opened repos and the active repo in `~/Hetu/settings.json`.
 //! All disk I/O goes through `settings_store` to avoid dual-write races.
 //!
-//! JSON layout (matches the Electron format):
+//! JSON layout:
 //! ```json
 //! {
 //!   "repos": [ { "name": "...", "workingDir": "...", "id": "..." }, ... ],
@@ -99,6 +99,11 @@ pub fn remove_repo(working_dir: &str) {
             serde_json::to_value(&repos).unwrap_or(Value::Array(vec![])),
         );
     }
+}
+
+/// Load all repo entries from history (for internal use by credential cleanup, etc.).
+pub fn load_history() -> Vec<RepoEntry> {
+    get_repos()
 }
 
 /// Get history as frontend-friendly items.

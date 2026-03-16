@@ -1,4 +1,4 @@
-//! Plain-JSON settings store mirroring the Electron `~/Hetu/settings.json`
+//! Plain-JSON settings store at `~/Hetu/settings.json`
 //! and per-repo `<repoId>.json` files.
 
 use serde_json::{Map, Value};

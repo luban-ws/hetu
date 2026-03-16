@@ -7,7 +7,7 @@ import { HotkeysService } from "@ngneat/hotkeys";
 import { CommitSelectionService } from "./commit-selection.service";
 import { WIPCommit } from "../prototypes/commit";
 import { LoadingService } from "../../infrastructure/loading-service.service";
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class CommitChangeService {

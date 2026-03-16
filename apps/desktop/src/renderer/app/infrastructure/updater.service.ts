@@ -2,7 +2,7 @@ import { Injectable, EventEmitter, Inject, NgZone } from '@angular/core';
 import { DESKTOP_ADAPTER, DesktopAdapter } from './desktop-adapter';
 import { ToastrService } from 'ngx-toastr';
 import { StatusBarService } from './status-bar.service';
-import { IPC_EVENTS  } from '@common/ipc-events';
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class UpdaterService {

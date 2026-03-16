@@ -88,6 +88,33 @@ pub async fn repo_fetch(
     }
 }
 
+/// Pull from the default remote (fetch + merge).
+#[tauri::command]
+pub async fn repo_pull(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    payload: RemotePayload,
+) -> Result<(), String> {
+    let guard = state.repo.lock();
+    let repo = guard.as_ref().ok_or("No repository open")?;
+    let creds = resolve_creds(repo, &payload);
+    match git::remote::pull(repo, &creds) {
+        Ok(()) => {
+            let _ = app.emit("Repo-Pulled", serde_json::json!({}));
+            Ok(())
+        }
+        Err(e) => {
+            let msg = e.to_string();
+            if msg.contains("Conflict") {
+                let _ = app.emit("Repo-PullFailed", serde_json::json!({ "message": msg }));
+            } else {
+                let _ = app.emit("Repo-CredentialIssue", serde_json::json!({}));
+            }
+            Err(msg)
+        }
+    }
+}
+
 /// Push to the default remote.
 #[tauri::command]
 pub async fn repo_push(
@@ -105,6 +132,51 @@ pub async fn repo_push(
         }
         Err(e) => {
             let _ = app.emit("Repo-CredentialIssue", serde_json::json!({}));
+            Err(e.to_string())
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PushTagPayload {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub username: Option<String>,
+    #[serde(default)]
+    pub password: Option<String>,
+}
+
+/// Push a specific tag to the default remote.
+#[tauri::command]
+pub async fn repo_push_tag(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    payload: PushTagPayload,
+) -> Result<(), String> {
+    let guard = state.repo.lock();
+    let repo = guard.as_ref().ok_or("No repository open")?;
+    let creds = resolve_creds(
+        repo,
+        &RemotePayload {
+            username: payload.username,
+            password: payload.password,
+            force: false,
+        },
+    );
+    match git::remote::push_tag(repo, &creds, &payload.name) {
+        Ok(()) => {
+            let _ = app.emit(
+                "Repo-TagPushed",
+                serde_json::json!({ "name": payload.name }),
+            );
+            Ok(())
+        }
+        Err(e) => {
+            let _ = app.emit(
+                "Repo-PushTagFailed",
+                serde_json::json!({ "message": e.to_string() }),
+            );
             Err(e.to_string())
         }
     }

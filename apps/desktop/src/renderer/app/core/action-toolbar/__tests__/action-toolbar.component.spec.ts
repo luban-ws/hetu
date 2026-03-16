@@ -5,8 +5,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { InfrastructureModule } from '../../../infrastructure/infrastructure.module';
 import { CoreModule } from '../../core.module';
 import { RepoService } from '../../services/repo.service';
-import { ElectronService } from '../../../infrastructure/electron.service';
-import { MockElectron } from '../../../infrastructure/mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { NotificationsService, SimpleNotificationsModule } from 'angular2-notifications';
 import { CredentialsService } from '../../services/credentials.service';
 import { CommitChangeService } from '../../services/commit-change.service';
@@ -33,7 +33,7 @@ describe('ActionToolbarComponent', () => {
         InfrastructureModule,
       ],
       providers: [
-        { provide: ElectronService, useClass: MockElectron },
+        { provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter },
         { provide: RepoService, useClass: MockRepo },
         { provide: HotkeysService, useClass: MockHotkeys },
         { provide: CommitChangeService, useClass: MockCommitChange },

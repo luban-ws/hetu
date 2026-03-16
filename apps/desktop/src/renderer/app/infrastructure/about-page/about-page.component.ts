@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from "@angular/core";
 import { DesktopAdapter, DESKTOP_ADAPTER } from '../desktop-adapter';
-import { IPC_EVENTS } from "@common/ipc-events";
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Component({
   selector: "app-about-page",

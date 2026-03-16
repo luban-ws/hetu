@@ -24,5 +24,5 @@ export class MockLayout {
   @Output() filePanelChanged = new EventEmitter<boolean>();
   @Output() navPanelChanged = new EventEmitter<boolean>();
   @Output() tooltipChanged = new EventEmitter<boolean>();
-  constructor(private hotkeys: any, private electron: any) {}
+  constructor(private hotkeys: any, private adapter: any) {}
 }

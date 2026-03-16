@@ -89,31 +89,30 @@ RFCs are numbered sequentially starting from 0001. Use the next available number
 
 ## Current RFCs
 
-### Phase 1: Shell + Frontend Decoupling
+### Completed (Phase 1–3) → `completed/`
+
+| RFC | Title | One job |
+|-----|-------|---------|
+| [0001](./completed/0001-tauri-shell-scaffold.md) | Tauri Shell Scaffold | Scaffold src-tauri/, minimal commands, window loads Angular |
+| [0002](./completed/0002-standalone-frontend-build.md) | Standalone Frontend Build | Decouple renderer build from electron-vite for Tauri |
+| [0003](./completed/0003-desktop-adapter.md) | DesktopAdapter + Adapters | Adapter interface, ElectronAdapter, TauriAdapter stub, DI |
+| [0004](./completed/0004-service-migration.md) | Frontend Service Migration | Refactor all 13 services from ElectronService to adapter |
+| [0005](./completed/0005-rust-git-core.md) | Rust Git Core (git2) | Implement Git ops in Rust, expose as Tauri commands |
+| [0006](./completed/0006-tauri-git-wiring.md) | TauriAdapter Git Wiring | Wire TauriAdapter to Rust Git commands, verify E2E |
+| [0007](./completed/0007-credential-storage.md) | Credential Storage Migration | Migrate Electron safeStorage to Rust/OS keychain |
+| [0008](./completed/0008-jira-ci-migration.md) | JIRA/CI Migration | Rewrite JIRA/AppVeyor integrations in Rust |
+| [0009](./completed/0009-updater-cleanup.md) | Remove Electron | Delete Electron main/preload/Node deps (updater → 0012) |
+
+### Phase 4: Distribution & UX
 
 | RFC | Title | Status | One job | Depends on |
 |-----|-------|--------|---------|------------|
-| [0001](./0001-tauri-shell-scaffold.md) | Tauri Shell Scaffold | Done | Scaffold src-tauri/, minimal commands, window loads Angular | — |
-| [0002](./0002-standalone-frontend-build.md) | Standalone Frontend Build | Done | Decouple renderer build from electron-vite for Tauri | 0001 |
-| [0003](./0003-desktop-adapter.md) | DesktopAdapter + Adapters | Done | Adapter interface, ElectronAdapter, TauriAdapter stub, DI | 0002 |
-| [0004](./0004-service-migration.md) | Frontend Service Migration | Done | Refactor all 13 services from ElectronService to adapter | 0003 |
+| [0012](./0012-auto-updater.md) | Auto-Updater via GitHub Releases | Draft | Integrate tauri-plugin-updater with GitHub Releases endpoint | 0009 |
+| [0013](./0013-file-watcher.md) | File Watcher & Live Updates | Draft | Real-time file watching via `notify` crate + open external file | 0005 |
+| [0014](./0014-operation-progress.md) | Operation Progress Signals | Draft | Emit blocking-operation events for loading UX during fetch/pull/push | 0005 |
+| [0015](./0015-ipc-cleanup.md) | IPC Cleanup & Legacy Removal | Draft | Remove dead IPC channels, stale services, fix event mismatches | 0009, 0013, 0014 |
 
-### Phase 2: Rust Git Backend
-
-| RFC | Title | Status | One job | Depends on |
-|-----|-------|--------|---------|------------|
-| [0005](./0005-rust-git-core.md) | Rust Git Core (git2) | Done | Implement Git ops in Rust, expose as Tauri commands | 0001 |
-| [0006](./0006-tauri-git-wiring.md) | TauriAdapter Git Wiring | Done | Wire TauriAdapter to Rust Git commands, verify E2E | 0004, 0005 |
-
-### Phase 3: Backend Integrations
-
-| RFC | Title | Status | One job | Depends on |
-|-----|-------|--------|---------|------------|
-| [0007](./0007-credential-storage.md) | Credential Storage Migration | Done | Migrate Electron safeStorage to Rust/OS keychain | 0006 |
-| [0008](./0008-jira-ci-migration.md) | JIRA/CI Migration | Done | Rewrite JIRA/AppVeyor integrations in Rust | 0006 |
-| [0009](./0009-updater-cleanup.md) | Remove Electron | Deferred | Delete Electron main/preload/Node deps | 0007, 0008 |
-
-### Phase 4: UX Enhancements
+### Phase 5: UX Enhancements
 
 | RFC | Title | Status | One job | Depends on |
 |-----|-------|--------|---------|------------|

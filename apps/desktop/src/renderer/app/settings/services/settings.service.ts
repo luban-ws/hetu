@@ -1,7 +1,7 @@
 import { Injectable, Output, EventEmitter, Inject, NgZone } from "@angular/core";
 import { DESKTOP_ADAPTER, DesktopAdapter } from '../../infrastructure/desktop-adapter';
 import { ToastrService } from "ngx-toastr";
-import { IPC_EVENTS } from "@common/ipc-events";
+import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 @Injectable()
 export class SettingsService {

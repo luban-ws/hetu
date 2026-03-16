@@ -8,8 +8,8 @@ import { APP_BASE_HREF } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SettingsModule } from './settings/settings.module';
-import { ElectronService } from './infrastructure/electron.service';
-import { MockElectron } from './infrastructure/mocks/mock-electron-service';
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { HotkeyModule } from 'angular2-hotkeys';
 
 describe('AppComponent', () => {
@@ -43,7 +43,7 @@ describe('AppComponent', () => {
         AppComponent
       ],
       providers: [
-        {provide: ElectronService, useClass: MockElectron}
+        {provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter}
       ]
     }).compileComponents();
   }));

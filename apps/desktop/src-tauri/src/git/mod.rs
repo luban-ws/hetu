@@ -2,6 +2,7 @@
 
 pub mod branch;
 pub mod commit;
+pub mod diff;
 pub mod error;
 pub mod remote;
 pub mod repo;

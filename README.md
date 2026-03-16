@@ -1,15 +1,16 @@
 <div align="center">
-  <img src="./build/Icon-128.png" alt="Hetu logo" width="88" />
+  <img src="./apps/desktop/build/Icon-128.png" alt="Hetu logo" width="88" />
 
   <h1>河图 Hetu</h1>
   <p><strong>Subway-Map Git Client</strong></p>
-  <p>以“河图”之意重塑 Git 历史：让分支关系像地铁线路一样清晰可读。</p>
+  <p>以"河图"之意重塑 Git 历史：让分支关系像地铁线路一样清晰可读。</p>
 
   <p>
+    <a href="https://luban-ws.github.io/hetu/"><img src="https://img.shields.io/badge/Site-luban--ws.github.io/hetu-3ba7ff.svg" alt="Website" /></a>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-0A66C2.svg" alt="MIT License" /></a>
     <a href="https://tauri.app/"><img src="https://img.shields.io/badge/Tauri-2.0-F08A24.svg" alt="Tauri 2" /></a>
     <a href="https://github.com/rust-lang/git2-rs"><img src="https://img.shields.io/badge/Rust-git2--rs-9A5A2E.svg" alt="Rust git2-rs" /></a>
-    <a href="https://angular.dev/"><img src="https://img.shields.io/badge/Angular-18-C3002F.svg" alt="Angular" /></a>
+    <a href="https://angular.dev/"><img src="https://img.shields.io/badge/Angular-20-C3002F.svg" alt="Angular" /></a>
   </p>
 
   <img src="./misc/metrogit3.PNG" alt="Hetu overview" width="860" />
@@ -73,36 +74,49 @@ Hetu 是一个原生桌面 Git 客户端，基于 **Tauri + Rust + Angular**。
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22+
+- pnpm 10+
 - Rust 1.70+ (`rustup`, `cargo`)
-- npm
 
 ### Development
 
 ```bash
-npm install
-npm run tauri:dev
+pnpm install
+pnpm desktop:tauri:dev
 ```
 
 ### Production Build
 
 ```bash
-npm run tauri:build
+pnpm desktop:tauri:build
 ```
 
 ### Testing
 
 ```bash
-npm test                       # Frontend (Vitest)
-cd src-tauri && cargo test     # Rust backend
+pnpm test                                  # All workspace tests (Angular + Rust)
+cd apps/desktop/src-tauri && cargo test    # Rust backend only
 ```
 
-> Legacy Electron path (`npm run dev`) is retained temporarily and will be removed later.
+## Monorepo 结构
+
+```
+hetu/
+├── apps/desktop/     @luban-ws/desktop — Tauri 桌面应用
+├── packages/         共享 Angular 组件（规划中）
+├── site/             @luban-ws/site — 文档展示站（Astro）
+├── docs/rfc/         架构决策文档
+├── turbo.json        Turborepo pipeline
+└── pnpm-workspace.yaml
+```
 
 ## 文档入口
 
 | Resource | Description |
 |---|---|
+| [Hetu Site](https://luban-ws.github.io/hetu/) | 项目主页、功能展示、下载 |
+| [Getting Started](https://luban-ws.github.io/hetu/docs/getting-started/) | 安装与快速上手 |
+| [Architecture](https://luban-ws.github.io/hetu/docs/architecture/) | 系统架构概览 |
 | [Tauri Dev Guide](./docs/tauri.md) | Tauri 构建、运行、调试 |
 | [RFCs](./docs/rfc/README.md) | 架构决策与设计文档 |
 | [Roadmap](./ROADMAP.md) | 迁移阶段与任务追踪 |

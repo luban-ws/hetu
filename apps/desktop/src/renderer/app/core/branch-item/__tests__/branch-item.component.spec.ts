@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { BranchItemComponent } from "../branch-item.component";
 import { D3Service } from "../../d3/d3.service";
-import { ElectronService } from "../../../infrastructure/electron.service";
-import { MockElectron } from "../../../infrastructure/mocks/mock-electron-service";
+import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
+import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { MockD3 } from "../../mocks/mock-d3-service";
 import {
   ContextMenuModule,
@@ -24,7 +24,7 @@ describe("BranchItemComponent", () => {
       declarations: [BranchItemComponent],
       imports: [ContextMenuModule],
       providers: [
-        { provide: ElectronService, useClass: MockElectron },
+        { provide: DESKTOP_ADAPTER, useClass: MockDesktopAdapter },
         { provide: D3Service, useClass: MockD3 },
         { provide: ContextMenuService, useClass: MockContextMenuService },
         { provide: CommitSelectionService, useClass: MockCommitSelection },

@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { StatusBarService } from './status-bar.service';
+import { StatusBarService } from '../status-bar.service';
 
 describe('StatusBarService', () => {
   beforeEach(() => {

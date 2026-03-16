@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TitleEditorComponent } from './title-editor.component';
+import { TitleEditorComponent } from '../title-editor.component';
 import { FormsModule } from '@angular/forms';
 
 describe('TitleEditorComponent', () => {

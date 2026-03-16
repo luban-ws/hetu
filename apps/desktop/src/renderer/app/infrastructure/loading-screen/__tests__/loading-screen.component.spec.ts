@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoadingScreenComponent } from './loading-screen.component';
-import { SpinnerComponent } from '../spinner/spinner.component';
-import { LoadingService } from '../loading-service.service';
+import { LoadingScreenComponent } from '../loading-screen.component';
+import { SpinnerComponent } from '../../spinner/spinner.component';
+import { LoadingService } from '../../loading-service.service';
 import { NotificationsService, SimpleNotificationsModule } from 'angular2-notifications';
 
 describe('LoadingScreenComponent', () => {

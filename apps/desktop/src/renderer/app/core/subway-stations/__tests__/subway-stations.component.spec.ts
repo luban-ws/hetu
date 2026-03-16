@@ -1,17 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SubwayStationsComponent } from '../subway-stations.component';
-import { D3Service } from '../d3/d3.service';
-import { RepoService } from '../services/repo.service';
-import { CommitChangeService } from '../services/commit-change.service';
-import { CommitSelectionService } from '../services/commit-selection.service';
+import { D3Service } from '../../d3/d3.service';
+import { RepoService } from '../../services/repo.service';
+import { CommitChangeService } from '../../services/commit-change.service';
+import { CommitSelectionService } from '../../services/commit-selection.service';
 import { ContextMenuService, ContextMenuModule, ContextMenuComponent } from 'ngx-contextmenu';
 import { MockD3 } from '../mocks/mock-d3-service';
 import { MockCommitSelection } from '../mocks/mock-commit-selection-service';
 import { MockRepo } from '../mocks/mock-repo-service';
 import { MockCommitChange } from '../mocks/mock-commit-change-service';
 import { MockContextMenuService } from '../mocks/mock-context-menu-service';
-import { NO_ERRORS_SCHEMA } from '../../../../node_modules/@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('SubwayStationsComponent', () => {
   let component: SubwayStationsComponent;

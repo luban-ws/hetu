@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CommitterCardComponent } from './committer-card.component';
-import { D3Service } from '../d3/d3.service';
+import { CommitterCardComponent } from '../committer-card.component';
+import { D3Service } from '../../d3/d3.service';
 import { MockD3 } from '../mocks/mock-d3-service';
 
 describe('CommitterCardComponent', () => {

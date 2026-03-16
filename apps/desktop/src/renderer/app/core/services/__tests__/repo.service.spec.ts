@@ -2,21 +2,21 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { RepoService } from '../repo.service';
 import { MockLoading } from '../../infrastructure/mocks/mock-loading-service';
-import { StatusBarService } from '../../infrastructure/status-bar.service';
+import { StatusBarService } from '../../../infrastructure/status-bar.service';
 import { MockStatusBar } from '../../infrastructure/mocks/mock-status-bar-service';
 import { CommitChangeService } from '../commit-change.service';
 import { MockHotkeys } from '../../infrastructure/mocks/mock-hotkeys-service';
-import { HotkeysService } from '../../../../node_modules/angular2-hotkeys';
+import { HotkeysService } from 'angular2-hotkeys';
 import { MockCommitChange } from '../mocks/mock-commit-change-service';
-import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
+import { PromptInjectorService } from '../../../infrastructure/prompt-injector.service';
 import { MockPromptInjector } from '../../infrastructure/mocks/mock-prompt-injector-service';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
-import { LoadingService } from '../../infrastructure/loading-service.service';
-import { SimpleNotificationsComponent, SimpleNotificationsModule, NotificationsService } from '../../../../node_modules/angular2-notifications';
-import { RouterTestingModule } from '../../../../node_modules/@angular/router/testing';
+import { LoadingService } from '../../../infrastructure/loading-service.service';
+import { SimpleNotificationsComponent, SimpleNotificationsModule, NotificationsService } from 'angular2-notifications';
+import { RouterTestingModule } from '@angular/router/testing';
 import { MockCredential } from '../mocks/mock-credential-service';
-import { CredentialsService } from './credentials.service';
+import { CredentialsService } from '../credentials.service';
 import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
 describe('RepoService', () => {

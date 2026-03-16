@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CommitFileListComponent } from './commit-file-list.component';
-import { FileListFilter } from './file-list-filter';
+import { CommitFileListComponent } from '../commit-file-list.component';
+import { FileListFilter } from '../file-list-filter';
 
 describe('CommitFileListComponent', () => {
   let component: CommitFileListComponent;

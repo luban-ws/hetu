@@ -1,13 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExternalFileViewerComponent } from './external-file-viewer.component';
-import { NO_ERRORS_SCHEMA } from '../../../../node_modules/@angular/core';
-import { RouterTestingModule } from '../../../../node_modules/@angular/router/testing';
-import { CommitSelectionService } from '../services/commit-selection.service';
+import { ExternalFileViewerComponent } from '../external-file-viewer.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { RouterTestingModule } from '@angular/router/testing';
+import { CommitSelectionService } from '../../services/commit-selection.service';
 import { MockCommitSelection } from '../mocks/mock-commit-selection-service';
-import { LoadingService } from '../../infrastructure/loading-service.service';
+import { LoadingService } from '../../../infrastructure/loading-service.service';
 import { MockLoading } from '../../infrastructure/mocks/mock-loading-service';
-import { ActivatedRoute } from '../../../../node_modules/@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs/observable/of';
 
 

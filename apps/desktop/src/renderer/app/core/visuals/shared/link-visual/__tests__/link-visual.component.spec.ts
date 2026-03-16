@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LinkVisualComponent } from './link-visual.component';
-import { NO_ERRORS_SCHEMA, Component, OnInit } from '../../../../../../node_modules/@angular/core';
-import { Link } from '../../../d3/models/link';
-import { Node } from '../../../d3/models/node';
-import { Color } from '../../../d3/models/color';
+import { LinkVisualComponent } from '../link-visual.component';
+import { NO_ERRORS_SCHEMA, Component, OnInit } from '@angular/core';
+import { Link } from '../../../../d3/models/link';
+import { Node } from '../../../../d3/models/node';
+import { Color } from '../../../../d3/models/color';
 
 describe('LinkVisualComponent', () => {
   let component: HostComponent;

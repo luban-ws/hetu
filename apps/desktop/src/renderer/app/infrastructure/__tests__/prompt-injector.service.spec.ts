@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { PromptInjectorService } from './prompt-injector.service';
+import { PromptInjectorService } from '../prompt-injector.service';
 
 describe('PromptInjectorService', () => {
   beforeEach(() => {

@@ -1,11 +1,11 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { UpdaterService } from './updater.service';
+import { UpdaterService } from '../updater.service';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
-import { StatusBarService } from './status-bar.service';
+import { StatusBarService } from '../status-bar.service';
 import { MockStatusBar } from './mocks/mock-status-bar-service';
-import { SimpleNotificationsModule } from '../../../node_modules/angular2-notifications';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 describe('UpdaterService', () => {
   beforeEach(() => {

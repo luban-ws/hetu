@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SubtaskPromptComponent } from './subtask-prompt.component';
+import { SubtaskPromptComponent } from '../subtask-prompt.component';
 import { FormsModule } from '@angular/forms';
 
 describe('SubtaskPromptComponent', () => {

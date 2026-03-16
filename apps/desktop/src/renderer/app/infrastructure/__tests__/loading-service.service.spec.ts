@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { LoadingService } from './loading-service.service';
+import { LoadingService } from '../loading-service.service';
 import { SimpleNotificationsModule, NotificationsService } from 'angular2-notifications';
 
 describe('LoadingService', () => {

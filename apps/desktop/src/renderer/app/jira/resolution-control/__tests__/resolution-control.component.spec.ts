@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ResolutionControlComponent } from './resolution-control.component';
-import { JiraIntegrationService } from '../services/jira-integration.service';
+import { ResolutionControlComponent } from '../resolution-control.component';
+import { JiraIntegrationService } from '../../services/jira-integration.service';
 import { MockJira } from '../../../core/infrastructure/mocks/mock-jira-service';
-import { Component, OnInit, ViewChild } from '../../../../node_modules/@angular/core';
-import { Resolution } from '../models/resolution';
-import { ResolutionSelectorComponent } from '../resolution-selector/resolution-selector.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Resolution } from '../../models/resolution';
+import { ResolutionSelectorComponent } from '../../resolution-selector/resolution-selector.component';
 
 describe('ResolutionControlComponent', () => {
   let component: HostComponent;

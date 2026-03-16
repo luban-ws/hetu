@@ -1,13 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SubwayMapVisualComponent } from './subway-map-visual.component';
-import { D3Service } from '../../../d3/d3.service';
-import { CiIntegrationService } from '../../../services/ci-integration.service';
+import { SubwayMapVisualComponent } from '../subway-map-visual.component';
+import { D3Service } from '../../../../d3/d3.service';
+import { CiIntegrationService } from '../../../../services/ci-integration.service';
 import { MockD3 } from '../../../mocks/mock-d3-service';
 import { MockCIIntegration } from '../../../mocks/mock-ci-integration-service';
-import { LinkVisualComponent } from '../../shared/link-visual/link-visual.component';
-import { NodeVisualComponent } from '../../shared/node-visual/node-visual.component';
-import { ContextMenuModule } from '../../../../../../node_modules/ngx-contextmenu';
+import { LinkVisualComponent } from '../../../shared/link-visual/link-visual.component';
+import { NodeVisualComponent } from '../../../shared/node-visual/node-visual.component';
+import { ContextMenuModule } from 'ngx-contextmenu';
 
 describe('SubwayMapVisualComponent', () => {
   let component: SubwayMapVisualComponent;

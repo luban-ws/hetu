@@ -142,9 +142,9 @@ fn get_single_commit() {
     let (_dir, repo) = scaffold_repo();
     let commits = git::commit::get_commits(&repo, 1).unwrap();
     let sha = &commits[0].sha;
-    let info = git::commit::get_commit(&repo, sha).expect("get_commit failed");
-    assert_eq!(&info.sha, sha);
-    assert_eq!(info.message, "initial commit");
+    let detail = git::commit::get_commit(&repo, sha).expect("get_commit failed");
+    assert_eq!(&detail.info.sha, sha);
+    assert_eq!(detail.info.message, "initial commit");
 }
 
 #[test]

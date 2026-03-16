@@ -1,15 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SubwayStationAnnotComponent } from './subway-station-annot.component';
-import { RepoService } from '../services/repo.service';
+import { SubwayStationAnnotComponent } from '../subway-station-annot.component';
+import { RepoService } from '../../services/repo.service';
 import { MockRepo } from '../../infrastructure/mocks/mock-repo-service';
 import { MockCommitSelection } from '../mocks/mock-commit-selection-service';
-import { D3Service } from '../d3/d3.service';
-import { ContextMenuService, ContextMenuModule } from '../../../../node_modules/ngx-contextmenu';
+import { D3Service } from '../../d3/d3.service';
+import { ContextMenuService, ContextMenuModule } from 'ngx-contextmenu';
 import { MockContextMenuService } from '../mocks/mock-context-menu-service';
-import { CommitSelectionService } from '../services/commit-selection.service';
+import { CommitSelectionService } from '../../services/commit-selection.service';
 import { MockD3 } from '../mocks/mock-d3-service';
-import { NO_ERRORS_SCHEMA } from '../../../../node_modules/@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('SubwayStationAnnotComponent', () => {
   let component: SubwayStationAnnotComponent;

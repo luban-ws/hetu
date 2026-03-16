@@ -1,13 +1,13 @@
 import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import { AppComponent } from '../app.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
-import { CoreModule } from './core/core.module';
-import { InfrastructureModule } from './infrastructure/infrastructure.module';
+import { CoreModule } from '../core/core.module';
+import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SettingsModule } from './settings/settings.module';
+import { SettingsModule } from '../settings/settings.module';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { HotkeyModule } from 'angular2-hotkeys';

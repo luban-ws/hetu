@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileViewPanelComponent } from './file-view-panel.component';
-import { CommitSelectionService } from '../services/commit-selection.service';
+import { FileViewPanelComponent } from '../file-view-panel.component';
+import { CommitSelectionService } from '../../services/commit-selection.service';
 import { MockCommitSelection } from '../mocks/mock-commit-selection-service';
-import { CommitChangeService } from '../services/commit-change.service';
+import { CommitChangeService } from '../../services/commit-change.service';
 import { MockCommitChange } from '../mocks/mock-commit-change-service';
-import { FormsModule } from '../../../../node_modules/@angular/forms';
-import { NO_ERRORS_SCHEMA } from '../../../../node_modules/@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('FileViewPanelComponent', () => {
   let component: FileViewPanelComponent;

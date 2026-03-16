@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReleaseNoteComponent } from './release-note.component';
+import { ReleaseNoteComponent } from '../release-note.component';
 
 describe('ReleaseNoteComponent', () => {
   let component: ReleaseNoteComponent;

@@ -5,7 +5,7 @@ import angular from "@analogjs/vite-plugin-angular";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(({ mode }) => ({
-  plugins: [tsconfigPaths()],
+  plugins: [angular(), tsconfigPaths()],
   test: {
     globals: true,
     setupFiles: ["test/angular/test-setup.ts"],
@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => ({
       "src/renderer/**/__tests__/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
     ],
     reporters: ["default"],
-    pool: "forks",
     server: {
       deps: {
         inline: [/fesm2022/],

@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SubmoduleDetailsPanelComponent } from '../submodule-details-panel.component';
-import { SubmodulesService } from '../services/submodules.service';
+import { SubmodulesService } from '../../services/submodules.service';
 import { MockSubmodule } from '../../infrastructure/mocks/mock-submodule-service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 

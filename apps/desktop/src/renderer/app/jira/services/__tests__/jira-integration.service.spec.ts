@@ -1,11 +1,11 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { JiraIntegrationService } from './jira-integration.service';
+import { JiraIntegrationService } from '../jira-integration.service';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
-import { StatusBarService } from '../../infrastructure/status-bar.service';
+import { StatusBarService } from '../../../infrastructure/status-bar.service';
 import { MockStatusBar } from '../../infrastructure/mocks/mock-status-bar-service';
-import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 describe('JiraIntegrationService', () => {
   beforeEach(() => {

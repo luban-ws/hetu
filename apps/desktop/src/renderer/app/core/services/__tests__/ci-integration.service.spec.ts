@@ -1,9 +1,9 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { CiIntegrationService } from './ci-integration.service';
+import { CiIntegrationService } from '../ci-integration.service';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
-import { StatusBarService } from '../../infrastructure/status-bar.service';
-import { RepoService } from './repo.service';
+import { StatusBarService } from '../../../infrastructure/status-bar.service';
+import { RepoService } from '../repo.service';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { MockRepo } from '../mocks/mock-repo-service';
 import { MockStatusBar } from '../../infrastructure/mocks/mock-status-bar-service';

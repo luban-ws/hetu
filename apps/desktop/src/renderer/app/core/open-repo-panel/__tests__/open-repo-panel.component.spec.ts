@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OpenRepoPanelComponent } from './open-repo-panel.component';
-import { NgbModule } from '../../../../node_modules/@ng-bootstrap/ng-bootstrap';
-import { RepoService } from '../services/repo.service';
+import { OpenRepoPanelComponent } from '../open-repo-panel.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RepoService } from '../../services/repo.service';
 import { MockRepo } from '../mocks/mock-repo-service';
-import { LayoutService } from '../services/layout.service';
+import { LayoutService } from '../../services/layout.service';
 import { MockLayout } from '../mocks/mock-layout-service';
-import { HistoryService } from '../services/history.service';
+import { HistoryService } from '../../services/history.service';
 import { MockHistory } from '../mocks/mock-history-service';
 
 describe('OpenRepoPanelComponent', () => {

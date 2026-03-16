@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IcheckComponent } from './icheck.component';
+import { IcheckComponent } from '../icheck.component';
 
 describe('IcheckComponent', () => {
   let component: IcheckComponent;

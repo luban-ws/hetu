@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KeySelectorComponent } from './key-selector.component';
-import { JiraIntegrationService } from '../services/jira-integration.service';
+import { KeySelectorComponent } from '../key-selector.component';
+import { JiraIntegrationService } from '../../services/jira-integration.service';
 import { MockJira } from '../../../core/infrastructure/mocks/mock-jira-service';
-import { FormsModule } from '../../../../node_modules/@angular/forms';
-import { NO_ERRORS_SCHEMA } from '../../../../node_modules/@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('KeySelectorComponent', () => {
   let component: KeySelectorComponent;

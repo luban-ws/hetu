@@ -1,15 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NodeVisualComponent } from './node-visual.component';
+import { NodeVisualComponent } from '../node-visual.component';
 import { MockCommitSelection } from '../../../../infrastructure/mocks/mock-commit-selection-service';
-import { CommitSelectionService } from '../../../services/commit-selection.service';
-import { CommitChangeService } from '../../../services/commit-change.service';
+import { CommitSelectionService } from '../../../../services/commit-selection.service';
+import { CommitChangeService } from '../../../../services/commit-change.service';
 import { MockCommitChange } from '../../../mocks/mock-commit-change-service';
-import { NO_ERRORS_SCHEMA, Component, OnInit } from '../../../../../../node_modules/@angular/core';
-import { ContextMenuModule, ContextMenuService } from '../../../../../../node_modules/ngx-contextmenu';
+import { NO_ERRORS_SCHEMA, Component, OnInit } from '@angular/core';
+import { ContextMenuModule, ContextMenuService } from 'ngx-contextmenu';
 import { MockContextMenuService } from '../../../mocks/mock-context-menu-service';
-import { Node } from '../../../d3/models/node';
-import { Color } from '../../../d3/models/color';
+import { Node } from '../../../../d3/models/node';
+import { Color } from '../../../../d3/models/color';
 
 describe('NodeVisualComponent', () => {
   let component: HostComponent;

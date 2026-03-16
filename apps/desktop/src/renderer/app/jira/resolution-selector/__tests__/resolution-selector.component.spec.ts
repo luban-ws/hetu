@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ResolutionSelectorComponent } from './resolution-selector.component';
+import { ResolutionSelectorComponent } from '../resolution-selector.component';
 import { FormsModule } from '@angular/forms';
-import { JiraIntegrationService } from '../services/jira-integration.service';
+import { JiraIntegrationService } from '../../services/jira-integration.service';
 import { MockJira } from '../../../core/infrastructure/mocks/mock-jira-service';
-import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 describe('ResolutionSelectorComponent', () => {
   let component: ResolutionSelectorComponent;

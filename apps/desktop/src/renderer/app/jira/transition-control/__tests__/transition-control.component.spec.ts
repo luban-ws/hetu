@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TransitionControlComponent } from './transition-control.component';
-import { JiraIntegrationService } from '../services/jira-integration.service';
+import { TransitionControlComponent } from '../transition-control.component';
+import { JiraIntegrationService } from '../../services/jira-integration.service';
 import { MockJira } from '../../../core/infrastructure/mocks/mock-jira-service';
-import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
+import { PromptInjectorService } from '../../../infrastructure/prompt-injector.service';
 import { MockPromptInjector } from '../../infrastructure/mocks/mock-prompt-injector-service';
-import { OnInit, Component } from '../../../../node_modules/@angular/core';
-import { Status } from '../models/status';
+import { OnInit, Component } from '@angular/core';
+import { Status } from '../../models/status';
 
 describe('TransitionControlComponent', () => {
   let component: HostComponent;

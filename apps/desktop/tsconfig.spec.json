@@ -3,8 +3,19 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "target": "es2016",
+    "baseUrl": "src/renderer",
+    "paths": {
+      "@/*": ["../*"],
+      "@app/*": ["./app/*"],
+      "@core/*": ["./app/core/*"],
+      "@infrastructure/*": ["./app/infrastructure/*"],
+      "@settings/*": ["./app/settings/*"],
+      "@jira/*": ["./app/jira/*"],
+      "@common/*": ["../../src/common/*"],
+      "@shared/*": ["../../src/shared/*"]
+    },
     "types": ["vitest/globals", "node"]
   },
-  "files": ["src/test-setup.ts"],
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+  "files": ["test/angular/test-setup.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/renderer/**/*.ts"]
 }

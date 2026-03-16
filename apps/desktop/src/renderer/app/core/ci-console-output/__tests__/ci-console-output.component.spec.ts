@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CiConsoleOutputComponent } from './ci-console-output.component';
-import { InfrastructureModule } from '../../infrastructure/infrastructure.module';
+import { CiConsoleOutputComponent } from '../ci-console-output.component';
+import { InfrastructureModule } from '../../../infrastructure/infrastructure.module';
 
 describe('CiConsoleOutputComponent', () => {
   let component: CiConsoleOutputComponent;

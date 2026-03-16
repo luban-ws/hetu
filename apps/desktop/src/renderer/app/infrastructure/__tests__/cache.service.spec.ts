@@ -1,9 +1,9 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { CacheService } from './cache.service';
+import { CacheService } from '../cache.service';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
-import { StatusBarService } from './status-bar.service';
+import { StatusBarService } from '../status-bar.service';
 import { MockStatusBar } from './mocks/mock-status-bar-service';
 
 describe('CacheService', () => {

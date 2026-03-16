@@ -1,15 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JiraDetailComponent } from './jira-detail.component';
+import { JiraDetailComponent } from '../jira-detail.component';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
-import { JiraIntegrationService } from '../services/jira-integration.service';
+import { JiraIntegrationService } from '../../services/jira-integration.service';
 import { MockJira } from '../../core/mocks/mock-jira-service';
-import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
+import { PromptInjectorService } from '../../../infrastructure/prompt-injector.service';
 import { MockPromptInjector } from '../../infrastructure/mocks/mock-prompt-injector-service';
-import { LayoutService } from '../../core/services/layout.service';
+import { LayoutService } from '../../../core/services/layout.service';
 import { MockLayout } from '../../core/mocks/mock-layout-service';
-import { NO_ERRORS_SCHEMA } from '../../../../node_modules/@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('JiraDetailComponent', () => {
   let component: JiraDetailComponent;

@@ -1,12 +1,12 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { CommitSelectionService } from './commit-selection.service';
+import { CommitSelectionService } from '../commit-selection.service';
 import { MockPromptInjector } from '../../infrastructure/mocks/mock-prompt-injector-service';
-import { CredentialsService } from './credentials.service';
+import { CredentialsService } from '../credentials.service';
 import { MockCredential } from '../mocks/mock-credential-service';
-import { SimpleNotificationsModule } from '../../../../node_modules/angular2-notifications';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 import { DESKTOP_ADAPTER } from '@infrastructure/desktop-adapter';
-import { PromptInjectorService } from '../../infrastructure/prompt-injector.service';
+import { PromptInjectorService } from '../../../infrastructure/prompt-injector.service';
 import { MockDesktopAdapter } from '@infrastructure/mocks/mock-desktop-adapter';
 import { IPC_EVENTS } from '@infrastructure/ipc-events';
 
